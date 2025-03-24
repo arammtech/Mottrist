@@ -13,7 +13,7 @@
 		<PackageReference Include="System.Diagnostics.EventLog" Version="9.0.3" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="DTOS\Customer\" />
+	  <Folder Include="Features\Review\DTOs\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Mottrist.Domain\Mottrist.Domain.csproj" />

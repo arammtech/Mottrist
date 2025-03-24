@@ -8,10 +8,10 @@ using Mottrist.Repository.DbInitializer;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 using Mottrist.Repository.Repository;
 using Mottrist.Repository.UnitOfWork;
-using Mottrist.Service.Implementations;
-using Mottrist.Service.Profiles;
+using Mottrist.Service.Features.General.Mapper.Profiles;
+using Mottrist.Service.Features.User;
+using Mottrist.Service.Features.User.Inerfaces;
 using Mottrist.Utilities.Identity;
-using Template.Service.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,13 +27,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(option =>
 {
-    option.Password.RequiredLength = 4;
-    option.Password.RequireDigit = false;
-    option.Password.RequireNonAlphanumeric = false;
-    option.Password.RequireUppercase = false;
+    //option.Password.RequiredLength = 4;
+    //option.Password.RequireDigit = false;
+    //option.Password.RequireNonAlphanumeric = false;
+    //option.Password.RequireUppercase = false;
 })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
@@ -57,18 +56,19 @@ builder.Services.AddScoped<IUserService, UserService>();
 #endregion
 
 var app = builder.Build();
-SeedDatabase();
 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json","v1"));
 }
 
 app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseAuthorization();
+app.UseEndpoints(endpoints => endpoints.MapControllers());
 
 app.MapControllers();
 
