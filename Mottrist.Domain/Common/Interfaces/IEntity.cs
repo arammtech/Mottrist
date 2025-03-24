@@ -1,4 +1,4 @@
-﻿namespace Mottrist.Domain.Common
+﻿namespace Mottrist.Domain.Common.Interfaces
 {
     public interface IEntity<TPrimaryKey>
     {

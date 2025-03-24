@@ -2,7 +2,7 @@
 
 namespace Mottrist.Domain.Common
 {
-    public abstract class BaseEntity : IEntity<int>
+    public class LookupEntity : ILookupEntity
     {
         public int Id { get; set; }
     }
