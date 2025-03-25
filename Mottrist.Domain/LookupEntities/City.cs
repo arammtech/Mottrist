@@ -9,7 +9,7 @@ namespace Mottrist.Domain.LookupEntities
 
         #region Navigation Properties
         public virtual Country Country { get; set; } = null!;
-        public virtual ICollection<DriverCityCoverage> DriverCityCoverages { get; set; } = new List<DriverCityCoverage>();
+        public virtual ICollection<DriverCity> DriverCities { get; set; } = new List<DriverCity>();
         #endregion
     }
 

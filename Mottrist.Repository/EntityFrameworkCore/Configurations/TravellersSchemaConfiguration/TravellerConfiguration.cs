@@ -13,9 +13,23 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.TravellersSchem
             builder.Property(t => t.WhatsAppNumber)
                 .HasMaxLength(20);
 
-            builder.ToTable("Travellers", schema: "Travellers");
+            builder.Property(t => t.NationailtyId)
+                .IsRequired();
 
+            builder.Property(t => t.UserId)
+                .IsRequired();
+
+            builder.HasOne(b => b.Country)
+                .WithMany()
+                .HasForeignKey(b => b.NationailtyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(builder => builder.User)
+                .WithOne()
+                .HasForeignKey<Traveller>(t => t.UserId)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.ToTable("Travellers", schema: "Travellers");
         }
     }
-
 }

@@ -9,9 +9,14 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaC
         public void Configure(EntityTypeBuilder<CarImage> builder)
         {
             builder.HasNoKey();
+
             builder.Property(ci => ci.ImageUrl)
                    .IsRequired()
                    .HasMaxLength(500);
+
+            builder.HasOne(ci => ci.Car)
+                   .WithMany()
+                   .HasForeignKey(ci => ci.CarId);
 
             builder.ToTable("CarImages", schema: "Vehicles");
 

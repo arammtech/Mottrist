@@ -15,8 +15,9 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.GeographySchema
                    .HasMaxLength(200);
 
             builder.HasOne(c => c.Country)
-                   .WithMany(country => country.Cities) 
-                   .HasForeignKey(c => c.CountryId);
+                   .WithMany(country => country.Cities)
+                   .HasForeignKey(c => c.CountryId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.ToTable("Cities", schema: "Geography");
         }

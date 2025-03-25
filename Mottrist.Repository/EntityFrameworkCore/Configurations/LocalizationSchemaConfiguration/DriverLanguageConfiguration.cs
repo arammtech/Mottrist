@@ -8,7 +8,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.LocalizationSch
     {
         public void Configure(EntityTypeBuilder<DriverLanguage> builder)
         {
-            builder.HasKey(dl => dl.Id);
+            builder.HasKey(dcc => new { dcc.DriverId, dcc.LanguageId });
 
             builder.ToTable("DriverLanguages", schema: "Localization");
         }
