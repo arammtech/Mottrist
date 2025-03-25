@@ -20,8 +20,8 @@ namespace Mottrist.Domain.Entities
         public virtual ApplicationUser User { get; set; } = null!;
         public virtual Car? Car { get; set; }
         public virtual Country Country { get; set; } = null!;
-        public virtual ICollection<DriverCityCoverage> DriverCityCoverages { get; set; } = new List<DriverCityCoverage>();
-        public virtual ICollection<DriverCountryCoverage> DriverCountryCoverages { get; set; } = new List<DriverCountryCoverage>();
+        public virtual ICollection<DriverCity>  DriverCities { get; set; } = new List<DriverCity>();
+        public virtual ICollection<DriverCountry> DriverCountrites { get; set; } = new List<DriverCountry>();
         public virtual ICollection<DriverLanguage> DriverLanguages { get; set; } = new List<DriverLanguage>();
 
         #endregion

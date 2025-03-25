@@ -24,10 +24,9 @@ namespace Mottrist.Repository.EntityFrameworkCore.Context
         public virtual DbSet<FuelType> FuelTypes { get; set; } = null!;
         public virtual DbSet<CarImage> CarImages { get; set; } = null!;
         public virtual DbSet<Color> Colors { get; set; } = null!;
-        public virtual DbSet<CoverageType> CoverageTypes { get; set; } = null!;
 
-        public virtual DbSet<DriverCityCoverage> DriverCityCoverages { get; set; } = null!;
-        public virtual DbSet<DriverCountryCoverage> DriverCountryCoverages { get; set; } = null!;
+        public virtual DbSet<DriverCity> DriverCities { get; set; } = null!;
+        public virtual DbSet<DriverCountry> DriverCountries { get; set; } = null!;
         public virtual DbSet<DriverLanguage> DriverLanguages { get; set; } = null!;
         public virtual DbSet<Language> Languages { get; set; } = null!;
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Mottrist.Domain.Enums;
 using Mottrist.Domain.LookupEntities;
 
 namespace Mottrist.Repository.EntityFrameworkCore.Configurations.GeographySchemaConfiguration
@@ -10,6 +11,19 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.GeographySchema
         {
             builder.HasKey(c => c.Id);
 
+            builder.Property(c => c.Name)
+                   .IsRequired()
+                   .HasMaxLength(100);
+
+            builder.Property(c => c.Continent)
+                   .IsRequired()
+                   .HasConversion(
+                       continent => (byte)continent, 
+                       value => (Continent)value     
+                   )
+                   .HasColumnType("tinyint"); 
+
+            // Table mapping
             builder.ToTable("Countries", schema: "Geography");
         }
     }
