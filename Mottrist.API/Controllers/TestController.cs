@@ -7,10 +7,29 @@ namespace Mottrist.API.Controllers
     [ApiController]
     public class TestController : ControllerBase
     {
-        [HttpGet("hi")]
-        public IActionResult GetMyName()
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetCountries()
         {
-            return Ok("Hi");
+            using (var httpClient = new HttpClient())
+            {
+                try
+                {
+                    // Send GET request to the external API URL
+                    HttpResponseMessage response = await httpClient.GetAsync("https://countriesnow.space/api/v0.1/countries");
+                    response.EnsureSuccessStatusCode();
+
+                    // Read the JSON response as a string
+                    string jsonResult = await response.Content.ReadAsStringAsync();
+                    return Ok(jsonResult);
+                }
+                catch (HttpRequestException ex)
+                {
+                    // Return a 500 error with the exception message if an error occurs
+                    return StatusCode(500, $"Error retrieving data: {ex.Message}");
+                }
+            }
         }
     }
 }
