@@ -10,9 +10,8 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations
         {
             builder.HasKey(d => d.Id);
 
-
-
+            builder.Property(d => d.WhatsAppNumber)
+                .HasMaxLength(20);
         }
     }
-
 }
