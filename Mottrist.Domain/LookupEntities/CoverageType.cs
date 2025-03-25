@@ -1,18 +1,16 @@
 ﻿using Mottrist.Domain.Common;
-using Mottrist.Domain.Enums;
 
 namespace Mottrist.Domain.LookupEntities
 {
-    public class Country : LookupEntity
+    public class CoverageType : BaseEntity
     {
-        public string Name { get; set; } = null!;
-        public Continent Continent { get; set; }
-
+        public string Type { get; set; } = null!;
 
         #region Navigation Properties
         public virtual ICollection<DriverCountryCoverage> DriverCountryCoverages { get; set; } = new List<DriverCountryCoverage>();
 
-        public virtual ISet<City> Cities { get; set; } = new HashSet<City>();
+        public virtual ICollection<DriverCityCoverage> DriverCityCoverages { get; set; } = new List<DriverCityCoverage>();
+
         #endregion
     }
 }
