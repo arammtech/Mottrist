@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Mottrist.Domain.LookupEntities;
 
-namespace Mottrist.Repository.EntityFrameworkCore.Configurations
+namespace Mottrist.Repository.EntityFrameworkCore.Configurations.GeographySchemaConfiguration
 {
     internal class CityConfiguration : IEntityTypeConfiguration<City>
     {
@@ -17,6 +17,8 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations
             builder.HasOne(c => c.Country)
                    .WithMany(country => country.Cities) 
                    .HasForeignKey(c => c.CountryId);
+
+            builder.ToTable("Cities", schema: "Geography");
         }
-    }
+    } 
 }

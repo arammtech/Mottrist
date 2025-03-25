@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Mottrist.Domain.Entities;
 
-namespace Mottrist.Repository.EntityFrameworkCore.Configurations
+namespace Mottrist.Repository.EntityFrameworkCore.Configurations.TravellersSchemaConfiguration
 {
     public class TravellerConfiguration : IEntityTypeConfiguration<Traveller>
     {
@@ -12,6 +12,8 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations
 
             builder.Property(t => t.WhatsAppNumber)
                 .HasMaxLength(20);
+
+            builder.ToTable("Travellers", schema: "Travellers");
 
         }
     }

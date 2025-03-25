@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Mottrist.Domain.LookupEntities;
 
-namespace Mottrist.Repository.EntityFrameworkCore.Configurations
+namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaConfiguration
 {
     internal class DriverCityCoverageConfiguration : IEntityTypeConfiguration<DriverCityCoverage>
     {
@@ -20,7 +20,9 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations
 
             builder.HasOne(dcc => dcc.CoverageType)
                    .WithMany()
-                   .HasForeignKey(dcc => dcc.CoverageTypeId); 
+                   .HasForeignKey(dcc => dcc.CoverageTypeId);
+
+            builder.ToTable("DriverCityCoverages", schema: "Drivers");
         }
-    }
+    } 
 }

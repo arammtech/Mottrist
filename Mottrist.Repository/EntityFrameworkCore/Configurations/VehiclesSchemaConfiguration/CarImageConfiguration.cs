@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Mottrist.Domain.Entities.CarDetails;
 
-namespace Mottrist.Repository.EntityFrameworkCore.Configurations
+namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaConfiguration
 {
     public class CarImageConfiguration : IEntityTypeConfiguration<CarImage>
     {
@@ -12,6 +12,8 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations
             builder.Property(ci => ci.ImageUrl)
                    .IsRequired()
                    .HasMaxLength(500);
+
+            builder.ToTable("CarImages", schema: "Vehicles");
 
         }
     }

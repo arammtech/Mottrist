@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Mottrist.Domain.Entities.CarDetails;
 
-namespace Mottrist.Repository.EntityFrameworkCore.Configurations
+namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaConfiguration
 {
     public class BrandConfiguration : IEntityTypeConfiguration<Brand>
     {
@@ -13,6 +13,8 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations
             builder.Property(b => b.Name)
                    .IsRequired()
                    .HasMaxLength(100);
+
+            builder.ToTable("Brands", schema: "Vehicles");
         }
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Mottrist.Domain.Entities.CarDetails;
 
-namespace Mottrist.Repository.EntityFrameworkCore.Configurations
+namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaConfiguration
 {
     public class FuelTypeConfiguration : IEntityTypeConfiguration<FuelType>
     {
@@ -13,6 +13,9 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations
             builder.Property(ft => ft.Type)
                    .IsRequired()
                    .HasMaxLength(50);
+
+            builder.ToTable("FuelTypes", schema: "Vehicles");
+
         }
     }
 }
