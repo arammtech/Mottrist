@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 
@@ -11,9 +12,11 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250326022504_Car-SeedData")]
+    partial class CarSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -701,158 +704,6 @@ namespace Mottrist.Repository.Migrations
                     b.HasIndex("CountryId");
 
                     b.ToTable("Cities", "Geography");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CountryId = 1,
-                            Name = "New York"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CountryId = 1,
-                            Name = "Los Angeles"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CountryId = 1,
-                            Name = "Chicago"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CountryId = 1,
-                            Name = "Houston"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CountryId = 1,
-                            Name = "Phoenix"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CountryId = 2,
-                            Name = "Toronto"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CountryId = 2,
-                            Name = "Montreal"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CountryId = 2,
-                            Name = "Vancouver"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CountryId = 2,
-                            Name = "Calgary"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CountryId = 2,
-                            Name = "Ottawa"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CountryId = 3,
-                            Name = "London"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CountryId = 3,
-                            Name = "Manchester"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CountryId = 3,
-                            Name = "Birmingham"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CountryId = 3,
-                            Name = "Liverpool"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CountryId = 3,
-                            Name = "Leeds"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CountryId = 4,
-                            Name = "Berlin"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CountryId = 4,
-                            Name = "Munich"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CountryId = 4,
-                            Name = "Frankfurt"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CountryId = 4,
-                            Name = "Hamburg"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CountryId = 4,
-                            Name = "Cologne"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            CountryId = 5,
-                            Name = "Paris"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            CountryId = 5,
-                            Name = "Marseille"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            CountryId = 5,
-                            Name = "Lyon"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            CountryId = 5,
-                            Name = "Toulouse"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            CountryId = 5,
-                            Name = "Nice"
-                        });
                 });
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.Country", b =>
@@ -874,38 +725,6 @@ namespace Mottrist.Repository.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Countries", "Geography");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Continent = (byte)0,
-                            Name = "USA"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Continent = (byte)0,
-                            Name = "Canada"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Continent = (byte)0,
-                            Name = "UK"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Continent = (byte)0,
-                            Name = "Germany"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Continent = (byte)0,
-                            Name = "France"
-                        });
                 });
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.DriverCity", b =>
