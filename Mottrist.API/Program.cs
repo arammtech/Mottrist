@@ -8,6 +8,9 @@ using Mottrist.Repository.DbInitializer;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 using Mottrist.Repository.Repository;
 using Mottrist.Repository.UnitOfWork;
+using Mottrist.Service.Features.Drivers.Interfaces;
+using Mottrist.Service.Features.Drivers.Mappers;
+using Mottrist.Service.Features.Drivers.Services;
 using Mottrist.Service.Features.General.Mapper.Profiles;
 using Mottrist.Service.Features.Traveller.Interfaces;
 using Mottrist.Service.Features.Traveller.Services;
@@ -52,6 +55,8 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(option =>
 
 
 builder.Services.AddAutoMapper(typeof(MappingProfile), typeof(TravelerProfile));
+builder.Services.AddAutoMapper(typeof(MappingProfile), typeof(DriverProfile));
+
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 #endregion
 
@@ -62,6 +67,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITravelerService, TravelerService>();
+builder.Services.AddScoped<IDriverService, DriverService>();
+
 #endregion
 
 var app = builder.Build();

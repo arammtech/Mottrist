@@ -8,7 +8,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaC
     {
         public void Configure(EntityTypeBuilder<CarImage> builder)
         {
-            builder.HasNoKey();
+            builder.HasKey(ci => ci.Id);
 
             builder.Property(ci => ci.ImageUrl)
                    .IsRequired()
