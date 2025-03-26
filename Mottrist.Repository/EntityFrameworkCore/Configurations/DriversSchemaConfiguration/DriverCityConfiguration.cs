@@ -12,12 +12,19 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
             // Composite key for uniqueness
             builder.HasKey(dcc => new { dcc.DriverId, dcc.CityId});
 
+
+            builder.Property(dcc => dcc.WorkStatus)
+                     .IsRequired()
+                     .HasConversion(
+                        builder => (byte)builder,
+                        builder => (WorkStatus)builder);
+
             // Relationships
             builder.HasOne(dcc => dcc.Driver)
                    .WithMany(d => d. DriverCities)
                    .HasForeignKey(dcc => dcc.DriverId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
+                   .IsRequired()
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(dcc => dcc.City)
                    .WithMany(c => c.DriverCities)
@@ -25,17 +32,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
                    .IsRequired()
                    .OnDelete(DeleteBehavior.Restrict);
 
-
-            builder.Property(dcc => dcc.WorkStatus)
-                     .IsRequired()
-                     .HasConversion(
-                        builder => (byte)builder,
-                        builder => (WorkStatus)builder)
-                     .HasColumnType("tinyint");
-
-
-
-            builder.ToTable("DriverCityCoverages", schema: "Drivers");
+            builder.ToTable("DriverCities", schema: "Drivers");
         }
     }
 }

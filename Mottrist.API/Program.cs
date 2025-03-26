@@ -42,22 +42,8 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(option =>
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-
-
 #region AutoMapper
-//var mapperConfig = new MapperConfiguration(cfg =>
-//{
-//    cfg.AddProfile(new MappingProfile());
-//});
-
-//IMapper mapper = mapperConfig.CreateMapper();
-//builder.Services.AddSingleton(mapper);
-
-
-builder.Services.AddAutoMapper(typeof(MappingProfile), typeof(TravelerProfile));
-builder.Services.AddAutoMapper(typeof(MappingProfile), typeof(DriverProfile));
-
-//builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(typeof(MappingProfile), typeof(TravelerProfile), typeof(DriverProfile));
 #endregion
 
 #region Custom Services

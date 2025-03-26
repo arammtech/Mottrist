@@ -8,6 +8,7 @@ namespace Mottrist.Domain.Entities
     {
         public string? WhatsAppNumber { get; set; }
         public int NationailtyId { get; set; }
+        public string? ProfileImageUrl { get; set; }
         public int UserId { get; set; }
 
         #region Navigation Properties

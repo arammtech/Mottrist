@@ -11,10 +11,9 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaC
             builder.HasKey(bt => bt.Id);
 
             builder.Property(bt => bt.Type)
-                   .IsRequired()
-                   .HasMaxLength(50);
-            builder.Property(bt => bt.Id)
-       .ValueGeneratedOnAdd(); // Manual assignment of Ids
+                   .IsRequired();
+
+            builder.ToTable("BodyTypes", schema: "Vehicles");
 
             // Seed data
             builder.HasData(
@@ -24,7 +23,6 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaC
                 new BodyType { Id = 4, Type = "Coupe" },
                 new BodyType { Id = 5, Type = "Pickup" }
             );
-            builder.ToTable("BodyTypes", schema: "Vehicles");
         }
     }
 }

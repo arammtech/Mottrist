@@ -12,6 +12,7 @@ namespace Mottrist.Domain.Entities
         public string LicenseImageUrl { get; set; } = null!;
         public byte YearsOfExperience { get; set; }
         public string? Bio { get; set; }
+        public string? ProfileImageUrl { get; set; }
         public string PassportImageUrl { get; set; } = null!;
         public int? CarId { get; set; }
         public int UserId { get; set; }

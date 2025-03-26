@@ -9,9 +9,7 @@ namespace Mottrist.Domain.LookupEntities
         public int CountryId { get; set; }
         public  WorkStatus WorkStatus { get; set; }
 
-
         #region Navigation Properties
-
         public virtual Driver Driver { get; set; } = null!;
         public virtual Country Country { get; set; } = null!;
         #endregion

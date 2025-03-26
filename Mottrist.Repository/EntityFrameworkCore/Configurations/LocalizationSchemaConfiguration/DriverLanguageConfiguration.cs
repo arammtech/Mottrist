@@ -10,6 +10,18 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.LocalizationSch
         {
             builder.HasKey(dcc => new { dcc.DriverId, dcc.LanguageId });
 
+            builder.HasOne(x => x.Driver)
+                .WithMany(x => x.DriverLanguages)
+                .IsRequired()
+                .HasForeignKey(x => x.DriverId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Language)
+                .WithMany(x=> x.DriverLanguages)
+                .IsRequired()
+                .HasForeignKey(x => x.LanguageId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.ToTable("DriverLanguages", schema: "Localization");
         }
     }

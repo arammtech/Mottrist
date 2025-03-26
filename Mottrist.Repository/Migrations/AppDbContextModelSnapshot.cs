@@ -135,8 +135,7 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -180,8 +179,7 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -256,10 +254,7 @@ namespace Mottrist.Repository.Migrations
 
                     b.HasIndex("ModelId");
 
-                    b.ToTable("Cars", "Vehicles", t =>
-                        {
-                            t.HasCheckConstraint("CK_Car_Year", "[Year] >= 1900 AND [Year] <= 2025");
-                        });
+                    b.ToTable("Cars", "Vehicles");
 
                     b.HasData(
                         new
@@ -332,8 +327,7 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsMain")
                         .HasColumnType("bit");
@@ -440,8 +434,7 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -500,6 +493,9 @@ namespace Mottrist.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -523,34 +519,6 @@ namespace Mottrist.Repository.Migrations
                     b.ToTable("Drivers", "Drivers");
                 });
 
-            modelBuilder.Entity("Mottrist.Domain.Entities.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Reviews", "Travellers");
-                });
-
             modelBuilder.Entity("Mottrist.Domain.Entities.Traveler", b =>
                 {
                     b.Property<int>("Id")
@@ -561,6 +529,9 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<int>("NationailtyId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -687,9 +658,6 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("ProfileImageUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -913,31 +881,31 @@ namespace Mottrist.Repository.Migrations
                         new
                         {
                             Id = 1,
-                            Continent = (byte)4,
+                            Continent = (byte)5,
                             Name = "USA"
                         },
                         new
                         {
                             Id = 2,
-                            Continent = (byte)4,
+                            Continent = (byte)5,
                             Name = "Canada"
                         },
                         new
                         {
                             Id = 3,
-                            Continent = (byte)3,
+                            Continent = (byte)4,
                             Name = "UK"
                         },
                         new
                         {
                             Id = 4,
-                            Continent = (byte)3,
+                            Continent = (byte)4,
                             Name = "Germany"
                         },
                         new
                         {
                             Id = 5,
-                            Continent = (byte)3,
+                            Continent = (byte)4,
                             Name = "France"
                         });
                 });
@@ -957,7 +925,7 @@ namespace Mottrist.Repository.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.ToTable("DriverCityCoverages", "Drivers");
+                    b.ToTable("DriverCities", "Drivers");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.DriverCountry", b =>
@@ -975,7 +943,7 @@ namespace Mottrist.Repository.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("DriverCountryCoverages", "Drivers");
+                    b.ToTable("DriverCountries", "Drivers");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.DriverLanguage", b =>
@@ -1124,7 +1092,7 @@ namespace Mottrist.Repository.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Mottrist.Domain.LookupEntities.Country", "Country")
-                        .WithMany()
+                        .WithMany("Drivers")
                         .HasForeignKey("NationailtyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1138,17 +1106,6 @@ namespace Mottrist.Repository.Migrations
                     b.Navigation("Car");
 
                     b.Navigation("Country");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Mottrist.Domain.Entities.Review", b =>
-                {
-                    b.HasOne("Mottrist.Domain.Identity.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -1205,7 +1162,7 @@ namespace Mottrist.Repository.Migrations
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.DriverCountry", b =>
                 {
                     b.HasOne("Mottrist.Domain.LookupEntities.Country", "Country")
-                        .WithMany("DriverCountryCoverages")
+                        .WithMany("DriverCountries")
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1226,13 +1183,13 @@ namespace Mottrist.Repository.Migrations
                     b.HasOne("Mottrist.Domain.Entities.Driver", "Driver")
                         .WithMany("DriverLanguages")
                         .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Mottrist.Domain.LookupEntities.Language", "Language")
                         .WithMany("DriverLanguages")
                         .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Driver");
@@ -1258,7 +1215,9 @@ namespace Mottrist.Repository.Migrations
                 {
                     b.Navigation("Cities");
 
-                    b.Navigation("DriverCountryCoverages");
+                    b.Navigation("DriverCountries");
+
+                    b.Navigation("Drivers");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.Language", b =>

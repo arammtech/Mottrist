@@ -1,8 +1,8 @@
 ﻿namespace Mottrist.Domain.Enums
 {
-    public enum WorkStatus
+    public enum WorkStatus : byte
     {
-        WorkedOn,
-        CoverNow
+        WorkedOn = 1,
+        CoverNow = 2
     }
 }

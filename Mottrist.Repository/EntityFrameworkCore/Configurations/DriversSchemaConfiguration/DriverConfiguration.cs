@@ -25,23 +25,24 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
             builder.HasOne(d => d.Car)
                 .WithOne()
                 .HasForeignKey<Driver>(d => d.CarId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
-
 
             // Relation with User
             builder.HasOne(d => d.User)
                 .WithMany()
                 .HasForeignKey(d => d.UserId)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Relation with Country
             builder.HasOne(d => d.Country)
-                .WithMany()
+                .WithMany(x => x.Drivers)
                 .HasForeignKey(d => d.NationailtyId)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Adding Indexes for optimized querying
-            builder.HasIndex(d => d.NationailtyId);
             builder.HasIndex(d => d.UserId);
 
             builder.ToTable("Drivers", schema: "Drivers");

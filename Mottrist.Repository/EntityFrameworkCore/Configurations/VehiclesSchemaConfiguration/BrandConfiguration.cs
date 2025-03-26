@@ -11,11 +11,9 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaC
             builder.HasKey(b => b.Id);
 
             builder.Property(b => b.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
+                   .IsRequired();
 
-            builder.Property(b => b.Id)
-                   .ValueGeneratedOnAdd(); // Manual assignment of Ids
+            builder.ToTable("Brands", schema: "Vehicles");
 
             // Seed data
             builder.HasData(
@@ -25,8 +23,6 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaC
                 new Brand { Id = 4, Name = "Tesla" },
                 new Brand { Id = 5, Name = "BMW" }
             );
-
-            builder.ToTable("Brands", schema: "Vehicles");
         }
     }
 }

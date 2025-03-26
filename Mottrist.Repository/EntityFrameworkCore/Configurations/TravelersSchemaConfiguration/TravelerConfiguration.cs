@@ -22,12 +22,14 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.TravellersSchem
             builder.HasOne(b => b.Country)
                 .WithMany()
                 .HasForeignKey(b => b.NationailtyId)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(builder => builder.User)
                 .WithOne()
                 .HasForeignKey<Traveler>(t => t.UserId)
-                 .OnDelete(DeleteBehavior.Restrict);
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.ToTable("Travellers", schema: "Travellers");
         }

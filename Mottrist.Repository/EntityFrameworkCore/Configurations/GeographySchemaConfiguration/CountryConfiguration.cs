@@ -18,10 +18,9 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.GeographySchema
             builder.Property(c => c.Continent)
                    .IsRequired()
                    .HasConversion(
-                       continent => (byte)continent, 
-                       value => (Continent)value     
-                   )
-                   .HasColumnType("tinyint"); 
+                       continent => (byte)continent,
+                       value => (Continent)value
+                   );
 
             // Table mapping
             builder.ToTable("Countries", schema: "Geography");

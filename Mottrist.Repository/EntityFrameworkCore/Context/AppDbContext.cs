@@ -15,9 +15,9 @@ namespace Mottrist.Repository.EntityFrameworkCore.Context
         public AppDbContext() : base() { }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
        
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public virtual DbSet<Driver> Drivers { get; set; } = null!;
-        public virtual DbSet<Traveler> Travellers { get; set; } = null!;
+        public virtual DbSet<Traveler> Travelers { get; set; } = null!;
         public virtual DbSet<Country> Countries { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<Car> Cars { get; set; } = null!;

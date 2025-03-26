@@ -11,16 +11,14 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaC
             builder.HasKey(ci => ci.Id);
 
             builder.Property(ci => ci.ImageUrl)
-                   .IsRequired()
-                   .HasMaxLength(500);
+                   .IsRequired();
 
             builder.HasOne(ci => ci.Car)
                    .WithMany()
+                   .IsRequired()
                    .HasForeignKey(ci => ci.CarId);
-            builder.HasIndex(ci => ci.CarId);
 
             builder.ToTable("CarImages", schema: "Vehicles");
-
         }
     }
 }

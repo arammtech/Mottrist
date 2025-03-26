@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Mottrist.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class CeateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -49,7 +51,6 @@ namespace Mottrist.Repository.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProfileImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -77,7 +78,7 @@ namespace Mottrist.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -91,7 +92,7 @@ namespace Mottrist.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -162,7 +163,7 @@ namespace Mottrist.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -276,29 +277,6 @@ namespace Mottrist.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reviews",
-                schema: "Travellers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Reviews", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Reviews_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Cities",
                 schema: "Geography",
                 columns: table => new
@@ -329,6 +307,7 @@ namespace Mottrist.Repository.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     WhatsAppNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     NationailtyId = table.Column<int>(type: "int", nullable: false),
+                    ProfileImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -367,7 +346,6 @@ namespace Mottrist.Repository.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Cars", x => x.Id);
-                    table.CheckConstraint("CK_Car_Year", "[Year] >= 1900 AND [Year] <= 2025");
                     table.ForeignKey(
                         name: "FK_Cars_BodyTypes_BodyTypeId",
                         column: x => x.BodyTypeId,
@@ -410,12 +388,15 @@ namespace Mottrist.Repository.Migrations
                 schema: "Vehicles",
                 columns: table => new
                 {
-                    ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CarId = table.Column<int>(type: "int", nullable: false),
                     IsMain = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_CarImages", x => x.Id);
                     table.ForeignKey(
                         name: "FK_CarImages_Cars_CarId",
                         column: x => x.CarId,
@@ -437,6 +418,7 @@ namespace Mottrist.Repository.Migrations
                     LicenseImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     YearsOfExperience = table.Column<byte>(type: "tinyint", nullable: false),
                     Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProfileImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PassportImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CarId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: false)
@@ -467,7 +449,7 @@ namespace Mottrist.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DriverCityCoverages",
+                name: "DriverCities",
                 schema: "Drivers",
                 columns: table => new
                 {
@@ -477,16 +459,16 @@ namespace Mottrist.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DriverCityCoverages", x => new { x.DriverId, x.CityId });
+                    table.PrimaryKey("PK_DriverCities", x => new { x.DriverId, x.CityId });
                     table.ForeignKey(
-                        name: "FK_DriverCityCoverages_Cities_CityId",
+                        name: "FK_DriverCities_Cities_CityId",
                         column: x => x.CityId,
                         principalSchema: "Geography",
                         principalTable: "Cities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DriverCityCoverages_Drivers_DriverId",
+                        name: "FK_DriverCities_Drivers_DriverId",
                         column: x => x.DriverId,
                         principalSchema: "Drivers",
                         principalTable: "Drivers",
@@ -495,7 +477,7 @@ namespace Mottrist.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DriverCountryCoverages",
+                name: "DriverCountries",
                 schema: "Drivers",
                 columns: table => new
                 {
@@ -505,16 +487,16 @@ namespace Mottrist.Repository.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DriverCountryCoverages", x => new { x.DriverId, x.CountryId });
+                    table.PrimaryKey("PK_DriverCountries", x => new { x.DriverId, x.CountryId });
                     table.ForeignKey(
-                        name: "FK_DriverCountryCoverages_Countries_CountryId",
+                        name: "FK_DriverCountries_Countries_CountryId",
                         column: x => x.CountryId,
                         principalSchema: "Geography",
                         principalTable: "Countries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DriverCountryCoverages_Drivers_DriverId",
+                        name: "FK_DriverCountries_Drivers_DriverId",
                         column: x => x.DriverId,
                         principalSchema: "Drivers",
                         principalTable: "Drivers",
@@ -547,6 +529,140 @@ namespace Mottrist.Repository.Migrations
                         principalTable: "Languages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { 1, null, "Admin", "ADMIN" },
+                    { 2, null, "Driver", "DRIVER" },
+                    { 3, null, "Traveler", "TRAVELER" },
+                    { 4, null, "Employee", "EMPLOYEE" }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "Vehicles",
+                table: "BodyTypes",
+                columns: new[] { "Id", "Type" },
+                values: new object[,]
+                {
+                    { 1, "Sedan" },
+                    { 2, "SUV" },
+                    { 3, "Hatchback" },
+                    { 4, "Coupe" },
+                    { 5, "Pickup" }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "Vehicles",
+                table: "Brands",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Toyota" },
+                    { 2, "Ford" },
+                    { 3, "Honda" },
+                    { 4, "Tesla" },
+                    { 5, "BMW" }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "Vehicles",
+                table: "Colors",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Red" },
+                    { 2, "Blue" },
+                    { 3, "Black" },
+                    { 4, "White" },
+                    { 5, "Green" }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "Geography",
+                table: "Countries",
+                columns: new[] { "Id", "Continent", "Name" },
+                values: new object[,]
+                {
+                    { 1, (byte)5, "USA" },
+                    { 2, (byte)5, "Canada" },
+                    { 3, (byte)4, "UK" },
+                    { 4, (byte)4, "Germany" },
+                    { 5, (byte)4, "France" }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "Vehicles",
+                table: "FuelTypes",
+                columns: new[] { "Id", "Type" },
+                values: new object[,]
+                {
+                    { 1, "Petrol" },
+                    { 2, "Diesel" },
+                    { 3, "Electric" },
+                    { 4, "Hybrid" }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "Vehicles",
+                table: "Models",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Corolla" },
+                    { 2, "Mustang" },
+                    { 3, "Civic" },
+                    { 4, "Model S" },
+                    { 5, "X5" }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "Vehicles",
+                table: "Cars",
+                columns: new[] { "Id", "BodyTypeId", "BrandId", "ColorId", "FuelTypeId", "ModelId", "NumberOfSeats", "Year" },
+                values: new object[,]
+                {
+                    { 1, 1, 1, 1, 1, 1, (byte)5, 2022 },
+                    { 2, 2, 2, 2, 2, 2, (byte)7, 2021 },
+                    { 3, 1, 1, 1, 1, 1, (byte)5, 2022 },
+                    { 4, 2, 2, 2, 2, 2, (byte)7, 2021 },
+                    { 5, 3, 3, 3, 1, 3, (byte)4, 2023 }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "Geography",
+                table: "Cities",
+                columns: new[] { "Id", "CountryId", "Name" },
+                values: new object[,]
+                {
+                    { 1, 1, "New York" },
+                    { 2, 1, "Los Angeles" },
+                    { 3, 1, "Chicago" },
+                    { 4, 1, "Houston" },
+                    { 5, 1, "Phoenix" },
+                    { 6, 2, "Toronto" },
+                    { 7, 2, "Montreal" },
+                    { 8, 2, "Vancouver" },
+                    { 9, 2, "Calgary" },
+                    { 10, 2, "Ottawa" },
+                    { 11, 3, "London" },
+                    { 12, 3, "Manchester" },
+                    { 13, 3, "Birmingham" },
+                    { 14, 3, "Liverpool" },
+                    { 15, 3, "Leeds" },
+                    { 16, 4, "Berlin" },
+                    { 17, 4, "Munich" },
+                    { 18, 4, "Frankfurt" },
+                    { 19, 4, "Hamburg" },
+                    { 20, 4, "Cologne" },
+                    { 21, 5, "Paris" },
+                    { 22, 5, "Marseille" },
+                    { 23, 5, "Lyon" },
+                    { 24, 5, "Toulouse" },
+                    { 25, 5, "Nice" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -631,15 +747,15 @@ namespace Mottrist.Repository.Migrations
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DriverCityCoverages_CityId",
+                name: "IX_DriverCities_CityId",
                 schema: "Drivers",
-                table: "DriverCityCoverages",
+                table: "DriverCities",
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DriverCountryCoverages_CountryId",
+                name: "IX_DriverCountries_CountryId",
                 schema: "Drivers",
-                table: "DriverCountryCoverages",
+                table: "DriverCountries",
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
@@ -666,12 +782,6 @@ namespace Mottrist.Repository.Migrations
                 name: "IX_Drivers_UserId",
                 schema: "Drivers",
                 table: "Drivers",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Reviews_UserId",
-                schema: "Travellers",
-                table: "Reviews",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -711,20 +821,16 @@ namespace Mottrist.Repository.Migrations
                 schema: "Vehicles");
 
             migrationBuilder.DropTable(
-                name: "DriverCityCoverages",
+                name: "DriverCities",
                 schema: "Drivers");
 
             migrationBuilder.DropTable(
-                name: "DriverCountryCoverages",
+                name: "DriverCountries",
                 schema: "Drivers");
 
             migrationBuilder.DropTable(
                 name: "DriverLanguages",
                 schema: "Localization");
-
-            migrationBuilder.DropTable(
-                name: "Reviews",
-                schema: "Travellers");
 
             migrationBuilder.DropTable(
                 name: "Travellers",

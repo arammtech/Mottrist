@@ -11,25 +11,25 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
         {
             builder.HasKey(dcc => new { dcc.DriverId, dcc.CountryId});
 
-            builder.HasOne(dcc => dcc.Driver) 
-                   .WithMany(d => d.DriverCountrites)
-                   .HasForeignKey(dcc => dcc.DriverId)
-                   .OnDelete(DeleteBehavior.Restrict);
-
-
-            builder.HasOne(dcc => dcc.Country) 
-                   .WithMany(c => c.DriverCountryCoverages)
-                   .HasForeignKey(dcc => dcc.CountryId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
             builder.Property(dcc => dcc.WorkStatus)
                 .IsRequired()
                 .HasConversion(
                     builder => (byte)builder,
-                    builder => (WorkStatus)builder)
-                .HasColumnType("tinyint");
+                    builder => (WorkStatus)builder);
 
-            builder.ToTable("DriverCountryCoverages", schema: "Drivers");
+            builder.HasOne(dcc => dcc.Driver) 
+                .WithMany(d => d.DriverCountrites)
+                .IsRequired()
+                .HasForeignKey(dcc => dcc.DriverId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(dcc => dcc.Country) 
+                   .WithMany(c => c.DriverCountries)
+                   .IsRequired()
+                   .HasForeignKey(dcc => dcc.CountryId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.ToTable("DriverCountries", schema: "Drivers");
         }
     }
 }

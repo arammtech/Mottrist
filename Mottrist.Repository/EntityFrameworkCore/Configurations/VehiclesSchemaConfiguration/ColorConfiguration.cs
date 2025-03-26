@@ -13,8 +13,8 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaC
             builder.Property(c => c.Name)
                    .IsRequired()
                    .HasMaxLength(50);
-            builder.Property(c => c.Id)
-       .ValueGeneratedOnAdd(); // Manual assignment of Ids
+
+            builder.ToTable("Colors", schema: "Vehicles");
 
             // Seed data
             builder.HasData(
@@ -24,7 +24,6 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaC
                 new Color { Id = 4, Name = "White" },
                 new Color { Id = 5, Name = "Green" }
             );
-            builder.ToTable("Colors", schema: "Vehicles");
         }
     }
 }

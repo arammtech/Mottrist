@@ -174,7 +174,6 @@ namespace Mottrist.Service.Features.Drivers.Services
                 existingUser.UserName = user.UserName;
                 existingUser.PhoneNumber = user.PhoneNumber;
                 existingUser.PasswordHash = user.PasswordHash;
-                existingUser.ProfileImageUrl = user.ProfileImageUrl;
 
                 var userUpdateResult = await _userManager.UpdateAsync(existingUser);
                 if (!userUpdateResult.Succeeded)
