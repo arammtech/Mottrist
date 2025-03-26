@@ -4,9 +4,9 @@ using Mottrist.Domain.Entities;
 
 namespace Mottrist.Repository.EntityFrameworkCore.Configurations.TravellersSchemaConfiguration
 {
-    public class TravellerConfiguration : IEntityTypeConfiguration<Traveller>
+    public class TravelerConfiguration : IEntityTypeConfiguration<Traveler>
     {
-        public void Configure(EntityTypeBuilder<Traveller> builder)
+        public void Configure(EntityTypeBuilder<Traveler> builder)
         {
             builder.HasKey(t => t.Id);
 
@@ -26,7 +26,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.TravellersSchem
 
             builder.HasOne(builder => builder.User)
                 .WithOne()
-                .HasForeignKey<Traveller>(t => t.UserId)
+                .HasForeignKey<Traveler>(t => t.UserId)
                  .OnDelete(DeleteBehavior.Restrict);
 
             builder.ToTable("Travellers", schema: "Travellers");

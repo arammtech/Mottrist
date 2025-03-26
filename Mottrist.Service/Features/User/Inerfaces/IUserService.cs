@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using Mottrist.Domain.Global;
 using Mottrist.Domain.Identity;
 using Mottrist.Service.Features.User.DTOs;
+using Mottrist.Utilities.Identity;
 
 namespace Mottrist.Service.Features.User.Inerfaces
 {

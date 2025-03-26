@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Mottrist.Domain.Entities;
 using Mottrist.Domain.Entities.CarDetails;
+using Mottrist.Domain.Enums;
 using Mottrist.Domain.Identity;
 using Mottrist.Domain.LookupEntities;
+using Mottrist.Utilities.Identity;
 
 namespace Mottrist.Repository.EntityFrameworkCore.Context
 {
@@ -14,7 +17,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Context
        
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public virtual DbSet<Driver> Drivers { get; set; } = null!;
-        public virtual DbSet<Traveller> Travellers { get; set; } = null!;
+        public virtual DbSet<Traveler> Travellers { get; set; } = null!;
         public virtual DbSet<Country> Countries { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<Car> Cars { get; set; } = null!;
@@ -36,11 +39,11 @@ namespace Mottrist.Repository.EntityFrameworkCore.Context
 
             // Seed Countries
             modelBuilder.Entity<Country>().HasData(
-                new Country { Id = 1, Name = "USA" },
-                new Country { Id = 2, Name = "Canada" },
-                new Country { Id = 3, Name = "UK" },
-                new Country { Id = 4, Name = "Germany" },
-                new Country { Id = 5, Name = "France" }
+                new Country { Id = 1, Name = "USA" ,Continent = Continent.NorthAmerica},
+                new Country { Id = 2, Name = "Canada", Continent = Continent.NorthAmerica },
+                new Country { Id = 3, Name = "UK", Continent = Continent.Europe },
+                new Country { Id = 4, Name = "Germany", Continent = Continent.Europe },
+                new Country { Id = 5, Name = "France", Continent = Continent.Europe }
             );
 
             // Seed Cities (5 cities per country)
@@ -80,6 +83,15 @@ namespace Mottrist.Repository.EntityFrameworkCore.Context
                 new City { Id = 24, Name = "Toulouse", CountryId = 5 },
                 new City { Id = 25, Name = "Nice", CountryId = 5 }
             );
+
+            modelBuilder.Entity<ApplicationRole>().HasData(
+                 new ApplicationRole { Id = 1, Name = AppUserRoles.RoleAdmin, NormalizedName = "ADMIN" },
+                 new ApplicationRole { Id = 2, Name =AppUserRoles.RoleDriver, NormalizedName = "DRIVER" },
+                 new ApplicationRole { Id = 3, Name = AppUserRoles.RoleTraveler, NormalizedName = "TRAVELER" },
+                 new ApplicationRole { Id = 4, Name = AppUserRoles.RoleEmployee, NormalizedName = "EMPLOYEE" }
+            );
+
         }
+     
     }
 }
