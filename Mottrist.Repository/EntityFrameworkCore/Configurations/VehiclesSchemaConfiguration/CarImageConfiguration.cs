@@ -17,6 +17,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaC
             builder.HasOne(ci => ci.Car)
                    .WithMany()
                    .HasForeignKey(ci => ci.CarId);
+            builder.HasIndex(ci => ci.CarId);
 
             builder.ToTable("CarImages", schema: "Vehicles");
 
