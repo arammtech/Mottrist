@@ -4,7 +4,7 @@ using Mottrist.Domain.LookupEntities;
 
 namespace Mottrist.Domain.Entities
 {
-    public class Traveller : BaseEntity
+    public class Traveler : BaseEntity
     {
         public string? WhatsAppNumber { get; set; }
         public int NationailtyId { get; set; }

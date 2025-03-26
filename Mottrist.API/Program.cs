@@ -9,6 +9,8 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 using Mottrist.Repository.Repository;
 using Mottrist.Repository.UnitOfWork;
 using Mottrist.Service.Features.General.Mapper.Profiles;
+using Mottrist.Service.Features.Traveller.Interfaces;
+using Mottrist.Service.Features.Traveller.Services;
 using Mottrist.Service.Features.User;
 using Mottrist.Service.Features.User.Inerfaces;
 using Mottrist.Utilities.Identity;
@@ -37,14 +39,20 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(option =>
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-#region AutoMapper
-var mapperConfig = new MapperConfiguration(cfg =>
-{
-    cfg.AddProfile(new MappingProfile());
-});
 
-IMapper mapper = mapperConfig.CreateMapper();
-builder.Services.AddSingleton(mapper);
+
+#region AutoMapper
+//var mapperConfig = new MapperConfiguration(cfg =>
+//{
+//    cfg.AddProfile(new MappingProfile());
+//});
+
+//IMapper mapper = mapperConfig.CreateMapper();
+//builder.Services.AddSingleton(mapper);
+
+
+builder.Services.AddAutoMapper(typeof(MappingProfile), typeof(TravelerProfile));
+//builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 #endregion
 
 #region Custom Services
@@ -53,6 +61,7 @@ builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITravelerService, TravelerService>();
 #endregion
 
 var app = builder.Build();
