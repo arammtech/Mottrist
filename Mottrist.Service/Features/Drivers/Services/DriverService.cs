@@ -339,6 +339,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                         if (existingCar != null)
                         {
                             _mapper.Map(driverDto, existingCar);
+                            existingCar.Id = existingDriver.CarId.Value;
                             _unitOfWork.Repository<Car>().Update(existingCar);
                         }
                     }
@@ -394,10 +395,8 @@ namespace Mottrist.Service.Features.Drivers.Services
                     await _unitOfWork.RollbackAsync();
                     return Result.Failure("Failed to update driver.");
                 }
-
-                // Commit the transaction
-                await _unitOfWork.CommitAsync();
-                return Result.Success();
+                
+                return await _unitOfWork.CommitAsync();
             }
             catch (Exception ex)
             {
