@@ -13,12 +13,12 @@ namespace Mottrist.Domain.Entities.CarDetails
         public int FuelTypeId { get; set; }
 
         #region Navigation Properties
-        public Model Model { get; set; } = null!;
-        public Color Color { get; set; } = null!;
-        public Brand Brand { get; set; } = null!;
-        public BodyType BodyType { get; set; } = null!;
-        public FuelType FuelType { get; set; } = null!;
-        public ICollection<CarImage> CarImages { get; set; } = new List<CarImage>();
+        public virtual Model Model { get; set; } = null!;
+        public virtual Color Color { get; set; } = null!;
+        public virtual Brand Brand { get; set; } = null!;
+        public virtual BodyType BodyType { get; set; } = null!;
+        public virtual FuelType FuelType { get; set; } = null!;
+       public virtual ICollection<CarImage> CarImages { get; set; } = new List<CarImage>();
         #endregion
     }
 }

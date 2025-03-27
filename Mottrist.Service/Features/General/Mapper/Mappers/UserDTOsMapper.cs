@@ -18,7 +18,6 @@ namespace Mottrist.Service.Features.General.Mapper.Mappers
                 UserName = user.UserName,
                 Phone = user.PhoneNumber,
                 Password = user.PasswordHash,
-                ImagePath = user.ImagePath,
                 Role =  roles.GetAwaiter().GetResult().ToList(),
                 IsLocked = user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.UtcNow
             };
@@ -39,8 +38,7 @@ namespace Mottrist.Service.Features.General.Mapper.Mappers
                 Email = userDto.Email,
                 UserName = defaultUserName,
                 PhoneNumber = userDto.Phone,
-                PasswordHash = userDto.Password,
-                ImagePath = userDto.ImagePath
+                PasswordHash = userDto.Password
             };
         }
     }

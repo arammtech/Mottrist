@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35818.85 d17.13
+VisualStudioVersion = 17.13.35818.85
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mottrist.API", "Mottrist.API\Mottrist.API.csproj", "{1F896DB4-6B53-4036-B4B9-6E452CBF5AB3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mottrist.Domain", "Mottrist.Domain\Mottrist.Domain.csproj", "{33A6B247-FA0A-41D3-AEC0-3856E94E7F96}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mottrist.Repository", "Mottrist.Repository\Mottrist.Repository.csproj", "{75A41DED-817C-4127-84C2-EF223B32EE7C}"
@@ -13,16 +11,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mottrist.Service", "Mottris
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mottrist.Utilities", "Mottrist.Utilities\Mottrist.Utilities.csproj", "{0B7FF3AF-1DE2-4C4B-ADE0-F6A1F02A75BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mottrist.API", "Mottrist.API\Mottrist.API.csproj", "{49C96168-7E19-DC69-2FF9-76A91234AFCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mottrist.Service.UnitTests", "Mottrist.Service.UnitTests\Mottrist.Service.UnitTests.csproj", "{59CA7412-68F8-4AB0-8EEB-BA7ABCC26667}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1F896DB4-6B53-4036-B4B9-6E452CBF5AB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1F896DB4-6B53-4036-B4B9-6E452CBF5AB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1F896DB4-6B53-4036-B4B9-6E452CBF5AB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1F896DB4-6B53-4036-B4B9-6E452CBF5AB3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{33A6B247-FA0A-41D3-AEC0-3856E94E7F96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{33A6B247-FA0A-41D3-AEC0-3856E94E7F96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33A6B247-FA0A-41D3-AEC0-3856E94E7F96}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +37,14 @@ Global
 		{0B7FF3AF-1DE2-4C4B-ADE0-F6A1F02A75BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B7FF3AF-1DE2-4C4B-ADE0-F6A1F02A75BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B7FF3AF-1DE2-4C4B-ADE0-F6A1F02A75BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49C96168-7E19-DC69-2FF9-76A91234AFCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C96168-7E19-DC69-2FF9-76A91234AFCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49C96168-7E19-DC69-2FF9-76A91234AFCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49C96168-7E19-DC69-2FF9-76A91234AFCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59CA7412-68F8-4AB0-8EEB-BA7ABCC26667}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59CA7412-68F8-4AB0-8EEB-BA7ABCC26667}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59CA7412-68F8-4AB0-8EEB-BA7ABCC26667}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59CA7412-68F8-4AB0-8EEB-BA7ABCC26667}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
