@@ -24,6 +24,7 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public string? ProfileImageUrl { get; set; }
 
         public bool HasCar { get; set; } = false;
+    //    public int? CarId { get; }
         public int? BrandId { get; set; }
         public int? Year { get; set; }
         public byte? NumberOfSeats { get; set; }
