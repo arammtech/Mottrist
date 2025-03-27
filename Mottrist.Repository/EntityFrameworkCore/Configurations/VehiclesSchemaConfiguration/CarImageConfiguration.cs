@@ -14,7 +14,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaC
                    .IsRequired();
 
             builder.HasOne(ci => ci.Car)
-                   .WithMany()
+                   .WithMany(ci => ci.CarImages)
                    .IsRequired()
                    .HasForeignKey(ci => ci.CarId);
 
