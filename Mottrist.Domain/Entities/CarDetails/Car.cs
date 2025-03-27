@@ -18,7 +18,7 @@ namespace Mottrist.Domain.Entities.CarDetails
         public virtual Brand Brand { get; set; } = null!;
         public virtual BodyType BodyType { get; set; } = null!;
         public virtual FuelType FuelType { get; set; } = null!;
-     //   public virtual ICollection<CarImage> CarImages { get; set; } = new List<CarImage>();
+       public virtual ICollection<CarImage> CarImages { get; set; } = new List<CarImage>();
         #endregion
     }
 }

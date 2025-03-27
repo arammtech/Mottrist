@@ -6,6 +6,11 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
 {
     public interface IDriverService
     {
-        Task<Result> AddDriverAsync(AddUpdateDriverDto driverDto);
+        Task<HashSet<DriverDto>> GetAllAsync();
+        Task<Result> AddAsync(AddUpdateDriverDto driverDto);
+        Task<DriverDto?> GetByIdAsync(int driverId);
+
+        Task<Result> DeleteAsync(int driverId);
+        Task<Result> UpdateAsync(AddUpdateDriverDto driverDto);
     }
 }
