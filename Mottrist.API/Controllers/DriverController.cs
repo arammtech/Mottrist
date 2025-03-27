@@ -45,6 +45,7 @@ namespace Mottrist.API.Controllers
                 return StatusCode(500, $"Unexpected error: {ex.Message}");
             }
         }
+
         [HttpDelete("DeleteDriver")]
         public async Task<IActionResult> Delete(int driverId)
         {
@@ -100,6 +101,7 @@ namespace Mottrist.API.Controllers
                 return StatusCode(500, $"Unexpected error: {ex.Message}");
             }
         }
+
         [HttpPost("Add")]
         public async Task<IActionResult> Add(AddUpdateDriverDto driverDto)
         {
@@ -129,6 +131,7 @@ namespace Mottrist.API.Controllers
                 return StatusCode(500, $"Unexpected error: {ex.Message}");
             }
         }
+
         [HttpPut("Update")]
         public async Task<IActionResult> Update(AddUpdateDriverDto driverDto)
         {
