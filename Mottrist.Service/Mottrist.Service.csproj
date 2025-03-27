@@ -13,6 +13,9 @@
 		<PackageReference Include="System.Diagnostics.EventLog" Version="9.0.3" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Folder Include="Features\Review\DTOs\" />
+	</ItemGroup>
+	<ItemGroup>
 	  <ProjectReference Include="..\Mottrist.Domain\Mottrist.Domain.csproj" />
 	  <ProjectReference Include="..\Mottrist.Repository\Mottrist.Repository.csproj" />
 	  <ProjectReference Include="..\Mottrist.Utilities\Mottrist.Utilities.csproj" />

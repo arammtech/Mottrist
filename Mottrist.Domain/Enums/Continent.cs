@@ -1,8 +1,8 @@
 ﻿namespace Mottrist.Domain.Enums
 {
-    public enum Continent : byte
+    public enum Continent
     {
-        Africa = 1,
+        Africa,
         Antarctica,
         Asia,
         Europe,

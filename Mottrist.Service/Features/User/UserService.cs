@@ -284,6 +284,7 @@ namespace Mottrist.Service.Features.User
                 user.Email = userDto.Email;
                 user.UserName = userDto.UserName;
                 user.PhoneNumber = userDto.Phone;
+                user.ImagePath = userDto.ImagePath;
 
                 // Persist changes
                 var updateResult = await _userManager.UpdateAsync(user);
