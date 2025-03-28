@@ -16,7 +16,6 @@ using Mottrist.Service.Features.Traveller.Interfaces;
 using Mottrist.Service.Features.Traveller.Mappers;
 using Mottrist.Service.Features.Traveller.Services;
 using Mottrist.Service.Features.User;
-using Mottrist.Service.Features.User.Inerfaces;
 using Mottrist.Utilities.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,7 +51,6 @@ builder.Services.AddScoped<Microsoft.AspNetCore.Identity.UI.Services.IEmailSende
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITravelerService, TravelerService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
 
