@@ -1,11 +1,12 @@
 ﻿using Feature.Car.DTOs;
 using Mottrist.Domain.Entities.CarDetails;
 using Mottrist.Domain.Global;
+using Mottrist.Service.Features.General;
 using System.Linq.Expressions;
 
 namespace Mottrist.Service.Features.Cars.Interfaces
 {
-    public interface ICarService
+    public interface ICarService : IBaseService
     {
         #region Get
         Task<IEnumerable<CarDto>> GetAllAsync(Expression<Func<Car, bool>>? filter = null);

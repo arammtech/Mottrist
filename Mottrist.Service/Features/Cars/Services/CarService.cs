@@ -6,15 +6,16 @@ using AutoMapper;
 using Mottrist.Service.Features.Cars.Interfaces;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Mottrist.Service.Features.General;
 
 namespace Mottrist.Service.Features.Cars.Services
 {
-    public class CarService : ICarService
+    public class CarService :BaseService , ICarService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public CarService(IUnitOfWork unitOfWork, IMapper mapper)
+        public CarService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork) 
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
