@@ -15,16 +15,16 @@ namespace Mottrist.Service.Features.Traveller.Mappers
                 .ForPath(dest => dest.User.Email, opt => opt.MapFrom(src => src.Email))
                 .ForPath(dest => dest.User.UserName, opt => opt.MapFrom(src => src.UserName))
                 .ForPath(dest => dest.User.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
-                .ForPath(dest => dest.Country.Id, opt => opt.MapFrom(src => src.NationailtyId))
                 .ForPath(dest => dest.Country.Name, opt => opt.MapFrom(src => src.CountryName))
             .ReverseMap();
 
-            CreateMap<AddUpdateTravelerDto, Traveler>().ReverseMap();
+            CreateMap<AddTravelerDto, Traveler>().ReverseMap();
+            CreateMap<UpdateTravelerDto, Traveler>().ReverseMap();
 
-            CreateMap<AddUpdateTravelerDto, ApplicationUser>().ReverseMap();
+            CreateMap<AddTravelerDto, ApplicationUser>().ReverseMap();
+            CreateMap<UpdateTravelerDto, ApplicationUser>().ReverseMap();
             CreateMap<GetTravelerDto, ApplicationUser>().ReverseMap();
 
-            CreateMap<PaginationTravelerDto, Traveler>().ReverseMap();
         }
     }
 }

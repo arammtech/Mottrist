@@ -5,27 +5,30 @@ using Mottrist.Domain.Common.IUnitOfWork;
 using Mottrist.Domain.Entities;
 using Mottrist.Domain.Global;
 using Mottrist.Domain.Identity;
-using Mottrist.Service.Features.Drivers.DTOs;
+using Mottrist.Service.Features.General;
+using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Traveller.DTOs;
 using Mottrist.Service.Features.Traveller.Interfaces;
+using Mottrist.Service.Features.Traveller.Mappers;
 using Mottrist.Utilities.Identity;
 using System.Linq.Expressions;
 
 namespace Mottrist.Service.Features.Traveller.Services
 {
-    public class TravelerService : ITravelerService
+    public class TravelerService : BaseService , ITravelerService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public TravelerService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager)
+        public TravelerService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
-        public async Task<IEnumerable<GetTravelerDto>> GetAllAsync(Expression<Func<Traveler, bool>>? filter = null)
+
+        public async Task<DataResult<GetTravelerDto>> GetAllAsync(Expression<Func<Traveler, bool>>? filter = null)
         {
             try
             {
@@ -38,52 +41,23 @@ namespace Mottrist.Service.Features.Traveller.Services
                     travelerQuery = travelerQuery.Where(filter);
 
                 var travelers = await travelerQuery.ToListAsync();
+
+                DataResult<GetTravelerDto> travelersResult = new()
+                {
+                    Data = _mapper.Map<IEnumerable<GetTravelerDto>>(travelers)
+                };
+
                 if (!travelers.Any())
-                    return Enumerable.Empty<GetTravelerDto>();
+                    travelersResult.Data = Enumerable.Empty<GetTravelerDto>();
 
-                var travelersDto = _mapper.Map<IEnumerable<GetTravelerDto>>(travelers);
-                return travelersDto;
-
+                return travelersResult;
             }
             catch (Exception ex)
             {
                 return null;
             }
         }
-        public async Task<(IEnumerable<GetTravelerDto>? Travellers, int? TotalRecords)> GetAllWithPaginationAsync(int page, int pageSize = 10, Expression<Func<Traveler, bool>>? filter = null)
-        {
-            if (page < 1 || pageSize < 1)
-                return (null, null);
-
-            try
-            {
-                var travelerQuery = _unitOfWork.Repository<Traveler>().Table
-                 .Include(t => t.User)
-                 .Include(t => t.Country)
-                 .AsQueryable();
-
-                if (filter != null)
-                    travelerQuery = travelerQuery.Where(filter);
-
-                var totalRecords = travelerQuery.Count();
-
-                // Apply pagination
-                var paginatedCars = await travelerQuery
-                    .OrderBy(c => c.Id) 
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToListAsync();
-
-                var travelersDto = _mapper.Map<IEnumerable<GetTravelerDto>>(paginatedCars);
-
-                return (travelersDto, totalRecords);
-            }
-            catch (Exception ex)
-            {
-                return (null, null);
-            }
-        }
-        public async Task<PaginationTravelerDto?> GetAllWithPaginationWithDtoAsync(int page, int pageSize = 10, Expression<Func<Traveler, bool>>? filter = null)
+        public async Task<PaginatedResult<GetTravelerDto>?> GetAllWithPaginationAsync(int page, int pageSize = 10, Expression<Func<Traveler, bool>>? filter = null)
         {
             if (page < 1 || pageSize < 1)
                 return null;
@@ -98,7 +72,7 @@ namespace Mottrist.Service.Features.Traveller.Services
                 if (filter != null)
                     travelerQuery = travelerQuery.Where(filter);
 
-                var totalRecords = travelerQuery.Count();
+                var totalRecordsCount = travelerQuery.Count();
 
                 // Apply pagination
                 var paginatedCars = await travelerQuery
@@ -109,10 +83,12 @@ namespace Mottrist.Service.Features.Traveller.Services
 
                 var travelersDto = _mapper.Map<IEnumerable<GetTravelerDto>>(paginatedCars);
 
-                PaginationTravelerDto paginationTravelerDto = new()
+                PaginatedResult<GetTravelerDto> paginationTravelerDto = new()
                 {
-                    Travelers = travelersDto.ToList(),
-                    TotalRecords = totalRecords
+                    Data = travelersDto,
+                    PageNumber= page,
+                    PageSize = pageSize,
+                    TotalRecordsCount = totalRecordsCount
                 };
 
                 return paginationTravelerDto;
@@ -144,7 +120,7 @@ namespace Mottrist.Service.Features.Traveller.Services
                 return null;
             }
         }
-        public async Task<Result> AddAsync(AddUpdateTravelerDto travelerDto)
+        public async Task<Result> AddAsync(AddTravelerDto travelerDto)
         {
             var transactionResult = await _unitOfWork.StartTransactionAsync();
 
@@ -155,6 +131,8 @@ namespace Mottrist.Service.Features.Traveller.Services
             {
                 // Add user
                 ApplicationUser user = _mapper.Map<ApplicationUser>(travelerDto);
+                user.UserName = user.Email;
+
                 var addUserResult = await _userManager.CreateAsync(user);
 
                 if (!addUserResult.Succeeded)
@@ -172,7 +150,9 @@ namespace Mottrist.Service.Features.Traveller.Services
                 }
 
                 // Add traveler
-                Traveler newTraveler = _mapper.Map<Traveler>(travelerDto);
+                //Traveler newTraveler = _mapper.Map<Traveler>(travelerDto);
+                Traveler newTraveler = new();
+                TravelerMapper.Map(travelerDto, newTraveler);
                 newTraveler.UserId = user.Id;
 
                 await _unitOfWork.Repository<Traveler>().AddAsync(newTraveler);
@@ -197,7 +177,7 @@ namespace Mottrist.Service.Features.Traveller.Services
                 return Result.Failure($"Error creating a traveler: {ex.Message}");
             }
         }
-        public async Task<Result> UpdateAsync(AddUpdateTravelerDto travelerDto)
+        public async Task<Result> UpdateAsync(UpdateTravelerDto travelerDto)
         {
             var transactionResult = await _unitOfWork.StartTransactionAsync();
             if (!transactionResult.IsSuccess)
@@ -227,14 +207,7 @@ namespace Mottrist.Service.Features.Traveller.Services
                 //_mapper.Map(travelerDto, existingUser);
                 existingUser.FirstName = travelerDto.FirstName;
                 existingUser.LastName = travelerDto.LastName;
-                existingUser.Email = travelerDto.Email;
-                existingUser.UserName = travelerDto.UserName;
                 existingUser.PhoneNumber = travelerDto.PhoneNumber;
-                existingUser.PasswordHash = travelerDto.PasswordHash;
-
-
-
-              
 
                 // Ensure SecurityStamp is NOT null before updating
                 if (string.IsNullOrEmpty(existingUser.SecurityStamp))
@@ -311,5 +284,33 @@ namespace Mottrist.Service.Features.Traveller.Services
             }
         }
 
+        GetTravelerDto? ITravelerService.Get(Expression<Func<Traveler, bool>> filter)
+        {
+            throw new NotImplementedException();
+        }
+        IEnumerable<GetTravelerDto> ITravelerService.GetAll(Expression<Func<Traveler, bool>>? filter)
+        {
+            throw new NotImplementedException();
+        }
+        Result ITravelerService.Add(AddTravelerDto travelerDto)
+        {
+            throw new NotImplementedException();
+        }
+        Result ITravelerService.AddRange(IEnumerable<AddTravelerDto> travelerDtos)
+        {
+            throw new NotImplementedException();
+        }
+        Task<Result> ITravelerService.AddRangeAsync(IEnumerable<AddTravelerDto> travelerDtos)
+        {
+            throw new NotImplementedException();
+        }
+        Result ITravelerService.Update(UpdateTravelerDto travelerDto)
+        {
+            throw new NotImplementedException();
+        }
+        Result ITravelerService.Delete(int travelerId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

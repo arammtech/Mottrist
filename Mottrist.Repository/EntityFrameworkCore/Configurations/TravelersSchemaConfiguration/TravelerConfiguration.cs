@@ -13,7 +13,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.TravellersSchem
             builder.Property(t => t.WhatsAppNumber)
                 .HasMaxLength(20);
 
-            builder.Property(t => t.NationailtyId)
+            builder.Property(t => t.NationalityId)
                 .IsRequired();
 
             builder.Property(t => t.UserId)
@@ -21,7 +21,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.TravellersSchem
 
             builder.HasOne(b => b.Country)
                 .WithMany()
-                .HasForeignKey(b => b.NationailtyId)
+                .HasForeignKey(b => b.NationalityId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
