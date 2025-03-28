@@ -144,7 +144,7 @@ namespace Mottrist.API.Controllers
                 var result = await _travelerService.AddAsync(travelerDto);
 
                 if (result.IsSuccess)
-                    return CreatedAtAction(nameof(GetById), new { id = travelerDto.Id }, travelerDto);
+                    return CreatedAtAction(nameof(GetByIdAsync), new { id = travelerDto.Id }, travelerDto);
                 else
                 {
                     var errors = result.Errors?.ToList() ?? new List<string>();
