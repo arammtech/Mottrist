@@ -5,7 +5,7 @@ using Mottrist.Domain.Common.IUnitOfWork;
 using Mottrist.Domain.Entities;
 using Mottrist.Domain.Global;
 using Mottrist.Domain.Identity;
-using Mottrist.Service.Features.Drivers.DTOs;
+using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Traveller.DTOs;
 using Mottrist.Service.Features.Traveller.Interfaces;
 using Mottrist.Utilities.Identity;
@@ -25,7 +25,7 @@ namespace Mottrist.Service.Features.Traveller.Services
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
-        public async Task<IEnumerable<GetTravelerDto>> GetAllAsync(Expression<Func<Traveler, bool>>? filter = null)
+        public async Task<DataResult<GetTravelerDto>> GetAllAsync(Expression<Func<Traveler, bool>>? filter = null)
         {
             try
             {
@@ -38,52 +38,23 @@ namespace Mottrist.Service.Features.Traveller.Services
                     travelerQuery = travelerQuery.Where(filter);
 
                 var travelers = await travelerQuery.ToListAsync();
+
+                DataResult<GetTravelerDto> travelersResult = new()
+                {
+                    Data = _mapper.Map<IEnumerable<GetTravelerDto>>(travelers)
+                };
+
                 if (!travelers.Any())
-                    return Enumerable.Empty<GetTravelerDto>();
+                    travelersResult.Data = Enumerable.Empty<GetTravelerDto>();
 
-                var travelersDto = _mapper.Map<IEnumerable<GetTravelerDto>>(travelers);
-                return travelersDto;
-
+                return travelersResult;
             }
             catch (Exception ex)
             {
                 return null;
             }
         }
-        public async Task<(IEnumerable<GetTravelerDto>? Travellers, int? TotalRecords)> GetAllWithPaginationAsync(int page, int pageSize = 10, Expression<Func<Traveler, bool>>? filter = null)
-        {
-            if (page < 1 || pageSize < 1)
-                return (null, null);
-
-            try
-            {
-                var travelerQuery = _unitOfWork.Repository<Traveler>().Table
-                 .Include(t => t.User)
-                 .Include(t => t.Country)
-                 .AsQueryable();
-
-                if (filter != null)
-                    travelerQuery = travelerQuery.Where(filter);
-
-                var totalRecords = travelerQuery.Count();
-
-                // Apply pagination
-                var paginatedCars = await travelerQuery
-                    .OrderBy(c => c.Id) 
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToListAsync();
-
-                var travelersDto = _mapper.Map<IEnumerable<GetTravelerDto>>(paginatedCars);
-
-                return (travelersDto, totalRecords);
-            }
-            catch (Exception ex)
-            {
-                return (null, null);
-            }
-        }
-        public async Task<PaginationTravelerDto?> GetAllWithPaginationWithDtoAsync(int page, int pageSize = 10, Expression<Func<Traveler, bool>>? filter = null)
+        public async Task<PaginatedResult<GetTravelerDto>?> GetAllWithPaginationAsync(int page, int pageSize = 10, Expression<Func<Traveler, bool>>? filter = null)
         {
             if (page < 1 || pageSize < 1)
                 return null;
@@ -98,7 +69,7 @@ namespace Mottrist.Service.Features.Traveller.Services
                 if (filter != null)
                     travelerQuery = travelerQuery.Where(filter);
 
-                var totalRecords = travelerQuery.Count();
+                var totalRecordsCount = travelerQuery.Count();
 
                 // Apply pagination
                 var paginatedCars = await travelerQuery
@@ -109,10 +80,12 @@ namespace Mottrist.Service.Features.Traveller.Services
 
                 var travelersDto = _mapper.Map<IEnumerable<GetTravelerDto>>(paginatedCars);
 
-                PaginationTravelerDto paginationTravelerDto = new()
+                PaginatedResult<GetTravelerDto> paginationTravelerDto = new()
                 {
-                    Travelers = travelersDto.ToList(),
-                    TotalRecords = totalRecords
+                    Data = travelersDto,
+                    PageNumber= page,
+                    PageSize = pageSize,
+                    TotalRecordsCount = totalRecordsCount
                 };
 
                 return paginationTravelerDto;

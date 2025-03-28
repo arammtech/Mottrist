@@ -15,6 +15,7 @@ using Mottrist.Service.Features.General.Mapper.Profiles;
 using Mottrist.Service.Features.Traveller.Interfaces;
 using Mottrist.Service.Features.Traveller.Mappers;
 using Mottrist.Service.Features.Traveller.Services;
+using Mottrist.Service.Features.User;
 using Mottrist.Utilities.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
