@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Mottrist.Domain.Identity;
 using Mottrist.Repository.EntityFrameworkCore.Context;
-using Mottrist.Repository.SeedData;
 using Mottrist.Utilities.Identity;
 using System.Text;
 namespace Mottrist.Repository.DbInitializer
@@ -66,28 +65,7 @@ namespace Mottrist.Repository.DbInitializer
                         _userManager.SetLockoutEnabledAsync(user, false);
                     }
 
-                    var users = UserData.LoadUsers();
-
-                    foreach (var (userr, role) in users)
-                    {
-                        var result2 = _userManager.CreateAsync(userr, "DefaultPassword123!").GetAwaiter().GetResult();
-
-                        if (result.Succeeded)
-                        {
-                            _userManager.AddToRoleAsync(userr, role).GetAwaiter().GetResult();
-
-                            // Email Confirmed
-                            var codeToConfirm = _userManager.GenerateEmailConfirmationTokenAsync(userr).GetAwaiter().GetResult();
-                            codeToConfirm = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(codeToConfirm));
-
-                            codeToConfirm = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(codeToConfirm));
-                            _userManager.ConfirmEmailAsync(userr, codeToConfirm).GetAwaiter().GetResult();
-                        }
-                    }
                 }
-
-
-
             }
             catch (Exception ex)
             {

@@ -4,7 +4,7 @@ using Mottrist.Service.Features.Traveller.Interfaces;
 
 namespace Mottrist.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Traveler")]
     [ApiController]
     public class TravelerController : ControllerBase
     {
@@ -23,8 +23,8 @@ namespace Mottrist.API.Controllers
         /// An <see cref="IActionResult"/> containing the traveler data if found,
         /// or an error message if not found or in case of an exception.
         /// </returns>
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("{id:int}",Name = "GetById")]
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
             if (id <= 0)
                 return BadRequest(new { Error = "Invalid Traveler Id." });
@@ -54,8 +54,8 @@ namespace Mottrist.API.Controllers
         /// An <see cref="IActionResult"/> containing a list of all travelers
         /// or an error message if no data is found or in case of an exception.
         /// </returns>
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet(Name = "GetAll")]
+        public async Task<IActionResult> GetAllAsync()
         {
            try {
                 var travelerDtos = await _travelerService.GetAllAsync();
@@ -87,8 +87,9 @@ namespace Mottrist.API.Controllers
         /// or an error message if the page parameters are invalid, no data is found,
         /// or in case of an exception.
         /// </returns>
-        [HttpGet("TravelersPerPage")]
-        public async Task<IActionResult> GetAllWithPagination([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        
+        [HttpGet("TravelersPerPage", Name = "TravelersPerPage")]
+        public async Task<IActionResult> GetAllWithPaginationAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             if (page < 1 || pageSize < 1)
                 return BadRequest(new { Error = "Page and pageSize must be greater than zero." });
@@ -119,8 +120,8 @@ namespace Mottrist.API.Controllers
         /// An <see cref="IActionResult"/> with the result of the creation operation,
         /// including a location header on success or an error message on failure.
         /// </returns>
-        [HttpPost]
-        public async Task<IActionResult> Create(AddTravelerDto travelerDto)
+        [HttpPost(Name = "Create")]
+        public async Task<IActionResult> AddAsync(AddTravelerDto travelerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -139,7 +140,7 @@ namespace Mottrist.API.Controllers
 
                 // to make sure for now
                 travelerDto.Id = 0;
-
+                
                 var result = await _travelerService.AddAsync(travelerDto);
 
                 if (result.IsSuccess)
@@ -174,8 +175,8 @@ namespace Mottrist.API.Controllers
         /// An <see cref="IActionResult"/> indicating the result of the update operation,
         /// such as NoContent on success or an error message on failure.
         /// </returns>
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, UpdateTravelerDto travelerDto)
+        [HttpPut("{id:int}", Name = "Update")]
+        public async Task<IActionResult> UpdateAsync(int id, UpdateTravelerDto travelerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -229,8 +230,8 @@ namespace Mottrist.API.Controllers
         /// An <see cref="IActionResult"/> indicating the result of the deletion,
         /// such as NoContent on success or an error message if the deletion fails.
         /// </returns>
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{id:int}", Name = "Delete")]
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             if (id <= 0)
                 return BadRequest(new { Error = "Invalid Traveler Id." });

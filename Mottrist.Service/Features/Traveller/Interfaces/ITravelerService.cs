@@ -9,11 +9,11 @@ namespace Mottrist.Service.Features.Traveller.Interfaces
     public interface ITravelerService
     {
         #region Get
-        Task<GetTravelerDto> GetByIdAsync(int travelerId);
+        Task<GetTravelerDto>? GetByIdAsync(int travelerId);
         GetTravelerDto? Get(Expression<Func<Traveler, bool>> filter);
-        IEnumerable<GetTravelerDto> GetAll(Expression<Func<Traveler, bool>>? filter = null);
-        Task<DataResult<GetTravelerDto>> GetAllAsync(Expression<Func<Traveler, bool>>? filter = null);
-        Task<PaginatedResult<GetTravelerDto>> GetAllWithPaginationAsync(
+        IEnumerable<GetTravelerDto>? GetAll(Expression<Func<Traveler, bool>>? filter = null);
+        Task<DataResult<GetTravelerDto>>? GetAllAsync(Expression<Func<Traveler, bool>>? filter = null);
+        Task<PaginatedResult<GetTravelerDto>>? GetAllWithPaginationAsync(
          int page,
          int pageSize = 10,
          Expression<Func<Traveler, bool>>? filter = null);

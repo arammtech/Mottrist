@@ -28,7 +28,7 @@ namespace Mottrist.Service.Features.Traveller.Services
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
-        public async Task<DataResult<GetTravelerDto>> GetAllAsync(Expression<Func<Traveler, bool>>? filter = null)
+        public async Task<DataResult<GetTravelerDto>>? GetAllAsync(Expression<Func<Traveler, bool>>? filter = null)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace Mottrist.Service.Features.Traveller.Services
                 return null;
             }
         }
-        public async Task<GetTravelerDto> GetByIdAsync(int travelerId)
+        public async Task<GetTravelerDto>? GetByIdAsync(int travelerId)
         {
             try
             {
@@ -289,7 +289,7 @@ namespace Mottrist.Service.Features.Traveller.Services
         {
             throw new NotImplementedException();
         }
-        IEnumerable<GetTravelerDto> ITravelerService.GetAll(Expression<Func<Traveler, bool>>? filter)
+        IEnumerable<GetTravelerDto>? ITravelerService.GetAll(Expression<Func<Traveler, bool>>? filter)
         {
             throw new NotImplementedException();
         }
