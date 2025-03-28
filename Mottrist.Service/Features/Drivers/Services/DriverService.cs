@@ -174,6 +174,7 @@ namespace Mottrist.Service.Features.Drivers.Services
             {
                 // Step 1: Map and create the user
                 var user = _mapper.Map<ApplicationUser>(driverDto);
+                user.UserName = driverDto.Email;
                 var addUserResult = await _userManager.CreateAsync(user);
 
                 if (!addUserResult.Succeeded)

@@ -70,7 +70,7 @@ builder.Services.AddScoped<IDriverService, DriverService>();
 #endregion
 
 var app = builder.Build();
-
+SeedDatabase();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

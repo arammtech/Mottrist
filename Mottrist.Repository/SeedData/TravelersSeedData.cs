@@ -20,7 +20,7 @@ namespace Mottrist.Repository.SeedData
 
         public async Task<Result> LoadTravelers()
         {
-            List<AddTravelerDto>
+            throw new NotImplementedException();
         }
         
     }
