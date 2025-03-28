@@ -8,10 +8,11 @@ namespace Mottrist.Domain.Global
         public bool IsSuccess { get; private set; }
         
         public HashSet<string> Errors { get; private set; } = new HashSet<string>();
-
-        private Result(bool isSuccess, IEnumerable<string> errors = null)
+        public bool IsExpection { get; private set; } 
+        private Result( bool isSuccess,  bool isExpection = false, IEnumerable<string>? errors = null)
         {
             IsSuccess = isSuccess;
+            IsExpection = isExpection;
             if (errors != null)
             {
                 Errors = new HashSet<string>(errors);
@@ -20,6 +21,7 @@ namespace Mottrist.Domain.Global
         public Result()
         {
             IsSuccess = false;
+            IsExpection = false;
         }
         // Success factory method
         public static Result Success()
@@ -28,15 +30,15 @@ namespace Mottrist.Domain.Global
         }
 
         // Failure factory method for single error
-        public static Result Failure(string errorMessage)
+        public static Result Failure(string errorMessage, bool isExpcetion = false)
         {
-            return new Result(false, new[] { errorMessage });
+            return new Result(isExpcetion, false, new[] { errorMessage });
         }
 
         // Failure factory method for multiple errors
-        public static Result Failure(IEnumerable<string> errorMessages)
+        public static Result Failure( IEnumerable<string> errorMessages, bool isExpcetion = false)
         {
-            return new Result(false, errorMessages);
+            return new Result(isExpcetion,false, errorMessages);
         }
 
         // Add a single error

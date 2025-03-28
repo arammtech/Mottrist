@@ -161,6 +161,8 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// </returns>
         public async Task<Result> AddAsync(AddUpdateDriverDto driverDto)
         {
+            Result result = new Result();
+
             // Start a transaction
             var transaction = await _unitOfWork.StartTransactionAsync();
             if (!transaction.IsSuccess)
@@ -177,7 +179,19 @@ namespace Mottrist.Service.Features.Drivers.Services
                 if (!addUserResult.Succeeded)
                 {
                     await _unitOfWork.RollbackAsync();
-                    return Result.Failure("Failed to save the user to the database.");
+
+                    if(addUserResult?.Errors != null)
+                    {
+                    
+                        foreach (var error in addUserResult.Errors)
+                        {
+                            result.AddError(error.Description);
+                        }
+
+                        return result;
+                    }
+
+                    return Result.Failure("Failed to with database when add user.");
                 }
 
                 // Step 2: Assign the 'Driver' role to the user
@@ -185,8 +199,20 @@ namespace Mottrist.Service.Features.Drivers.Services
                 if (!roleResult.Succeeded)
                 {
                     await _unitOfWork.RollbackAsync();
+
+                    if (roleResult?.Errors != null)
+                    {
+
+                        foreach (var error in addUserResult.Errors)
+                        {
+                            result.AddError(error.Description);
+                        }
+
+                        return result;
+                    }
+                    
                     return Result.Failure("Failed to assign the driver role to the user.");
-                }
+                } 
 
                 // Step 3: Map and create the driver entity
                 var driverEntity = _mapper.Map<Driver>(driverDto);
@@ -254,7 +280,7 @@ namespace Mottrist.Service.Features.Drivers.Services
             {
                 // Rollback transaction on error
                 await _unitOfWork.RollbackAsync();
-                return Result.Failure($"Error adding driver: {ex.Message}");
+                return Result.Failure($"Error adding driver: {ex.Message}",true);
             }
         }
 
