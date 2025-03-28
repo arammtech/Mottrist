@@ -7,7 +7,7 @@ namespace Mottrist.Domain.Entities
     public class Traveler : BaseEntity
     {
         public string? WhatsAppNumber { get; set; }
-        public int NationailtyId { get; set; }
+        public int NationalityId { get; set; }
         public string? ProfileImageUrl { get; set; }
         public int UserId { get; set; }
 
