@@ -56,10 +56,6 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(option =>
 #region Packages
 builder.Services.AddAutoMapper(typeof(MappingProfile), typeof(TravelerProfile), typeof(DriverProfile));
 
-//builder.Services.AddFluentValidationAutoValidation()
-//                .AddValidatorsFromAssemblyContaining<AddTravelerDtoValidator>()
-//                .AddValidatorsFromAssemblyContaining<UpdateTravelerDtoValidator>();
-
 builder.Services.AddFluentValidationAutoValidation()
                 .AddValidatorsFromAssembly(typeof(AddTravelerDtoValidator).Assembly);
 #endregion
