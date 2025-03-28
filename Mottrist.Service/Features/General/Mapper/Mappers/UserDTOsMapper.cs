@@ -15,20 +15,13 @@ namespace Mottrist.Service.Features.General.Mapper.Mappers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
-                UserName = user.UserName,
-                Phone = user.PhoneNumber,
+                PhoneNumber = user.PhoneNumber,
                 Password = user.PasswordHash,
-                Role =  roles.GetAwaiter().GetResult().ToList(),
-                IsLocked = user.LockoutEnd != null && user.LockoutEnd > DateTimeOffset.UtcNow
             };
         }
 
         public static ApplicationUser ToApplicationUser(UserDto userDto)
         {
-            var defaultUserName = 
-                string.IsNullOrWhiteSpace(userDto.UserName)
-                ? GenerateDefaultUserNameFromEmailOrNames(userDto)
-                : userDto.UserName;
 
             return new ApplicationUser
             {
@@ -36,8 +29,6 @@ namespace Mottrist.Service.Features.General.Mapper.Mappers
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email,
-                UserName = defaultUserName,
-                PhoneNumber = userDto.Phone,
                 PasswordHash = userDto.Password
             };
         }

@@ -8,36 +8,26 @@ namespace Mottrist.Service.Features.User.DTOs
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "الاسم الأول مطلوب")]
-        [DisplayName("الاسم الأول ")]
+        [Required(ErrorMessage = "First name is required.")]
+        [DisplayName("First Name")]
         public string FirstName { get; set; }
 
-        [Required(ErrorMessage = "الاسم الأخير مطلوب")]
-        [DisplayName("الاسم الأخير")]
+        [Required(ErrorMessage = "Last name is required.")]
+        [DisplayName("Last Name")]
         public string LastName { get; set; }
 
-        [Required(ErrorMessage = "البريد الإلكتروني مطلوب")]
-        [DisplayName("البريد الإلكتروني")]
-        [EmailAddress(ErrorMessage = "البريد الإلكتروني غير صالح")]
+        [Required(ErrorMessage = "Email is required.")]
+        [DisplayName("Email")]
+        [EmailAddress(ErrorMessage = "Invalid email address.")]
         public string Email { get; set; }
 
-        public string? UserName { get; set; }
+        [StringLength(11, MinimumLength = 11, ErrorMessage = "Phone number must be exactly 11 digits.")]
+        public string? PhoneNumber { get; set; }
 
-        [StringLength(11, MinimumLength = 11, ErrorMessage = "رقم الهاتف يجب أن يتألف من 11 خانة حصرا")]
-        public string? Phone { get; set; }
-
-        // make here validation
-        [Required(ErrorMessage = "كلمة المرور مطلوبة")]
-        [DisplayName("كلمة المرور")]
+        [Required(ErrorMessage = "Password is required.")]
+        [DisplayName("Password")]
         [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$",
-            ErrorMessage = "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل، حرف كبير، رقم، وحرف خاص.")]
+            ErrorMessage = "Password must be at least 8 characters, include an uppercase letter, a number, and a special character.")]
         public string? Password { get; set; }
-
-        public string? ImagePath { get; set; } 
-
-        [Required(ErrorMessage = "الدور مطلوب")]
-        [DisplayName("الدور")]
-        public List<string> Role { get; set; }
-        public bool? IsLocked { get; set; }
     }
 }

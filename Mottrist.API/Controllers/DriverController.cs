@@ -17,148 +17,202 @@ namespace Mottrist.API.Controllers
             _driverService = driverService;
         }
 
-
-        [HttpGet("GetById")]
-        public async Task<IActionResult> GetById(int driverId)
+        /// <summary>
+        /// Retrieves a driver by the specified ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the driver to retrieve.</param>
+        /// <returns>
+        /// Returns:
+        /// - HTTP 200 OK with the driver details if successful.
+        /// - HTTP 404 Not Found if no driver is found with the given ID.
+        /// - HTTP 400 Bad Request if the driver ID is invalid.
+        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// </returns>
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
+            // Validate input
+            if (id <= 0)
+            {
+                return BadRequest(new { Error = "Invalid driver ID." });
+            }
+
             try
             {
-                // Call the service method
-                DriverDto? result = await _driverService.GetByIdAsync(driverId);
-                if (result != null)
-                {
-                    return Ok(result);
-                }
-                else
-                {
-                    return StatusCode(500, "not fund");
-                }
+                // Fetch the driver details from the service
+                DriverDto? result = await _driverService.GetByIdAsync(id);
+
+                // Return appropriate response based on the service result
+                return result != null
+                    ? Ok(result)
+                    : NotFound(new { Error = "Driver not found." });
             }
             catch (HttpRequestException ex)
             {
-                // Return a 500 error with the exception message if an error occurs
-                return StatusCode(500, $"Error: {ex.Message}");
+                // Handle HTTP request exceptions
+                return StatusCode(500, new { Error = $"Service error: {ex.Message}" });
             }
             catch (Exception ex)
             {
-                // Handle any general exceptions
-                return StatusCode(500, $"Unexpected error: {ex.Message}");
+                // Handle unexpected exceptions
+                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" });
             }
         }
 
-        [HttpDelete("DeleteDriver")]
-        public async Task<IActionResult> Delete(int driverId)
+        /// <summary>
+        /// Retrieves all drivers from the service.
+        /// </summary>
+        /// <returns>
+        /// Returns an HTTP 200 OK status with the list of drivers if successful, 
+        /// or an HTTP 500 Internal Server Error in case of failure.
+        /// </returns>
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
         {
             try
             {
-                // Call the service method
-                var result = await _driverService.DeleteAsync(driverId);
-                if (result.IsSuccess)
-                {
-                    return Ok("Success");
-                }
-                else
-                {
-                    return StatusCode(500, $"Error: {result.Errors.FirstOrDefault()}");
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                // Return a 500 error with the exception message if an error occurs
-                return StatusCode(500, $"Error: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                // Handle any general exceptions
-                return StatusCode(500, $"Unexpected error: {ex.Message}");
-            }
-        }
-
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll()
-        {
-            try
-            {
-                // Call the service method
                 var result = await _driverService.GetAllAsync();
-                if (result != null)
-                {
-                    return Ok(result);
-                }
-                else
-                {
-                    return StatusCode(500, "not fund");
-                }
+
+                // Check if the result is not null and return accordingly
+                return result != null
+                    ? Ok(result)
+                    : StatusCode(500, "No data found.");
             }
             catch (HttpRequestException ex)
             {
-                // Return a 500 error with the exception message if an error occurs
-                return StatusCode(500, $"Error: {ex.Message}");
+                // Handle HTTP request exceptions and return a structured error response
+                return StatusCode(500, new { Error = ex.Message });
             }
             catch (Exception ex)
             {
-                // Handle any general exceptions
-                return StatusCode(500, $"Unexpected error: {ex.Message}");
+                // Handle general exceptions and return a structured error response
+                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" });
             }
         }
 
-        [HttpPost("Add")]
-        public async Task<IActionResult> Add(AddUpdateDriverDto driverDto)
+        /// <summary>
+        /// Adds a new driver using the provided data transfer object.
+        /// </summary>
+        /// <param name="driverDto">The DTO containing the details of the driver to be added.</param>
+        /// <returns>
+        /// Returns an HTTP 200 OK status if the operation is successful, 
+        /// HTTP 400 Bad Request if there are validation errors, or 
+        /// HTTP 500 Internal Server Error for any exceptions or failures.
+        /// </returns>
+        [HttpPost]
+        public async Task<IActionResult> AddAsync(AddUpdateDriverDto driverDto)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(new { Errors = errors });
+            }
+
+
             try
             {
-
-                // Call the service method
                 var result = await _driverService.AddAsync(driverDto);
 
-                if (result.IsSuccess)
-                {
-                    return Ok("Success");
-                }
-                else
-                {
-                    return StatusCode(500, $"Error: {result.Errors.FirstOrDefault()}");
-                }
+                // Use ternary operator for concise response handling
+                return result.IsSuccess
+                    ? Ok("Success")
+                    : StatusCode(500, new { Error = result.Errors.FirstOrDefault() });
             }
             catch (HttpRequestException ex)
             {
-                // Return a 500 error with the exception message if an error occurs
-                return StatusCode(500, $"Error: {ex.Message}");
+                return StatusCode(500, new { Error = ex.Message }); // Handle HttpRequest exception
             }
             catch (Exception ex)
             {
-                // Handle any general exceptions
-                return StatusCode(500, $"Unexpected error: {ex.Message}");
+                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" }); // Handle general exceptions
             }
         }
 
-        [HttpPut("Update")]
-        public async Task<IActionResult> Update(AddUpdateDriverDto driverDto)
+        /// <summary>
+        /// Updates the details of a driver using the provided data transfer object.
+        /// </summary>
+        /// <param name="driverDto">The DTO containing driver details to be updated.</param>
+        /// <returns>
+        /// Returns an HTTP 200 OK status if the operation is successful, 
+        /// HTTP 400 Bad Request if there are validation errors, or 
+        /// HTTP 500 Internal Server Error for any exceptions or failures.
+        /// </returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateAsync(AddUpdateDriverDto driverDto)
         {
+            if (!ModelState.IsValid)
+            {
+                // Extract and return validation errors as a bad request response
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(new { Errors = errors });
+            }
+
             try
             {
-
-                // Call the service method
                 var result = await _driverService.UpdateAsync(driverDto);
 
-                if (result.IsSuccess)
-                {
-                    return Ok("Success");
-                }
-                else
-                {
-                    return StatusCode(500, $"Error: {result.Errors.FirstOrDefault()}");
-                }
+                // Return a success response if the operation succeeds
+                // or an internal server error with the first error message otherwise
+                return result.IsSuccess 
+                    ? Ok("Success") 
+                    : StatusCode(500, new { Error = result.Errors.FirstOrDefault() });
             }
             catch (HttpRequestException ex)
             {
-                // Return a 500 error with the exception message if an error occurs
-                return StatusCode(500, $"Error: {ex.Message}");
+                // Return a structured error response for HTTP request exceptions
+                return StatusCode(500, new { Error = ex.Message });
             }
             catch (Exception ex)
             {
-                // Handle any general exceptions
-                return StatusCode(500, $"Unexpected error: {ex.Message}");
+                // Return a generic error response for unexpected exceptions
+                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
+        /// Deletes a driver by the specified ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the driver to be deleted.</param>
+        /// <returns>
+        /// Returns:
+        /// - HTTP 200 OK if the deletion is successful.
+        /// - HTTP 400 Bad Request if the driver ID is invalid.
+        /// - HTTP 500 Internal Server Error with detailed error information for failures.
+        /// </returns>
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(new { Error = "Invalid driver ID." });
+            }
+
+            try
+            {
+                var result = await _driverService.DeleteAsync(id);
+
+                // Return success or error based on the service result
+                return result.IsSuccess
+                    ? Ok(new { Message = "Driver successfully deleted." })
+                    : StatusCode(500, new { Error = result.Errors.FirstOrDefault() });
+            }
+            catch (HttpRequestException ex)
+            {
+                // Handle HTTP request exceptions
+                return StatusCode(500, new { Error = $"Service error: {ex.Message}" });
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected exceptions
+                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" });
             }
         }
     }
