@@ -29,7 +29,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
             // Validate input
             if (id <= 0)
@@ -59,46 +59,6 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
-        /// <summary>
-        /// Deletes a driver by the specified ID.
-        /// </summary>
-        /// <param name="id">The unique identifier of the driver to be deleted.</param>
-        /// <returns>
-        /// Returns:
-        /// - HTTP 200 OK if the deletion is successful.
-        /// - HTTP 400 Bad Request if the driver ID is invalid.
-        /// - HTTP 500 Internal Server Error with detailed error information for failures.
-        /// </returns>
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            if (id <= 0)
-            {
-                return BadRequest(new { Error = "Invalid driver ID." });
-            }
-
-            try
-            {
-                var result = await _driverService.DeleteAsync(id);
-
-                // Return success or error based on the service result
-                return result.IsSuccess
-                    ? Ok(new { Message = "Driver successfully deleted." })
-                    : StatusCode(500, new { Error = result.Errors.FirstOrDefault() });
-            }
-            catch (HttpRequestException ex)
-            {
-                // Handle HTTP request exceptions
-                return StatusCode(500, new { Error = $"Service error: {ex.Message}" });
-            }
-            catch (Exception ex)
-            {
-                // Handle unexpected exceptions
-                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" });
-            }
-        }
-
         /// <summary>
         /// Retrieves all drivers from the service.
         /// </summary>
@@ -107,7 +67,7 @@ namespace Mottrist.API.Controllers
         /// or an HTTP 500 Internal Server Error in case of failure.
         /// </returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             try
             {
@@ -130,7 +90,6 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
         /// <summary>
         /// Adds a new driver using the provided data transfer object.
         /// </summary>
@@ -141,7 +100,7 @@ namespace Mottrist.API.Controllers
         /// HTTP 500 Internal Server Error for any exceptions or failures.
         /// </returns>
         [HttpPost]
-        public async Task<IActionResult> Add(AddUpdateDriverDto driverDto)
+        public async Task<IActionResult> AddAsync(AddUpdateDriverDto driverDto)
         {
             if (!ModelState.IsValid)
             {
@@ -173,8 +132,6 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
-
         /// <summary>
         /// Updates the details of a driver using the provided data transfer object.
         /// </summary>
@@ -185,7 +142,7 @@ namespace Mottrist.API.Controllers
         /// HTTP 500 Internal Server Error for any exceptions or failures.
         /// </returns>
         [HttpPut]
-        public async Task<IActionResult> Update(AddUpdateDriverDto driverDto)
+        public async Task<IActionResult> UpdateAsync(AddUpdateDriverDto driverDto)
         {
             if (!ModelState.IsValid)
             {
@@ -220,6 +177,43 @@ namespace Mottrist.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes a driver by the specified ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the driver to be deleted.</param>
+        /// <returns>
+        /// Returns:
+        /// - HTTP 200 OK if the deletion is successful.
+        /// - HTTP 400 Bad Request if the driver ID is invalid.
+        /// - HTTP 500 Internal Server Error with detailed error information for failures.
+        /// </returns>
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(new { Error = "Invalid driver ID." });
+            }
 
+            try
+            {
+                var result = await _driverService.DeleteAsync(id);
+
+                // Return success or error based on the service result
+                return result.IsSuccess
+                    ? Ok(new { Message = "Driver successfully deleted." })
+                    : StatusCode(500, new { Error = result.Errors.FirstOrDefault() });
+            }
+            catch (HttpRequestException ex)
+            {
+                // Handle HTTP request exceptions
+                return StatusCode(500, new { Error = $"Service error: {ex.Message}" });
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected exceptions
+                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" });
+            }
+        }
     }
 }

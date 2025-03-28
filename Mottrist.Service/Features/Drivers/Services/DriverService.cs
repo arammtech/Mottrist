@@ -28,6 +28,15 @@ namespace Mottrist.Service.Features.Drivers.Services
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
+        /// <summary>
+        /// Retrieves a set of drivers with their detailed information, optionally filtered by the specified criteria.
+        /// </summary>
+        /// <param name="filter">Optional: A filter expression to apply to the query. Defaults to null.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains:
+        /// - A set of <see cref="DriverDto"/> objects representing the drivers with their details, or
+        /// - Null if an exception occurs or if no matching drivers are found.
+        /// </returns>
         public async Task<ISet<DriverDto>?> GetAllAsync(Expression<Func<DriverDto, bool>>? filter = null)
         {
             try
@@ -67,18 +76,22 @@ namespace Mottrist.Service.Features.Drivers.Services
                                       CarImageUrl = carDetails.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl
                                   };
 
-                if(filter != null)
+                // Apply filter if provided
+                if (filter != null)
                 {
                     driverQuery = driverQuery.Where(filter);
                 }
 
+                // Execute the query and return the result as a set
                 return await driverQuery.ToHashSetAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                // Log the exception if required
                 return null;
             }
         }
+
         /// <summary>
         /// Retrieves detailed information about a specific driver, including car and nationality details, if applicable.
         /// </summary>
@@ -135,12 +148,9 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
             catch (Exception ex)
             {
-                // Log exception (replace with a proper logging framework)
-                Console.WriteLine($"Error retrieving driver data: {ex.Message}");
                 return null;
             }
         }
-
 
         /// <summary>
         /// Adds a new driver to the system, including an associated car and its image if applicable.
@@ -370,6 +380,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 return Result.Failure($"Error updating driver: {ex.Message}");
             }
         }
+
         /// <summary>
         /// Deletes a driver by their ID, along with associated car details (if applicable).
         /// </summary>

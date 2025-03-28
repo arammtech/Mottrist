@@ -10,7 +10,7 @@ using Mottrist.Service.Features.General;
 
 namespace Mottrist.Service.Features.Cars.Services
 {
-    public class CarService :BaseService , ICarService
+    public class CarService : BaseService , ICarService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -21,7 +21,16 @@ namespace Mottrist.Service.Features.Cars.Services
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<CarDto>> GetAllAsync(Expression<Func<Car, bool>>? filter = null)
+        /// <summary>
+        /// Retrieves a list of cars, optionally filtered by the specified criteria.
+        /// </summary>
+        /// <param name="filter">Optional: A filter expression to apply to the car query. Defaults to null.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation. The task result contains:
+        /// - An <see cref="IEnumerable{CarDto}"/> of cars matching the filter, or
+        /// - An empty enumerable if no cars match the filter or an exception occurs.
+        /// </returns>
+        public async Task<IEnumerable<CarDto>?> GetAllAsync(Expression<Func<Car, bool>>? filter = null)
         {
             try
             {
@@ -43,13 +52,21 @@ namespace Mottrist.Service.Features.Cars.Services
             }
             catch (Exception ex)
             {
-                // Log the exception (if you have a logging mechanism in place)
-                // Log.Error(ex, "Error occurred while fetching cars");
-
                 return Enumerable.Empty<CarDto>();
             }
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of cars based on the specified criteria.
+        /// </summary>
+        /// <param name="page">The page number to retrieve (1-based).</param>
+        /// <param name="pageSize">The number of cars per page. Defaults to 10.</param>
+        /// <param name="filter">Optional: A filter expression to apply to the car query. Defaults to null.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation. The task result contains:
+        /// - Cars: An <see cref="IEnumerable{CarDto}"/> of cars for the specified page, or null if an error occurs.
+        /// - TotalRecords: The total count of cars matching the criteria, or null if an error occurs.
+        /// </returns>
         public async Task<(IEnumerable<CarDto>? Cars, int? TotalRecords)> GetAllWithPaginationAsync(
             int page,
             int pageSize = 10,
@@ -72,7 +89,7 @@ namespace Mottrist.Service.Features.Cars.Services
                 }
 
                 // Get the total count of records before applying pagination
-                var totalRecords =  carsQuery.Count();
+                var totalRecords = carsQuery.Count();
 
                 // Apply pagination
                 var paginatedCars = await carsQuery
@@ -93,6 +110,15 @@ namespace Mottrist.Service.Features.Cars.Services
             }
         }
 
+        /// <summary>
+        /// Retrieves a car by its unique identifier.
+        /// </summary>
+        /// <param name="carId">The unique identifier of the car to retrieve.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation. The task result contains:
+        /// - A <see cref="CarDto"/> object if the car is found, or
+        /// - Null if the car is not found or an error occurs.
+        /// </returns>
         public async Task<CarDto?> GetByIdAsync(int carId)
         {
             try
@@ -109,14 +135,30 @@ namespace Mottrist.Service.Features.Cars.Services
             }
         }
 
+
+        /// <summary>
+        /// Adds a new car to the database.
+        /// </summary>
+        /// <param name="carDto">The data transfer object containing the car details to be added.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the operation:
+        /// - Returns <see cref="Result.Success"/> if the car is successfully saved.
+        /// - Returns <see cref="Result.Failure"/> with an appropriate error message if the operation fails.
+        /// </returns>
         public async Task<Result> AddAsync(CarDto carDto)
         {
+            if (carDto == null)
+            {
+                return Result.Failure("Invalid Car Object Be Null.");
+            }
+
             try
             {
                 var car = _mapper.Map<Car>(carDto);
                 await _unitOfWork.Repository<Car>().AddAsync(car);
-                     
-                if(car.Id <= 0) return Result.Failure("Failed to save the car to the database.");
+
+                if (car.Id <= 0)
+                    return Result.Failure("Failed to save the car to the database.");
 
                 carDto.Id = car.Id;
 
@@ -131,8 +173,20 @@ namespace Mottrist.Service.Features.Cars.Services
             }
         }
 
+        /// <summary>
+        /// Updates a car entity with the provided data.
+        /// </summary>
+        /// <param name="carDto">The data transfer object containing the updated car information.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the update operation was successful or not.
+        /// </returns>
         public async Task<Result> UpdateAsync(CarDto carDto)
         {
+            if (carDto == null)
+            {
+                return Result.Failure("Invalid Car Object Be Null.");
+            }
+
             try
             {
                 var car = await _unitOfWork.Repository<Car>().GetAsync(c => c.Id == carDto.Id);
@@ -152,8 +206,20 @@ namespace Mottrist.Service.Features.Cars.Services
             }
         }
 
+        /// <summary>
+        /// Deletes a car by its unique identifier.
+        /// </summary>
+        /// <param name="carId">The unique identifier of the car to delete.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the deletion was successful or not.
+        /// </returns>
         public async Task<Result> DeleteAsync(int carId)
         {
+            if (carId <= 0)
+            {
+                return Result.Failure("Invalid CarId.");
+            }
+
             try
             {
                 var car = await _unitOfWork.Repository<Car>().GetAsync(c => c.Id == carId);
@@ -172,8 +238,20 @@ namespace Mottrist.Service.Features.Cars.Services
             }
         }
 
-        public async Task<IEnumerable<CarImageDto>> GetCarImagesAsync(int carId)
+        /// <summary>
+        /// Retrieves all images associated with a specific car.
+        /// </summary>
+        /// <param name="carId">The unique identifier of the car whose images are to be retrieved.</param>
+        /// <returns>
+        /// A collection of <see cref="CarImageDto"/> objects, or null if no images are found.
+        /// </returns>
+        public async Task<IEnumerable<CarImageDto>?> GetCarImagesAsync(int carId)
         {
+            if (carId <= 0)
+            {
+                return null;
+            }
+
             try
             {
                 // Check if the car exists to ensure valid carId
@@ -182,24 +260,41 @@ namespace Mottrist.Service.Features.Cars.Services
 
                 // Retrieve car images for the given carId from the CarImage repository
                 var carImages = await _unitOfWork.Repository<CarImage>().GetAllAsync(ci => ci.CarId == carId);
-                if (!carImages.Any()) return Enumerable.Empty<CarImageDto>();
 
-                // Map the CarImage entities to CarImageDto
+                if (!carImages.Any())
+                {
+                    return null;
+                }
+
                 var carImageDtos = _mapper.Map<IEnumerable<CarImageDto>>(carImages);
 
                 return carImageDtos;
             }
             catch (Exception ex)
             {
-                // Log the exception if needed, e.g., using ILogger
-                // Log.Error(ex, "Error occurred while retrieving car images");
-
-                // Return an empty collection as a fallback
-                return Enumerable.Empty<CarImageDto>();
+                return null;
             }
         }
+
+        /// <summary>
+        /// Adds a new image to a car.
+        /// </summary>
+        /// <param name="carImageDto">The data transfer object representing the new car image.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the operation was successful or not.
+        /// </returns>
         public async Task<Result> AddCarImageAsync(CarImageDto carImageDto)
         {
+            if (carImageDto == null)
+            {
+                return Result.Failure("Invalid Cant Object Be Null.");
+            }
+
+            if (carImageDto.CarId <= 0)
+            {
+                return Result.Failure("Invalid CarId.");
+            }
+
             try
             {
                 var carImage = _mapper.Map<CarImage>(carImageDto);
@@ -216,8 +311,27 @@ namespace Mottrist.Service.Features.Cars.Services
             }
         }
 
+
+        /// <summary>
+        /// Removes a specific car image by its URL and associated car identifier.
+        /// </summary>
+        /// <param name="imageUrl">The URL of the car image to remove.</param>
+        /// <param name="carId">The unique identifier of the associated car.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the operation was successful or not.
+        /// </returns>
         public async Task<Result> RemoveCarImageAsync(string imageUrl, int carId)
         {
+            if(string.IsNullOrWhiteSpace(imageUrl))
+            {
+                return Result.Failure("Invalid ImageUrl.");
+            }
+
+            if (carId <= 0)
+            {
+                return Result.Failure("Invalid CarId.");
+            }
+
             try
             {
                 var carImage = await _unitOfWork.Repository<CarImage>().GetAsync(ci => ci.ImageUrl == imageUrl && ci.CarId == carId);
@@ -236,8 +350,27 @@ namespace Mottrist.Service.Features.Cars.Services
             }
         }
 
+
+        /// <summary>
+        /// Sets a specific car image as the main image for the car.
+        /// </summary>
+        /// <param name="carId">The unique identifier of the car.</param>
+        /// <param name="imageUrl">The URL of the image to set as the main image.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the operation was successful or not.
+        /// </returns>
         public async Task<Result> SetMainImageAsync(int carId, string imageUrl)
         {
+            if (string.IsNullOrWhiteSpace(imageUrl))
+            {
+                return Result.Failure("Invalid ImageUrl.");
+            }
+
+            if (carId <= 0)
+            {
+                return Result.Failure("Invalid CarId.");
+            }
+
             try
             {
                 var carImages = await _unitOfWork.Repository<CarImage>().GetAllAsync(ci => ci.CarId == carId);
