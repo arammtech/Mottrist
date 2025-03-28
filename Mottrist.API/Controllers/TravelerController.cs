@@ -60,7 +60,7 @@ namespace Mottrist.API.Controllers
            try {
                 var travelersDto = await _travelerService.GetAllAsync();
 
-                return  travelersDto == null ?
+                return  travelersDto != null ?
                         Ok(travelersDto)
                        : StatusCode(500, new { Error = "No data found." } );
             }
@@ -92,9 +92,9 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                var travelersDto = await _travelerService.GetAllWithPaginationWithDtoAsync(page, pageSize);
+                var travelersDto = await _travelerService.GetAllWithPaginationAsync(page, pageSize);
 
-                return travelersDto == null ?
+                return travelersDto != null ?
                         Ok(travelersDto)
                        : StatusCode(500, new { Error = "No data found." });
             }
