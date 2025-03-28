@@ -1,5 +1,8 @@
 using AutoMapper;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Mottrist.Domain.Common.IRepository;
 using Mottrist.Domain.Common.IUnitOfWork;
@@ -12,9 +15,11 @@ using Mottrist.Service.Features.Drivers.Interfaces;
 using Mottrist.Service.Features.Drivers.Mappers;
 using Mottrist.Service.Features.Drivers.Services;
 using Mottrist.Service.Features.General.Mapper.Profiles;
+using Mottrist.Service.Features.Traveller.DTOs;
 using Mottrist.Service.Features.Traveller.Interfaces;
 using Mottrist.Service.Features.Traveller.Mappers;
 using Mottrist.Service.Features.Traveller.Services;
+using Mottrist.Service.Features.Traveller.Validators;
 using Mottrist.Service.Features.User;
 using Mottrist.Utilities.Identity;
 
@@ -23,8 +28,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = false; // To allow automatic validation!
+});
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -42,8 +53,15 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(option =>
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-#region AutoMapper
+#region Packages
 builder.Services.AddAutoMapper(typeof(MappingProfile), typeof(TravelerProfile), typeof(DriverProfile));
+
+//builder.Services.AddFluentValidationAutoValidation()
+//                .AddValidatorsFromAssemblyContaining<AddTravelerDtoValidator>()
+//                .AddValidatorsFromAssemblyContaining<UpdateTravelerDtoValidator>();
+
+builder.Services.AddFluentValidationAutoValidation()
+                .AddValidatorsFromAssembly(typeof(AddTravelerDtoValidator).Assembly);
 #endregion
 
 #region Custom Services
@@ -53,7 +71,6 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ITravelerService, TravelerService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
-
 #endregion
 
 var app = builder.Build();
