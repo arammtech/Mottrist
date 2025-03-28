@@ -23,74 +23,76 @@ namespace Mottrist.Repository.DbInitializer
 
         public void Initialize()
         {
-            //try
-            //{
-            //    if (_context.Database.GetPendingMigrations().Any())
-            //    {
-            //        _context.Database.Migrate();
-            //    }
+            try
+            {
+                if (_context.Database.GetPendingMigrations().Any())
+                {
+                    _context.Database.Migrate();
+                }
 
-            //    if (!_roleManager.RoleExistsAsync(AppUserRoles.RoleAdmin).GetAwaiter().GetResult())
-            //    {
-            //        _roleManager.CreateAsync(new ApplicationRole() { Name = AppUserRoles.RoleAdmin }).GetAwaiter().GetResult();
-            //        _roleManager.CreateAsync(new ApplicationRole() { Name = AppUserRoles.RoleCustomer }).GetAwaiter().GetResult();
-            //    }
+                if (!_roleManager.RoleExistsAsync(AppUserRoles.RoleAdmin).GetAwaiter().GetResult())
+                {
+                    _roleManager.CreateAsync(new ApplicationRole() { Name = AppUserRoles.RoleAdmin }).GetAwaiter().GetResult();
+                    _roleManager.CreateAsync(new ApplicationRole() { Name = AppUserRoles.RoleTraveler }).GetAwaiter().GetResult();
+                    _roleManager.CreateAsync(new ApplicationRole() { Name = AppUserRoles.RoleDriver }).GetAwaiter().GetResult();
+                    _roleManager.CreateAsync(new ApplicationRole() { Name = AppUserRoles.RoleEmployee }).GetAwaiter().GetResult();
+                }
 
-            //    if (!_context.ApplicationUsers.Any())
-            //    {
-            //        ApplicationUser user = new();
-            //        user.FirstName = "ARAMM";
-            //        user.LastName = "Winners";
-            //        user.Email = "admin@aramm.com";
-            //        user.UserName = "admin@aramm.com";
-            //        user.PasswordHash = "Aramm123@";
+                if (!_context.ApplicationUsers.Any())
+                {
+                    ApplicationUser user = new();
+                    user.FirstName = "admin";
+                    user.LastName = "admin";
+                    user.Email = "admin@gmail.com";
+                    user.UserName = "admin@gmail.com";
+                    user.PasswordHash = "Admin123@";
 
-            //        var result = _userManager.CreateAsync(user, "Aramm123@").GetAwaiter().GetResult();
+                    var result = _userManager.CreateAsync(user, "Admin123@").GetAwaiter().GetResult();
 
-            //        if (result.Succeeded)
-            //        {
-            //            _userManager.AddToRoleAsync(user, AppUserRoles.RoleAdmin).GetAwaiter().GetResult();
+                    if (result.Succeeded)
+                    {
+                        _userManager.AddToRoleAsync(user, AppUserRoles.RoleAdmin).GetAwaiter().GetResult();
 
-            //            // Email Confirmed
-            //            var codeToConfirm = _userManager.GenerateEmailConfirmationTokenAsync(user).GetAwaiter().GetResult();
-            //            codeToConfirm = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(codeToConfirm));
+                        // Email Confirmed
+                        var codeToConfirm = _userManager.GenerateEmailConfirmationTokenAsync(user).GetAwaiter().GetResult();
+                        codeToConfirm = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(codeToConfirm));
 
-            //            codeToConfirm = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(codeToConfirm));
-            //            _userManager.ConfirmEmailAsync(user, codeToConfirm).GetAwaiter().GetResult();
+                        codeToConfirm = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(codeToConfirm));
+                        _userManager.ConfirmEmailAsync(user, codeToConfirm).GetAwaiter().GetResult();
 
-            //             _userManager.ConfirmEmailAsync(user, codeToConfirm).GetAwaiter().GetResult();
+                        _userManager.ConfirmEmailAsync(user, codeToConfirm).GetAwaiter().GetResult();
 
-            //            // Set Lockout Enabled to false
-            //            _userManager.SetLockoutEnabledAsync(user, false);
-            //        }
+                        // Set Lockout Enabled to false
+                        _userManager.SetLockoutEnabledAsync(user, false);
+                    }
 
-            //        var users = UserData.LoadUsers();
+                    var users = UserData.LoadUsers();
 
-            //        foreach (var (userr, role) in users)
-            //        {
-            //            var result2 = _userManager.CreateAsync(userr, "DefaultPassword123!").GetAwaiter().GetResult();
+                    foreach (var (userr, role) in users)
+                    {
+                        var result2 = _userManager.CreateAsync(userr, "DefaultPassword123!").GetAwaiter().GetResult();
 
-            //            if (result.Succeeded)
-            //            {
-            //                _userManager.AddToRoleAsync(userr, role).GetAwaiter().GetResult();
+                        if (result.Succeeded)
+                        {
+                            _userManager.AddToRoleAsync(userr, role).GetAwaiter().GetResult();
 
-            //                // Email Confirmed
-            //                var codeToConfirm = _userManager.GenerateEmailConfirmationTokenAsync(userr).GetAwaiter().GetResult();
-            //                codeToConfirm = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(codeToConfirm));
+                            // Email Confirmed
+                            var codeToConfirm = _userManager.GenerateEmailConfirmationTokenAsync(userr).GetAwaiter().GetResult();
+                            codeToConfirm = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(codeToConfirm));
 
-            //                codeToConfirm = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(codeToConfirm));
-            //                _userManager.ConfirmEmailAsync(userr, codeToConfirm).GetAwaiter().GetResult();
-            //            }
-            //        }
-            //    }
+                            codeToConfirm = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(codeToConfirm));
+                            _userManager.ConfirmEmailAsync(userr, codeToConfirm).GetAwaiter().GetResult();
+                        }
+                    }
+                }
 
-            
-                
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw new Exception($"Something got wrong while initializing the database: {ex.Message}");
-            //}
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Something got wrong while initializing the database: {ex.Message}");
+            }
         }
     }
 }

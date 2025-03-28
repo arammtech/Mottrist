@@ -162,7 +162,8 @@ namespace Mottrist.Service.Features.Traveller.Services
                 if (!commitResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
-                    return Result.Failure("Failed to complete the transaction");
+                    return Result.Failure("Failed to complete the transaction.");
+                    //return Result.Failure($"Failed to complete the transaction,\n Errors: {string.Join("\n", commitResult.Errors?.ToList())}");
                 }
 
                 if (newTraveler.Id <= 0) return Result.Failure("Failed to save the traveler to the database.");

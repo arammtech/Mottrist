@@ -60,6 +60,9 @@ namespace Mottrist.API.Controllers
            try {
                 var travelerDtos = await _travelerService.GetAllAsync();
 
+                if(travelerDtos?.DataRecordsCount == 0 && travelerDtos?.Data != null)
+                       return StatusCode(StatusCodes.Status204NoContent, travelerDtos);
+
                 return  travelerDtos != null ?
                         Ok(travelerDtos)
                        : StatusCode(StatusCodes.Status500InternalServerError, new { Error = "No data found." } );
