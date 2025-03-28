@@ -27,7 +27,7 @@ namespace Mottrist.API.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             if (id <= 0)
-                return BadRequest("Invalid Traveler Id.");
+                return BadRequest(new { Error = "Invalid Traveler Id." });
 
             try
             {
@@ -39,11 +39,11 @@ namespace Mottrist.API.Controllers
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(500, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" });
             }
         }
 
@@ -58,19 +58,19 @@ namespace Mottrist.API.Controllers
         public async Task<IActionResult> GetAll()
         {
            try {
-                var travelersDto = await _travelerService.GetAllAsync();
+                var travelerDtos = await _travelerService.GetAllAsync();
 
-                return  travelersDto != null ?
-                        Ok(travelersDto)
-                       : StatusCode(500, new { Error = "No data found." } );
+                return  travelerDtos != null ?
+                        Ok(travelerDtos)
+                       : StatusCode(StatusCodes.Status500InternalServerError, new { Error = "No data found." } );
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(500, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" });
             }
         }
 
@@ -88,23 +88,23 @@ namespace Mottrist.API.Controllers
         public async Task<IActionResult> GetAllWithPagination([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             if (page < 1 || pageSize < 1)
-                return BadRequest("Page and pageSize must be greater than zero.");
+                return BadRequest(new { Error = "Page and pageSize must be greater than zero." });
 
             try
             {
-                var travelersDto = await _travelerService.GetAllWithPaginationAsync(page, pageSize);
+                var travelerDtos = await _travelerService.GetAllWithPaginationAsync(page, pageSize);
 
-                return travelersDto != null ?
-                        Ok(travelersDto)
-                       : StatusCode(500, new { Error = "No data found." });
+                return travelerDtos != null ?
+                        Ok(travelerDtos)
+                       : StatusCode(StatusCodes.Status500InternalServerError, new { Error = "No data found." });
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(500, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" });
             }
         }
 
@@ -117,7 +117,7 @@ namespace Mottrist.API.Controllers
         /// including a location header on success or an error message on failure.
         /// </returns>
         [HttpPost]
-        public async Task<IActionResult> Create(AddUpdateTravelerDto travelerDto)
+        public async Task<IActionResult> Create(AddTravelerDto travelerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -126,27 +126,39 @@ namespace Mottrist.API.Controllers
                     .Select(e => e.ErrorMessage)
                     .ToList();
 
-                return BadRequest(new { Errors = errors });
+                return BadRequest(new {Message = "Validation error.", Errors = errors });
             }
 
             try
             {
                 if (travelerDto == null)
-                    return BadRequest("Traveler data is null.");
+                    return BadRequest(new { Error = "Traveler data is null." });
+
+                // to make sure for now
+                travelerDto.Id = 0;
 
                 var result = await _travelerService.AddAsync(travelerDto);
 
-                return result.IsSuccess ?
-                    CreatedAtAction(nameof(GetById), new { id = travelerDto.Id }, travelerDto) :
-                    StatusCode(500, new { Error = "Error creating traveler." });
+                if (result.IsSuccess)
+                    return CreatedAtAction(nameof(GetById), new { id = travelerDto.Id }, travelerDto);
+                else
+                {
+                    var errors = result.Errors?.ToList() ?? new List<string>();
+
+                    return StatusCode(StatusCodes.Status500InternalServerError, new
+                    {
+                        Message = "Error creating traveler.",
+                        Errors = errors
+                    });
+                }
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(500, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" });
             }
         }
 
@@ -160,7 +172,7 @@ namespace Mottrist.API.Controllers
         /// such as NoContent on success or an error message on failure.
         /// </returns>
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, AddUpdateTravelerDto travelerDto)
+        public async Task<IActionResult> Update(int id, UpdateTravelerDto travelerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -169,27 +181,40 @@ namespace Mottrist.API.Controllers
                     .Select(e => e.ErrorMessage)
                     .ToList();
 
-                return BadRequest(new { Errors = errors });
+                return BadRequest(new {Message = "Validation error.", Errors = errors });
             }
 
             try
             {
-                if (travelerDto == null || travelerDto.Id != id)
-                    return BadRequest("Traveler data is invalid.");
+                if (travelerDto.Id != id)
+                    return BadRequest(new { Error = $"Not allowed to change Traveler's Id value which is {id}" });
+
+                if (travelerDto == null)
+                    return BadRequest(new { Error = "Traveler data is invalid." });
 
                 var result = await _travelerService.UpdateAsync(travelerDto);
-                return result.IsSuccess ?
-                    NoContent() :
-                    StatusCode(500, new { Error = "Error updating traveler." });
+
+                if (result.IsSuccess)
+                    return Ok(travelerDto);
+                else
+                {
+                    var errors = result.Errors?.ToList() ?? new List<string>();
+
+                    return StatusCode(StatusCodes.Status500InternalServerError, new
+                    {
+                        Message = "Error updating traveler.",
+                        Errors = errors
+                    });
+                }
 
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(500, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" }); // Handle general exceptions
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" }); // Handle general exceptions
             }
         }
 
@@ -205,24 +230,34 @@ namespace Mottrist.API.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             if (id <= 0)
-                return BadRequest("Invalid Id.");
+                return BadRequest(new { Error = "Invalid Traveler Id." });
 
            try
             {
                 var result = await _travelerService.DeleteAsync(id);
-               
-                return result.IsSuccess ?
-                    NoContent() : 
-                    StatusCode(500, new { Error = "Error deleting traveler." });
+
+                if (result.IsSuccess)
+                    return NoContent();
+                else
+                {
+                    var errors = result.Errors?.ToList() ?? new List<string>();
+
+                    return StatusCode(StatusCodes.Status500InternalServerError, new
+                    {
+                        Message = "Error deleting traveler.",
+                        Errors = errors
+                    });
+                }
+             
 
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(500, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Error = $"Unexpected error: {ex.Message}" }); // Handle general exceptions
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" }); // Handle general exceptions
             }
         }
     }
