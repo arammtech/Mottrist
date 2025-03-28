@@ -32,6 +32,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.TravellersSchem
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.ToTable("Travellers", schema: "Travellers");
+
         }
     }
 }
