@@ -5,6 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Features\User\Inerfaces\**" />
+    <EmbeddedResource Remove="Features\User\Inerfaces\**" />
+    <None Remove="Features\User\Inerfaces\**" />
+  </ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="14.0.0" />
 		<PackageReference Include="MailKit" Version="4.10.0" />
@@ -16,9 +22,6 @@
 	  <ProjectReference Include="..\Mottrist.Domain\Mottrist.Domain.csproj" />
 	  <ProjectReference Include="..\Mottrist.Repository\Mottrist.Repository.csproj" />
 	  <ProjectReference Include="..\Mottrist.Utilities\Mottrist.Utilities.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Features\User\Inerfaces\" />
 	</ItemGroup>
 
 </Project>
