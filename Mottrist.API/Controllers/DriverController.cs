@@ -44,8 +44,6 @@ namespace Mottrist.API.Controllers
                 return Ok("File upload functionality has yet to be implemented.");
             }
 
-
-
             /// <summary>
             /// Retrieves a driver by the specified ID.
             /// </summary>
