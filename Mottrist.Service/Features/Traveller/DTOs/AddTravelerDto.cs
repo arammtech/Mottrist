@@ -51,9 +51,9 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         public string? PhoneNumber { get; set; }
 
         /// <summary>
-        /// Hashed password of the traveler. Optional but should follow security rules.
+        /// Hashed Password of the traveler. Optional but should follow security rules.
         /// </summary>
-        public string? PasswordHash { get; set; }
+        public string? Password { get; set; }
 
         /// <summary>
         /// Profile image URL. Example: https://example.com/image.jpg

@@ -133,8 +133,10 @@ namespace Mottrist.Service.Features.Traveller.Services
             try
             {
                 // Add user
-                ApplicationUser user = _mapper.Map<ApplicationUser>(travelerDto);
-                user.UserName = user.Email;
+                //ApplicationUser user = _mapper.Map<ApplicationUser>(travelerDto);
+                ApplicationUser user = new();
+
+                TravelerMapper.Map(travelerDto, user);
 
                 var addUserResult = await _userManager.CreateAsync(user);
 
@@ -209,6 +211,8 @@ namespace Mottrist.Service.Features.Traveller.Services
                 var existingUser = existingTraveler.User;
 
                 //_mapper.Map(travelerDto, existingUser);
+                TravelerMapper.Map(existingTraveler, existingUser);
+
                 existingUser.FirstName = travelerDto.FirstName;
                 existingUser.LastName = travelerDto.LastName;
                 existingUser.PhoneNumber = travelerDto.PhoneNumber;

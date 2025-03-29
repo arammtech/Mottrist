@@ -38,8 +38,10 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             applicationUser.FirstName = addTravelerDto.FirstName;
             applicationUser.LastName = addTravelerDto.LastName;
             applicationUser.Email = addTravelerDto.Email;
+            applicationUser.UserName = addTravelerDto.Email;
             applicationUser.PhoneNumber = addTravelerDto.PhoneNumber;
-            applicationUser.PasswordHash = addTravelerDto.PasswordHash;
+            applicationUser.PasswordHash = addTravelerDto.Password;
+
         }
 
         // Map properties from ApplicationUser to AddTravelerDto.
@@ -49,7 +51,23 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             addTravelerDto.LastName = applicationUser.LastName;
             addTravelerDto.Email = applicationUser.Email;
             addTravelerDto.PhoneNumber = applicationUser.PhoneNumber;
-            addTravelerDto.PasswordHash = applicationUser.PasswordHash;
+            addTravelerDto.Password = applicationUser.PasswordHash;
+        }
+
+        // Map properties from UpdateTravelerDto to ApplicationUser.
+        public static void Map(UpdateTravelerDto updateTravelerDto, ApplicationUser applicationUser)
+        {
+            applicationUser.FirstName = updateTravelerDto.FirstName;
+            applicationUser.LastName = updateTravelerDto.LastName;
+            applicationUser.PhoneNumber = updateTravelerDto.PhoneNumber;
+        }
+
+        // Map properties from ApplicationUser to UpdateTravelerDto.
+        public static void Map(ApplicationUser applicationUser, UpdateTravelerDto updateTravelerDto)
+        {
+            updateTravelerDto.FirstName = applicationUser.FirstName;
+            updateTravelerDto.LastName = applicationUser.LastName;
+            updateTravelerDto.PhoneNumber = applicationUser.PhoneNumber;
         }
     }
 }
