@@ -23,7 +23,7 @@ namespace Mottrist.API.Controllers
         /// An <see cref="IActionResult"/> containing the traveler data if found,
         /// or an error message if not found or in case of an exception.
         /// </returns>
-        [HttpGet("{id:int}",Name = "GetById")]
+        [HttpGet("{id:int}",Name = "GetByIdAsync")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             if (id <= 0)
@@ -138,13 +138,11 @@ namespace Mottrist.API.Controllers
                 if (travelerDto == null)
                     return BadRequest(new { Error = "Traveler data is null." });
 
-                // to make sure for now
-                travelerDto.Id = 0;
                 
                 var result = await _travelerService.AddAsync(travelerDto);
 
                 if (result.IsSuccess)
-                    return CreatedAtAction(nameof(GetById), new { id = travelerDto.Id }, travelerDto);
+                    return CreatedAtRoute("GetByIdAsync", new { id = travelerDto.Id }, travelerDto);
                 else
                 {
                     var errors = result.Errors?.ToList() ?? new List<string>();
@@ -241,7 +239,7 @@ namespace Mottrist.API.Controllers
                 var result = await _travelerService.DeleteAsync(id);
 
                 if (result.IsSuccess)
-                    return NoContent();
+                    return StatusCode(StatusCodes.Status204NoContent ,new { Message="Traveler record deleted successfully"});
                 else
                 {
                     var errors = result.Errors?.ToList() ?? new List<string>();

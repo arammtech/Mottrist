@@ -69,10 +69,12 @@ namespace Mottrist.Service.Features.Traveller.Services
                            .Include(t => t.Country)
                            .AsQueryable();
 
+                var totalRecordsCount = travelerQuery.Count();
+
                 if (filter != null)
                     travelerQuery = travelerQuery.Where(filter);
 
-                var totalRecordsCount = travelerQuery.Count();
+                var dataRecordsCount= travelerQuery.Count();
 
                 // Apply pagination
                 var paginatedCars = await travelerQuery
@@ -88,6 +90,7 @@ namespace Mottrist.Service.Features.Traveller.Services
                     Data = travelersDto,
                     PageNumber= page,
                     PageSize = pageSize,
+                    DataRecordsCount= dataRecordsCount,
                     TotalRecordsCount = totalRecordsCount
                 };
 
