@@ -155,17 +155,17 @@ namespace Mottrist.Service.Features.Cars.Services
             try
             {
                 var car = _mapper.Map<Car>(carDto);
+                car.Id = 0;
                 await _unitOfWork.Repository<Car>().AddAsync(car);
 
-                if (car.Id <= 0)
+                var saveResult = await _unitOfWork.SaveChangesAsync();
+
+                if (car.Id <= 0  | !saveResult.IsSuccess)
                     return Result.Failure("Failed to save the car to the database.");
 
                 carDto.Id = car.Id;
 
-                var saveResult = await _unitOfWork.SaveChangesAsync();
-                return saveResult.IsSuccess
-                    ? Result.Success()
-                    : Result.Failure("Failed to save the car to the database.");
+                return Result.Success();
             }
             catch (Exception ex)
             {
@@ -275,19 +275,18 @@ namespace Mottrist.Service.Features.Cars.Services
                 return null;
             }
         }
-
         /// <summary>
-        /// Adds a new image to a car.
+        /// Adds or updates the main car image based on the provided details.
         /// </summary>
-        /// <param name="carImageDto">The data transfer object representing the new car image.</param>
+        /// <param name="carImageDto">The DTO containing car image details.</param>
         /// <returns>
-        /// A <see cref="Result"/> indicating whether the operation was successful or not.
+        /// A <see cref="Result"/> indicating the success or failure of the operation.
         /// </returns>
         public async Task<Result> AddCarImageAsync(CarImageDto carImageDto)
         {
             if (carImageDto == null)
             {
-                return Result.Failure("Invalid Cant Object Be Null.");
+                return Result.Failure("Invalid: Car image object cannot be null.");
             }
 
             if (carImageDto.CarId <= 0)
@@ -297,19 +296,44 @@ namespace Mottrist.Service.Features.Cars.Services
 
             try
             {
-                var carImage = _mapper.Map<CarImage>(carImageDto);
-                await _unitOfWork.Repository<CarImage>().AddAsync(carImage);
+                // Check if there is an existing main car image for the specified CarId
+                var existingCarImage = await _unitOfWork.Repository<CarImage>().GetAsync(
+                    ci => ci.CarId == carImageDto.CarId && ci.IsMain);
 
+                if (existingCarImage != null)
+                {
+                    // Update the existing car image URL
+                    existingCarImage.ImageUrl = carImageDto.ImageUrl;
+                    _unitOfWork.Repository<CarImage>().Update(existingCarImage);
+                }
+                else
+                {
+                    // Create a new car image entity if none exists
+                    var carImageEntity = new CarImage
+                    {
+                        CarId = carImageDto.CarId,
+                        ImageUrl = carImageDto.ImageUrl,
+                        IsMain = true
+                    };
+                    await _unitOfWork.Repository<CarImage>().AddAsync(carImageEntity);
+                }
+
+                // Save changes to the database
                 var saveResult = await _unitOfWork.SaveChangesAsync();
-                return saveResult.IsSuccess
-                    ? Result.Success()
-                    : Result.Failure("Failed to save the car image.");
+                if (!saveResult.IsSuccess)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return Result.Failure("Failed to update or create the car image.");
+                }
+
+                return Result.Success();
             }
             catch (Exception ex)
             {
-                return Result.Failure($"Error adding car image: {ex.Message}");
+                return Result.Failure($"Error adding or updating car image: {ex.Message}");
             }
         }
+
 
 
         /// <summary>

@@ -64,7 +64,7 @@ namespace Mottrist.Repository.DbInitializer
                         // Set Lockout Enabled to false
                         _userManager.SetLockoutEnabledAsync(user, false);
                     }
-
+                   // LoadDriversData(); 
                 }
             }
             catch (Exception ex)

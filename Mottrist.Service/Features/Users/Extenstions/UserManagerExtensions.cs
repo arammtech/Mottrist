@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Mottrist.Domain.Global;
 using Mottrist.Domain.Identity;
 using Mottrist.Repository.EntityFrameworkCore.Context;
-using Mottrist.Service.Features.User.DTOs;
+using Mottrist.Service.Features.Users.DTOs;
 using Mottrist.Utilities.Identity;
 using System.Linq.Expressions;
 
-namespace Mottrist.Service.Features.User.Extenstions
+namespace Mottrist.Service.Features.Users.Extenstions
 {
     public static class UserManagerExtensions
     {

@@ -13,7 +13,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
             builder.Property(d => d.WhatsAppNumber)
                 .HasMaxLength(20);
 
-            builder.Property(d => d.NationailtyId)
+            builder.Property(d => d.NationalityId)
                 .IsRequired();
 
             builder.Property(d => d.UserId)
@@ -38,7 +38,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
             // Relation with Country
             builder.HasOne(d => d.Country)
                 .WithMany(x => x.Drivers)
-                .HasForeignKey(d => d.NationailtyId)
+                .HasForeignKey(d => d.NationalityId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 

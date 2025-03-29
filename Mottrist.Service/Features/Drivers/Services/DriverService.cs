@@ -12,20 +12,56 @@ using Mottrist.Domain.LookupEntities;
 using Microsoft.EntityFrameworkCore;
 using Mottrist.Service.Features.General;
 using System.Linq.Expressions;
-
+using Mottrist.Service.Features.General.DTOs;
+using Mottrist.Service.Features.Traveller.DTOs;
+using Mottrist.Service.Features.Cars.Interfaces;
+using Feature.Car.DTOs;
+using static Mottrist.Service.Features.Drivers.Helpers.UserHelper;
 namespace Mottrist.Service.Features.Drivers.Services
 {
-    public class DriverService :BaseService ,IDriverService
+    /// <summary>
+    /// Provides services for managing driver-related operations, including user management,
+    /// car details handling, and database transactions.
+    /// </summary>
+    public class DriverService : BaseService, IDriverService
     {
+        /// <summary>
+        /// Unit of work for managing database transactions and repositories.
+        /// </summary>
         private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>
+        /// Mapper for handling object-to-object mapping.
+        /// </summary>
         private readonly IMapper _mapper;
+
+        /// <summary>
+        /// Service for managing car-related operations.
+        /// </summary>
+        private readonly ICarService _carService;
+
+        /// <summary>
+        /// User manager for handling user-related operations, such as creating and updating users.
+        /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public DriverService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager) : base(unitOfWork)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DriverService"/> class.
+        /// </summary>
+        /// <param name="unitOfWork">The unit of work instance for managing database interactions.</param>
+        /// <param name="mapper">The mapper instance for object mapping.</param>
+        /// <param name="carService">The service for managing car operations.</param>
+        /// <param name="userManager">The user manager for handling user-related operations.</param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if any of the injected dependencies are null.
+        /// </exception>
+        public DriverService(IUnitOfWork unitOfWork, IMapper mapper, ICarService carService, UserManager<ApplicationUser> userManager)
+            : base(unitOfWork)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _carService = carService ?? throw new ArgumentNullException(nameof(carService));
         }
 
         /// <summary>
@@ -37,7 +73,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// - A set of <see cref="DriverDto"/> objects representing the drivers with their details, or
         /// - Null if an exception occurs or if no matching drivers are found.
         /// </returns>
-        public async Task<ISet<DriverDto>?> GetAllAsync(Expression<Func<DriverDto, bool>>? filter = null)
+        public async Task<DataResult<DriverDto>?> GetAllAsync(Expression<Func<DriverDto, bool>>? filter = null)
         {
             try
             {
@@ -46,7 +82,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                                   join user in _unitOfWork.Repository<ApplicationUser>().Table
                                   on driver.UserId equals user.Id
                                   join country in _unitOfWork.Repository<Country>().Table
-                                  on driver.NationailtyId equals country.Id into countryGroup
+                                  on driver.NationalityId equals country.Id into countryGroup
                                   from countryDetails in countryGroup.DefaultIfEmpty()
                                   join car in _unitOfWork.Repository<Car>().Table
                                   on driver.CarId equals car.Id into carGroup
@@ -55,14 +91,14 @@ namespace Mottrist.Service.Features.Drivers.Services
                                   {
                                       Id = driver.Id,
                                       WhatsAppNumber = driver.WhatsAppNumber,
-                                      Nationailty = countryDetails.Name ?? "Unknown",
+                                      Nationality = countryDetails.Name ?? "Unknown",
                                       LicenseImageUrl = driver.LicenseImageUrl,
                                       YearsOfExperience = driver.YearsOfExperience,
                                       Bio = driver.Bio,
                                       PassportImageUrl = driver.PassportImageUrl,
                                       FirstName = user.FirstName,
                                       LastName = user.LastName,
-                                      Email = user.Email,
+                                      Email = user.Email ?? string.Empty,
                                       PhoneNumber = user.PhoneNumber,
                                       ProfileImageUrl = driver.ProfileImageUrl,
                                       HasCar = driver.CarId != null,
@@ -81,9 +117,19 @@ namespace Mottrist.Service.Features.Drivers.Services
                 {
                     driverQuery = driverQuery.Where(filter);
                 }
+                var drivers = await driverQuery.ToListAsync();
+
+                DataResult<DriverDto> driversResult = new()
+                {
+                    Data = _mapper.Map<IEnumerable<DriverDto>>(drivers)
+                };
+
+                if (!drivers.Any())
+                    driversResult.Data = Enumerable.Empty<DriverDto>();
+
 
                 // Execute the query and return the result as a set
-                return await driverQuery.ToHashSetAsync();
+                return driversResult;
             }
             catch (Exception)
             {
@@ -112,7 +158,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                     join user in _unitOfWork.Repository<ApplicationUser>().Table
                         on driver.UserId equals user.Id
                     join country in _unitOfWork.Repository<Country>().Table
-                        on driver.NationailtyId equals country.Id into countryGroup
+                        on driver.NationalityId equals country.Id into countryGroup
                     from countryDetails in countryGroup.DefaultIfEmpty()
                     join car in _unitOfWork.Repository<Car>().Table
                         on driver.CarId equals car.Id into carGroup
@@ -122,14 +168,14 @@ namespace Mottrist.Service.Features.Drivers.Services
                     {
                         Id = driver.Id,
                         WhatsAppNumber = driver.WhatsAppNumber,
-                        Nationailty = countryDetails.Name ?? "Unknown",
+                        Nationality = countryDetails.Name ?? "Unknown",
                         LicenseImageUrl = driver.LicenseImageUrl,
                         YearsOfExperience = driver.YearsOfExperience,
                         Bio = driver.Bio,
                         PassportImageUrl = driver.PassportImageUrl,
                         FirstName = user.FirstName,
                         LastName = user.LastName,
-                        Email = user.Email,
+                        Email = user.Email ?? string.Empty ,
                         PhoneNumber = user.PhoneNumber,
                         ProfileImageUrl = driver.ProfileImageUrl,
                         HasCar = driver.CarId.HasValue,
@@ -159,151 +205,135 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <returns>
         /// A <see cref="Result"/> object indicating the success or failure of the operation.
         /// </returns>
-        public async Task<Result> AddAsync(AddUpdateDriverDto driverDto)
+        public async Task<Result> AddAsync(AddDriverDto driverDto)
         {
-            Result result = new Result();
-
             // Start a transaction
             var transaction = await _unitOfWork.StartTransactionAsync();
             if (!transaction.IsSuccess)
             {
-                return Result.Failure("Failed to start the transaction.");
+                return Result.Failure("Failed to start the transaction.", true);
             }
 
             try
             {
-                // Step 1: Map and create the user
-                var user = _mapper.Map<ApplicationUser>(driverDto);
-                user.UserName = driverDto.Email;
-                var addUserResult = await _userManager.CreateAsync(user);
-
-                if (!addUserResult.Succeeded)
+                // Step 1: Create user
+               var user = _mapper.Map<ApplicationUser>(driverDto);
+                var userResult = await AddUserAsync(_userManager,driverDto,user);
+                if (!userResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
-
-                    if(addUserResult?.Errors != null)
-                    {
-                    
-                        foreach (var error in addUserResult.Errors)
-                        {
-                            result.AddError(error.Description);
-                        }
-
-                        return result;
-                    }
-
-                    return Result.Failure("Failed to with database when add user.");
+                    return userResult;
                 }
 
-                // Step 2: Assign the 'Driver' role to the user
-                var roleResult = await _userManager.AddToRoleAsync(user, AppUserRoles.RoleDriver);
-                if (!roleResult.Succeeded)
+                // Step 2: Assign role
+                var roleResult = await AssignUserRoleAsync(_userManager,user, AppUserRoles.RoleDriver);
+                if (!roleResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
+                    return roleResult;
+                }
 
-                    if (roleResult?.Errors != null)
-                    {
-
-                        foreach (var error in addUserResult.Errors)
-                        {
-                            result.AddError(error.Description);
-                        }
-
-                        return result;
-                    }
-                    
-                    return Result.Failure("Failed to assign the driver role to the user.");
-                } 
-
-                // Step 3: Map and create the driver entity
+                // Step 3: Create driver entity
                 var driverEntity = _mapper.Map<Driver>(driverDto);
-                driverEntity.UserId = user.Id; // Link the user to the driver
+                driverEntity.UserId = user.Id;
 
-                // Check if the driver has a car
+                // Step 4: Add car using CarService if applicable
                 if (driverDto.HasCar)
                 {
-                    // Map and create the car entity
-                    var carEntity = _mapper.Map<Car>(driverDto);
-
-                    await _unitOfWork.Repository<Car>().AddAsync(carEntity);
-                    var carSaveResult = await _unitOfWork.SaveChangesAsync();
-                    if (!carSaveResult.IsSuccess)
+                    var carResult = await AddCarWithCarServiceAsync(driverDto, driverEntity);
+                    if (!carResult.IsSuccess)
                     {
                         await _unitOfWork.RollbackAsync();
-                        return Result.Failure("Failed to save the car.");
+                        return carResult;
                     }
-
-                    // Handle the car image creation if applicable
-                    if (!string.IsNullOrEmpty(driverDto.CarImageUrl))
-                    {
-                        var carImageEntity = new CarImage
-                        {
-                            CarId = carEntity.Id,
-                            ImageUrl = driverDto.CarImageUrl,
-                            IsMain = true
-                        };
-
-                        await _unitOfWork.Repository<CarImage>().AddAsync(carImageEntity);
-                        var carImageSaveResult = await _unitOfWork.SaveChangesAsync();
-                        if (!carImageSaveResult.IsSuccess)
-                        {
-                            await _unitOfWork.RollbackAsync();
-                            return Result.Failure("Failed to save the car image.");
-                        }
-                    }
-
-                    // Link the car to the driver
-                    driverEntity.CarId = carEntity.Id;
                 }
 
-                // Step 4: Add the driver entity to the database
+                // Step 5: Save driver entity
+                driverEntity.Id = 0;
                 await _unitOfWork.Repository<Driver>().AddAsync(driverEntity);
                 var driverSaveResult = await _unitOfWork.SaveChangesAsync();
                 if (!driverSaveResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
-                    return Result.Failure("Failed to save the driver.");
+                    return Result.Failure("Failed to save the driver.", true);
                 }
 
-                // Commit the transaction
+                // Commit transaction and update DTO with generated ID
                 await _unitOfWork.CommitAsync();
-
-                // Confirm the driver was saved and update the DTO with the generated ID
-                if (driverEntity.Id <= 0)
-                {
-                    return Result.Failure("Driver ID was not generated successfully.");
-                }
                 driverDto.Id = driverEntity.Id;
-
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                // Rollback transaction on error
                 await _unitOfWork.RollbackAsync();
-                return Result.Failure($"Error adding driver: {ex.Message}",true);
+                return Result.Failure($"Error adding driver: {ex.Message}", true);
             }
         }
 
+
+
+
         /// <summary>
-        /// Updates an existing driver in the system, including associated car details if applicable.
+        /// Adds a car to the system using CarService, along with its image if provided.
+        /// </summary>
+        /// <param name="driverDto">The driver DTO containing car details.</param>
+        /// <param name="driverEntity">The driver entity to link the car to.</param>
+        /// <returns>A <see cref="Result"/> indicating success or failure.</returns>
+        private async Task<Result> AddCarWithCarServiceAsync(AddDriverDto driverDto, Driver driverEntity)
+        {
+            // Map car details to a CarDto
+            var carDto = _mapper.Map<CarDto>(driverDto);
+
+            // Add the car using the CarService
+            var carAddResult = await _carService.AddAsync(carDto);
+            if (!carAddResult.IsSuccess)
+            {
+                return Result.Failure("Failed to add the car details.", true);
+            }
+
+            // Update the driver's CarId with the newly created car's ID
+            driverEntity.CarId = carDto.Id;
+
+            // Handle car image creation using CarService
+            if (!string.IsNullOrEmpty(driverDto.CarImageUrl))
+            {
+                var carImageDto = new CarImageDto
+                {
+                    CarId = carDto.Id,
+                    ImageUrl = driverDto.CarImageUrl,
+                    IsMain = true
+                };
+
+                var carImageResult = await _carService.AddCarImageAsync(carImageDto);
+                if (!carImageResult.IsSuccess)
+                {
+                    return Result.Failure("Failed to add the car image.", true);
+                }
+            }
+
+            return Result.Success();
+        }
+
+
+        /// <summary>
+        /// Updates an existing driver in the system, including associated user and car details if applicable.
         /// </summary>
         /// <param name="driverDto">The DTO containing updated driver and car details.</param>
         /// <returns>
         /// A <see cref="Result"/> object indicating the success or failure of the update operation.
         /// </returns>
-        public async Task<Result> UpdateAsync(AddUpdateDriverDto driverDto)
+        public async Task<Result> UpdateAsync(UpdateDriverDto driverDto)
         {
             // Start a transaction
-            var transaction = await _unitOfWork.StartTransactionAsync();
-            if (!transaction.IsSuccess)
+            var transactionResult = await _unitOfWork.StartTransactionAsync();
+            if (!transactionResult.IsSuccess)
             {
-                return Result.Failure("Failed to start the transaction.");
+                return Result.Failure("Failed to start the transaction.", true);
             }
 
             try
             {
-                // Fetch the existing driver
+                // Step 1: Fetch and validate the existing driver
                 var existingDriver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverDto.Id);
                 if (existingDriver == null)
                 {
@@ -311,80 +341,25 @@ namespace Mottrist.Service.Features.Drivers.Services
                     return Result.Failure("Driver not found.");
                 }
 
-                // Update driver entity with new details
+                // Update driver details
                 _mapper.Map(driverDto, existingDriver);
 
-                // Step 1: Update associated user details
-                var existingUser = await _userManager.FindByIdAsync(existingDriver.UserId.ToString());
-                if (existingUser == null)
+                // Step 2: Update associated user details
+                var userUpdateResult = await UpdateUserDetailsAsync(driverDto, existingDriver.UserId);
+                if (!userUpdateResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
-                    return Result.Failure("Associated user not found.");
+                    return userUpdateResult; // Error handling is done in the helper method
                 }
 
-                _mapper.Map(driverDto, existingUser); // Map updated user details
-                var userUpdateResult = await _userManager.UpdateAsync(existingUser);
-                if (!userUpdateResult.Succeeded)
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return Result.Failure("Failed to update user details.");
-                }
-
-                // Step 2: Check and update car details if applicable
+                // Step 3: Update car details if applicable
                 if (driverDto.HasCar)
                 {
-                    var carEntity = _mapper.Map<Car>(driverDto);
-
-                    if (existingDriver.CarId.HasValue)
-                    {
-                        // Update existing car
-                        var existingCar = await _unitOfWork.Repository<Car>().GetAsync(c => c.Id == existingDriver.CarId);
-                        if (existingCar != null)
-                        {
-                            _mapper.Map(driverDto, existingCar);
-                            _unitOfWork.Repository<Car>().Update(existingCar);
-                        }
-                    }
-                    else
-                    {
-                        // Create a new car and link it to the driver
-                        await _unitOfWork.Repository<Car>().AddAsync(carEntity);
-                        existingDriver.CarId = carEntity.Id;
-                    }
-
-                    var carSaveResult = await _unitOfWork.SaveChangesAsync();
-                    if (!carSaveResult.IsSuccess)
+                    var carUpdateResult = await UpdateOrAddCarDetailsAsync(driverDto, existingDriver);
+                    if (!carUpdateResult.IsSuccess)
                     {
                         await _unitOfWork.RollbackAsync();
-                        return Result.Failure("Failed to update or create car details.");
-                    }
-
-                    // Step 3: Handle car image updates
-                    if (!string.IsNullOrEmpty(driverDto.CarImageUrl))
-                    {
-                        var existingCarImage = await _unitOfWork.Repository<CarImage>().GetAsync(ci => ci.CarId == carEntity.Id && ci.IsMain);
-                        if (existingCarImage != null)
-                        {
-                            existingCarImage.ImageUrl = driverDto.CarImageUrl;
-                            _unitOfWork.Repository<CarImage>().Update(existingCarImage);
-                        }
-                        else
-                        {
-                            var carImageEntity = new CarImage
-                            {
-                                CarId = carEntity.Id,
-                                ImageUrl = driverDto.CarImageUrl,
-                                IsMain = true
-                            };
-                            await _unitOfWork.Repository<CarImage>().AddAsync(carImageEntity);
-                        }
-
-                        var carImageSaveResult = await _unitOfWork.SaveChangesAsync();
-                        if (!carImageSaveResult.IsSuccess)
-                        {
-                            await _unitOfWork.RollbackAsync();
-                            return Result.Failure("Failed to update or create car image.");
-                        }
+                        return carUpdateResult; // Error handling is done in the helper method
                     }
                 }
 
@@ -398,15 +373,96 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
 
                 // Commit the transaction
-                return await _unitOfWork.CommitAsync();
+                var commitResult = await _unitOfWork.CommitAsync();
+                if (!commitResult.IsSuccess)
+                {
+                    return Result.Failure("Failed to commit the transaction.");
+                }
+
+                return Result.Success();
             }
             catch (Exception ex)
             {
-                // Rollback transaction on error
                 await _unitOfWork.RollbackAsync();
-                return Result.Failure($"Error updating driver: {ex.Message}");
+                return Result.Failure($"Error updating driver: {ex.Message}", true);
             }
         }
+
+        /// <summary>
+        /// Updates the associated user details of the driver.
+        /// </summary>
+        /// <param name="driverDto">The driver DTO with updated details.</param>
+        /// <param name="userId">The ID of the associated user to update.</param>
+        /// <returns>A <see cref="Result"/> indicating the outcome of the operation.</returns>
+        private async Task<Result> UpdateUserDetailsAsync(UpdateDriverDto driverDto, int userId)
+        {
+            var existingUser = await _userManager.FindByIdAsync(userId.ToString());
+            if (existingUser == null)
+            {
+                return Result.Failure("Associated user not found.");
+            }
+
+            _mapper.Map(driverDto, existingUser);
+            
+            var userUpdateResult = await _userManager.UpdateAsync(existingUser);
+            if (!userUpdateResult.Succeeded)
+            {
+                return Result.Failure("Failed to update user details.", true);
+            }
+
+            return Result.Success();
+        }
+
+        /// <summary>
+        /// Updates or adds car details for the driver.
+        /// </summary>
+        /// <param name="driverDto">The driver DTO with updated car details.</param>
+        /// <param name="existingDriver">The existing driver entity.</param>
+        /// <returns>A <see cref="Result"/> indicating the outcome of the operation.</returns>
+        private async Task<Result> UpdateOrAddCarDetailsAsync(UpdateDriverDto driverDto, Driver existingDriver)
+        {
+            var carDto = _mapper.Map<CarDto>(driverDto);
+
+            if (existingDriver.CarId.HasValue)
+            {
+                // Update existing car
+                carDto.Id = existingDriver.CarId.Value;
+                var carUpdateResult = await _carService.UpdateAsync(carDto);
+                if (!carUpdateResult.IsSuccess)
+                {
+                    return Result.Failure("Failed to update car details.");
+                }
+            }
+            else
+            {
+                // Create a new car and link it to the driver
+                var carAddResult = await _carService.AddAsync(carDto);
+                if (!carAddResult.IsSuccess)
+                {
+                    return Result.Failure("Failed to add car details.");
+                }
+                existingDriver.CarId = carDto.Id;
+            }
+
+            // Handle car image updates
+            if (!string.IsNullOrEmpty(driverDto.CarImageUrl))
+            {
+                var carImageResult = await _carService.AddCarImageAsync(new CarImageDto
+                {
+                    CarId = existingDriver.CarId.Value,
+                    ImageUrl = driverDto.CarImageUrl,
+                    IsMain = true
+                });
+
+                if (!carImageResult.IsSuccess)
+                {
+                    return Result.Failure("Failed to update car image.");
+                }
+            }
+
+            return Result.Success();
+        }
+
 
         /// <summary>
         /// Deletes a driver by their ID, along with associated car details (if applicable).
@@ -458,14 +514,6 @@ namespace Mottrist.Service.Features.Drivers.Services
                     }
                 }
 
-                // Step 2: Delete the driver and the associated user
-                var userDeletionResult = await _userManager.DeleteAsync(await _userManager.FindByIdAsync(driver.UserId.ToString()));
-                if (!userDeletionResult.Succeeded)
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return Result.Failure("Failed to delete associated user.");
-                }
-
                 // Delete the driver
                 _unitOfWork.Repository<Driver>().Delete(driver);
                 var driverSaveResult = await _unitOfWork.SaveChangesAsync();
@@ -475,7 +523,17 @@ namespace Mottrist.Service.Features.Drivers.Services
                     return Result.Failure("Failed to delete the driver.");
                 }
 
-                return await _unitOfWork.CommitAsync();
+                // Step 2: Delete the driver and the associated user
+                var userDeletionResult = await _userManager.DeleteAsync(await _userManager.FindByIdAsync(driver.UserId.ToString()));
+                if (!userDeletionResult.Succeeded)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return Result.Failure("Failed to delete associated user.");
+                }
+
+                await _unitOfWork.CommitAsync();
+
+                return Result.Success();
             }
             catch (Exception ex)
             {
@@ -485,6 +543,43 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
         }
 
+        /// <summary>
+        /// Checks whether a driver exists in the database by their unique identifier.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// Optional. A token to monitor for cancellation requests.
+        /// </param>
+        /// <returns>
+        /// Returns <c>true</c> if the driver exists; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// Thrown if <paramref name="driverId"/> is less than or equal to 0.
+        /// </exception>
+        /// <remarks>
+        /// This method queries the database asynchronously to determine the existence of the driver.
+        /// </remarks>
+        public async Task<bool> DoesDriverExistByIdAsync(int driverId, CancellationToken cancellationToken = default)
+        {
+            if (driverId <= 0)
+            {
+                return false;
+            }
+
+            try
+            {
+                return await _unitOfWork.Repository<Driver>()
+                                        .Table
+                                        .AnyAsync(x => x.Id == driverId, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
 
 
     }
