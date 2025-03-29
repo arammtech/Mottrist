@@ -1,6 +1,6 @@
 ﻿using Mottrist.Domain.Identity;
 using System.ComponentModel.DataAnnotations;
-namespace Mottrist.Service.Features.User.DTOs
+namespace Mottrist.Service.Features.Users.DTOs
 {
     public class ChangeUserRoleDto
     {

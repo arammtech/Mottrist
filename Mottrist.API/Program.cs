@@ -11,16 +11,16 @@ using Mottrist.Repository.DbInitializer;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 using Mottrist.Repository.Repository;
 using Mottrist.Repository.UnitOfWork;
+using Mottrist.Service.Features.Cars.Interfaces;
+using Mottrist.Service.Features.Cars.Services;
 using Mottrist.Service.Features.Drivers.Interfaces;
 using Mottrist.Service.Features.Drivers.Mappers;
 using Mottrist.Service.Features.Drivers.Services;
 using Mottrist.Service.Features.General.Mapper.Profiles;
-using Mottrist.Service.Features.Traveller.DTOs;
 using Mottrist.Service.Features.Traveller.Interfaces;
 using Mottrist.Service.Features.Traveller.Mappers;
 using Mottrist.Service.Features.Traveller.Services;
 using Mottrist.Service.Features.Traveller.Validators;
-using Mottrist.Service.Features.User;
 using Mottrist.Utilities.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -67,6 +67,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ITravelerService, TravelerService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
+builder.Services.AddScoped<ICarService, CarService>();
+
 #endregion
 
 var app = builder.Build();

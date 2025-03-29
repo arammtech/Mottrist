@@ -2,6 +2,7 @@
 using Mottrist.Domain.Global;
 using Mottrist.Service.Features.Drivers.DTOs;
 using Mottrist.Service.Features.General;
+using Mottrist.Service.Features.General.DTOs;
 using System.Linq.Expressions;
 
 
@@ -9,11 +10,13 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
 {
     public interface IDriverService : IBaseService
     {
-        Task<ISet<DriverDto>?> GetAllAsync(Expression<Func<DriverDto, bool>>? filter = null);
+        Task<DataResult<DriverDto>?> GetAllAsync(Expression<Func<DriverDto, bool>>? filter = null);
         Task<DriverDto?> GetByIdAsync(int driverId);
-        Task<Result> AddAsync(AddUpdateDriverDto driverDto);
+        Task<Result> AddAsync(AddDriverDto driverDto);
 
         Task<Result> DeleteAsync(int driverId);
-        Task<Result> UpdateAsync(AddUpdateDriverDto driverDto);
+        Task<Result> UpdateAsync(UpdateDriverDto driverDto);
+
+        Task<bool> DoesDriverExistByIdAsync(int driverId, CancellationToken cancellationToken = default);
     }
 }

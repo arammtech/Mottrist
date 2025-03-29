@@ -1,7 +1,7 @@
 ﻿using Mottrist.Domain.Global;
-using Mottrist.Service.Features.User.DTOs;
+using Mottrist.Service.Features.Users.DTOs;
 
-namespace Mottrist.Service.Features.User
+namespace Mottrist.Service.Features.Users
 {
     public static class UserValidation
     {

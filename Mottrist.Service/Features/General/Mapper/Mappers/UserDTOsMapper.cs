@@ -1,6 +1,6 @@
 ﻿using Mottrist.Domain.Identity;
-using Mottrist.Service.Features.User.DTOs;
-using static Mottrist.Service.Features.User.UserGenerate;
+using Mottrist.Service.Features.Users.DTOs;
+using static Mottrist.Service.Features.Users.UserGenerate;
 
 namespace Mottrist.Service.Features.General.Mapper.Mappers
 {

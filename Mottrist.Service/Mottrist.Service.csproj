@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Features\User\Inerfaces\**" />
-    <EmbeddedResource Remove="Features\User\Inerfaces\**" />
-    <None Remove="Features\User\Inerfaces\**" />
+    <Compile Remove="Features\Users\Inerfaces\**" />
+    <EmbeddedResource Remove="Features\Users\Inerfaces\**" />
+    <None Remove="Features\Users\Inerfaces\**" />
   </ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="14.0.0" />

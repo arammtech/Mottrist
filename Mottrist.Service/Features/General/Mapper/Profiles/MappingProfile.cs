@@ -4,7 +4,7 @@ using Mottrist.Domain.Entities;
 using Mottrist.Domain.Entities.CarDetails;
 using Mottrist.Domain.Identity;
 using Mottrist.Service.Features.Traveller.DTOs;
-using Mottrist.Service.Features.User.DTOs;
+using Mottrist.Service.Features.Users.DTOs;
 
 namespace Mottrist.Service.Features.General.Mapper.Profiles
 {
