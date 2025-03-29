@@ -7,21 +7,28 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 using Mottrist.Service.Features.Drivers.DTOs;
 using Mottrist.Service.Features.Drivers.Interfaces;
 
-namespace Mottrist.Repository.SeedData
+namespace Mottrist.Service.SeedData
 {
-    public class SeedDb
+    public class SeedDb : ISeedDb
     {
-      
+
+        private readonly AppDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IDriverService _driverService;
-        public SeedDb(IDriverService driverService)
+        public SeedDb
+        (AppDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IDriverService driverService)
         {
+            _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
             _driverService = driverService;
         }
 
         /// <summary>
         /// Loads realistic drivers data into the system by adding 20 drivers.
         /// </summary>
-        public async Task LoadDriversData()
+        public  void LoadDriversData()
         {
             // Define a list of realistic driver data
             var drivers = new List<AddDriverDto>
@@ -185,8 +192,17 @@ namespace Mottrist.Repository.SeedData
             // Loop through the list and add each driver using the DriverService
             foreach (var driverDto in drivers)
             {
-                var result = await _driverService.AddAsync(driverDto);
+                var result = _driverService.AddAsync(driverDto).GetAwaiter();
 
+            }
+        }
+
+
+        public void LoadData()
+        {
+            if(_context.Drivers.Any())
+            {
+                LoadDriversData();
             }
         }
 

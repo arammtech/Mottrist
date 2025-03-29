@@ -98,11 +98,16 @@ namespace Mottrist.API.Controllers
             {
                 try
                 {
-                    var result = await _driverService.GetAllAsync();
+                    var dataResult = await _driverService.GetAllAsync();
+
+                    if(dataResult?.DataRecordsCount?.Equals(0) ?? false)
+                    {
+                        return StatusCode(203, "No data Content.");
+                    }
 
                     // Check if the result is not null and return accordingly
-                    return result != null
-                        ? Ok(result)
+                    return dataResult != null
+                        ? Ok(dataResult)
                         : StatusCode(500, "No data found.");
                 }
                 catch (HttpRequestException ex)
@@ -200,7 +205,7 @@ namespace Mottrist.API.Controllers
                     // Return a success response if the operation succeeds
                     // or an internal server error with the first error message otherwise
                     return result.IsSuccess
-                        ? NoContent()
+                        ? Ok(result)
                         : StatusCode(500, new { Error = result.Errors.FirstOrDefault() });
                 }
                 catch (HttpRequestException ex)
@@ -239,7 +244,7 @@ namespace Mottrist.API.Controllers
 
                     // Return success or error based on the service result
                     return result.IsSuccess
-                        ? NoContent()
+                        ? Ok("Deleted Successfully")
                         : StatusCode(500, new { Error = result.Errors.FirstOrDefault() });
                 }
                 catch (HttpRequestException ex)
