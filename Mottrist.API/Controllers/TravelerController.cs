@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Mottrist.Domain.Entities;
+using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Traveller.DTOs;
 using Mottrist.Service.Features.Traveller.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Mottrist.API.Controllers
 {
@@ -23,27 +27,51 @@ namespace Mottrist.API.Controllers
         /// An <see cref="IActionResult"/> containing the traveler data if found,
         /// or an error message if not found or in case of an exception.
         /// </returns>
-        [HttpGet("{id:int}",Name = "GetById")]
+        [HttpGet("{id:int}",Name = "GetByIdAsync")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             if (id <= 0)
-                return BadRequest(new { Error = "Invalid Traveler Id." });
+                return BadRequest(new ApiResponse<GetTravelerDto>
+                {
+                    Success = false,
+                    Message = "Invalid Id",
+                    Errors = new List<string> { $"Traveler Id should be positive number" }
+                });
 
             try
             {
                 GetTravelerDto? travelerDto = await _travelerService.GetByIdAsync(id);
 
                 return travelerDto != null ?
-                       Ok(travelerDto)
-                     : NotFound(new { Error = $"Traveler with Id {id} was not found." });
+                       Ok(new {
+                            Success = true,
+                            Message = "Traveler retrieved successfully.",
+                            Data = travelerDto
+                           }) :
+                       NotFound(new ApiResponse<GetTravelerDto>
+                       {
+                             Success = false,
+                             Message = "Traveler not found.",
+                             Errors = new List<string> { $"Traveler with Id {id} was not found." }
+                         });
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<GetTravelerDto>
+                {
+                    Success = false,
+                    Message = "An error accrued",
+                    Errors = new List<string> { $"Service error: {ex.Message}" }
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<GetTravelerDto>
+                {
+                    Success = false,
+                    Message = "An error accrued",
+                    Errors = new List<string> { $"Unexpected error: {ex.Message}" }
+                });
             }
         }
 
@@ -61,19 +89,46 @@ namespace Mottrist.API.Controllers
                 var travelerDtos = await _travelerService.GetAllAsync();
 
                 if(travelerDtos?.DataRecordsCount == 0 && travelerDtos?.Data != null)
-                       return StatusCode(StatusCodes.Status204NoContent, travelerDtos);
+                       return StatusCode(StatusCodes.Status204NoContent, new ApiResponse<DataResult<GetTravelerDto>>
+                       {
+                           Success = true,
+                           Message = "There is no travelers",
+                           Data = travelerDtos
+                       });
 
-                return  travelerDtos != null ?
-                        Ok(travelerDtos)
-                       : StatusCode(StatusCodes.Status500InternalServerError, new { Error = "No data found." } );
+                return travelerDtos != null ?
+                        Ok(new ApiResponse<DataResult<GetTravelerDto>>
+                        {
+                            Success = true,
+                            Message = "Travelers retrieved successfully.",
+                            Data = travelerDtos
+                        })
+                       : StatusCode(StatusCodes.Status500InternalServerError,
+                       new ApiResponse<DataResult<GetTravelerDto>>
+                       {
+                           Success = false,
+                           Message = "No data found.",
+                           Errors = new List<string> { "There is no data found for travelers." }
+                       });
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<DataResult<GetTravelerDto>>
+                    {
+                        Success = false,
+                        Message = "An error accrued",
+                        Errors = new List<string> { $"Service error: {ex.Message}" 
+                    }
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<DataResult<GetTravelerDto>>
+                {
+                    Success = false,
+                    Message = "An error accrued",
+                    Errors = new List<string> { $"Unexpected error: {ex.Message}" }
+                });
             }
         }
 
@@ -92,23 +147,50 @@ namespace Mottrist.API.Controllers
         public async Task<IActionResult> GetAllWithPaginationAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             if (page < 1 || pageSize < 1)
-                return BadRequest(new { Error = "Page and pageSize must be greater than zero." });
+                return BadRequest(
+                    new ApiResponse<PaginatedResult<GetTravelerDto>>
+                    {
+                        Success = false,
+                        Message = "Invalid Page or pageSize",
+                        Errors = new List<string> { "Page and pageSize must be greater than zero." }
+                    });
 
             try
             {
                 var travelerDtos = await _travelerService.GetAllWithPaginationAsync(page, pageSize);
 
                 return travelerDtos != null ?
-                        Ok(travelerDtos)
-                       : StatusCode(StatusCodes.Status500InternalServerError, new { Error = "No data found." });
+                        Ok(new ApiResponse<PaginatedResult<GetTravelerDto>>
+                        {
+                            Success = true,
+                            Message = "Travelers retrieved successfully.",
+                            Data = travelerDtos
+                        })
+                       : StatusCode(StatusCodes.Status500InternalServerError,
+                       new ApiResponse<PaginatedResult<GetTravelerDto>>
+                        {
+                            Success = false,
+                            Message = "No data found.",
+                            Errors = new List<string> { "There is no data found for travelers." }
+                       });
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<PaginatedResult<GetTravelerDto>>
+                {
+                    Success = false,
+                    Message = "An error accrued",
+                    Errors = new List<string> { $"Service error: {ex.Message}" }
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<PaginatedResult<GetTravelerDto>>
+                {
+                    Success = false,
+                    Message = "An error accrued",
+                    Errors = new List<string> { $"Unexpected error: {ex.Message}" }
+                });
             }
         }
 
@@ -130,21 +212,36 @@ namespace Mottrist.API.Controllers
                     .Select(e => e.ErrorMessage)
                     .ToList();
 
-                return BadRequest(new {Message = "Validation error.", Errors = errors });
+                return BadRequest(
+                    new ApiResponse<AddTravelerDto>
+                    {
+                        Success = false,
+                        Message = "Validation error in AddTravelerDto.",
+                        Errors = errors
+                    });
             }
 
             try
             {
                 if (travelerDto == null)
-                    return BadRequest(new { Error = "Traveler data is null." });
+                    return BadRequest(new ApiResponse<AddTravelerDto>
+                    {
+                        Success = false,
+                        Message = "Traveler data is invalid.",
+                        Errors = new List<string> { $"AddTravelerDto is null." }
+                    });
 
-                // to make sure for now
-                travelerDto.Id = 0;
-                
+
                 var result = await _travelerService.AddAsync(travelerDto);
 
                 if (result.IsSuccess)
-                    return CreatedAtAction(nameof(GetByIdAsync), new { id = travelerDto.Id }, travelerDto);
+                    return CreatedAtRoute("GetByIdAsync", new { id = travelerDto.Id }, new ApiResponse<AddTravelerDto>
+                        {
+                            Success = true,
+                            Message = "Traveler added successfully",
+                            Data = travelerDto
+                        }
+                    );
                 else
                 {
                     var errors = result.Errors?.ToList() ?? new List<string>();
@@ -158,11 +255,21 @@ namespace Mottrist.API.Controllers
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<AddTravelerDto>
+                {
+                    Success = false,
+                    Message = "An error accrued",
+                    Errors = new List<string> { $"Service error: {ex.Message}" }
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<AddTravelerDto>
+                {
+                    Success = false,
+                    Message = "An error accrued",
+                    Errors = new List<string> { $"Unexpected error: {ex.Message}" }
+                });
             }
         }
 
@@ -185,21 +292,42 @@ namespace Mottrist.API.Controllers
                     .Select(e => e.ErrorMessage)
                     .ToList();
 
-                return BadRequest(new {Message = "Validation error.", Errors = errors });
+                return BadRequest(
+                   new ApiResponse<UpdateTravelerDto>
+                   {
+                       Success = false,
+                       Message = "Validation error in UpdateTravelerDto.",
+                       Errors = errors
+                   });
             }
 
             try
             {
                 if (travelerDto.Id != id)
-                    return BadRequest(new { Error = $"Not allowed to change Traveler's Id value which is {id}" });
+                    return BadRequest(new ApiResponse<UpdateTravelerDto>
+                    {
+                        Success = false,
+                        Message = "Invalid Id",
+                        Errors = new List<string> { $"Not allowed to change Traveler's Id value which is {id}" }
+                    });
 
                 if (travelerDto == null)
-                    return BadRequest(new { Error = "Traveler data is invalid." });
+                    return BadRequest(new ApiResponse<UpdateTravelerDto>
+                    {
+                        Success = false,
+                        Message = "UpdateTravelerDto data is invalid.",
+                        Errors = new List<string> { $"Traveler is null." }
+                    });
 
                 var result = await _travelerService.UpdateAsync(travelerDto);
 
                 if (result.IsSuccess)
-                    return Ok(travelerDto);
+                    return Ok(new ApiResponse<UpdateTravelerDto>
+                         { 
+                            Success = true,
+                            Message = "Traveler updated successfully",
+                            Data = travelerDto
+                        });
                 else
                 {
                     var errors = result.Errors?.ToList() ?? new List<string>();
@@ -214,11 +342,21 @@ namespace Mottrist.API.Controllers
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<PaginatedResult<GetTravelerDto>>
+                {
+                    Success = false,
+                    Message = "An error accrued",
+                    Errors = new List<string> { $"Service error: {ex.Message}" }
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" }); // Handle general exceptions
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<PaginatedResult<GetTravelerDto>>
+                {
+                    Success = false,
+                    Message = "An error accrued",
+                    Errors = new List<string> { $"Unexpected error: {ex.Message}" }
+                });
             }
         }
 
@@ -234,20 +372,30 @@ namespace Mottrist.API.Controllers
         public async Task<IActionResult> DeleteAsync(int id)
         {
             if (id <= 0)
-                return BadRequest(new { Error = "Invalid Traveler Id." });
+                return BadRequest(new ApiResponse<UpdateTravelerDto>
+                {
+                    Success = false,
+                    Message = "Invalid Id",
+                    Errors = new List<string> { $"Traveler Id should be positive number" }
+                });
 
-           try
+            try
             {
                 var result = await _travelerService.DeleteAsync(id);
 
                 if (result.IsSuccess)
-                    return NoContent();
+                    return StatusCode(StatusCodes.Status204NoContent, new ApiResponse<Traveler>
+                    {
+                        Success = true,
+                        Message = "Traveler record deleted successfully",
+                    });
                 else
                 {
                     var errors = result.Errors?.ToList() ?? new List<string>();
 
-                    return StatusCode(StatusCodes.Status500InternalServerError, new
+                    return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<Traveler>
                     {
+                        Success = false,
                         Message = "Error deleting traveler.",
                         Errors = errors
                     });
@@ -257,11 +405,21 @@ namespace Mottrist.API.Controllers
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Service error: {ex.Message}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<PaginatedResult<GetTravelerDto>>
+                {
+                    Success = false,
+                    Message = "An error accrued",
+                    Errors = new List<string> { $"Service error: {ex.Message}" }
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unexpected error: {ex.Message}" }); // Handle general exceptions
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse<PaginatedResult<GetTravelerDto>>
+                {
+                    Success = false,
+                    Message = "An error accrued",
+                    Errors = new List<string> { $"Unexpected error: {ex.Message}" }
+                });
             }
         }
     }

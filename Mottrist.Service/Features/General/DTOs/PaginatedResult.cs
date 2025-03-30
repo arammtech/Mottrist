@@ -9,9 +9,9 @@ namespace Mottrist.Service.Features.General.DTOs
         public IEnumerable<T>? Data { get; set; } = null;
 
         /// <summary>
-        /// The number of records in the current page.
+        /// The number of records across all pages.
         /// </summary>
-        public int? DataRecordsCount => Data?.Count() ?? null;
+        public int? DataRecordsCount { get; set; } = null;
 
         /// <summary>
         /// The current page number.
@@ -24,14 +24,14 @@ namespace Mottrist.Service.Features.General.DTOs
         public int PageSize { get; set; }
 
         /// <summary>
-        /// The total number of records across all pages.
-        /// </summary>
-        public int? TotalRecordsCount { get; set; }
-
-        /// <summary>
         /// The total number of pages calculated from TotalRecordsCount and PageSize.
         /// </summary>
-        public int? TotalPages => TotalRecordsCount != null ? (int)Math.Ceiling((double)TotalRecordsCount / PageSize) : null;
+        public int? TotalPages => DataRecordsCount != null ? (int)Math.Ceiling((double)DataRecordsCount / PageSize) : null;
+
+        /// <summary>
+        /// The total number of records at Database all without filter
+        /// </summary>
+        public int? TotalRecordsCount { get; set; } = null;
     }
 
 }
