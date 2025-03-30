@@ -34,7 +34,7 @@ namespace Mottrist.Repository.SeedData
             LastName = "Smith",
             Email = "john.smith1@example.com",
             PhoneNumber = "+12345678901",
-            PasswordHash = "Pass@1234",
+            Password = "Pass@1234",
             ProfileImageUrl = "https://example.com/images/1.jpg"
         },
         new AddTravelerDto
@@ -46,7 +46,7 @@ namespace Mottrist.Repository.SeedData
             LastName = "Doe",
             Email = "jane.doe@example.com",
             PhoneNumber = "+12345678902",
-            PasswordHash = "Pass@1234",
+            Password = "Pass@1234",
             ProfileImageUrl = "https://example.com/images/2.jpg"
         },
         new AddTravelerDto
@@ -58,7 +58,7 @@ namespace Mottrist.Repository.SeedData
             LastName = "Brown",
             Email = "alice.brown@example.com",
             PhoneNumber = "+12345678903",
-            PasswordHash = "Pass@1234",
+            Password = "Pass@1234",
             ProfileImageUrl = "https://example.com/images/3.jpg"
         },
         new AddTravelerDto
@@ -70,7 +70,7 @@ namespace Mottrist.Repository.SeedData
             LastName = "Johnson",
             Email = "bob.johnson@example.com",
             PhoneNumber = "+12345678904",
-            PasswordHash = "Pass@1234",
+            Password = "Pass@1234",
             ProfileImageUrl = "https://example.com/images/4.jpg"
         },
         new AddTravelerDto
@@ -82,7 +82,7 @@ namespace Mottrist.Repository.SeedData
             LastName = "Williams",
             Email = "charlie.williams@example.com",
             PhoneNumber = "+12345678905",
-            PasswordHash = "Pass@1234",
+            Password = "Pass@1234",
             ProfileImageUrl = "https://example.com/images/5.jpg"
         },
         new AddTravelerDto
@@ -94,7 +94,7 @@ namespace Mottrist.Repository.SeedData
             LastName = "Miller",
             Email = "david.miller@example.com",
             PhoneNumber = "+12345678906",
-            PasswordHash = "Pass@1234",
+            Password = "Pass@1234",
             ProfileImageUrl = "https://example.com/images/6.jpg"
         },
         new AddTravelerDto
@@ -106,7 +106,7 @@ namespace Mottrist.Repository.SeedData
             LastName = "Davis",
             Email = "eve.davis@example.com",
             PhoneNumber = "+12345678907",
-            PasswordHash = "Pass@1234",
+            Password = "Pass@1234",
             ProfileImageUrl = "https://example.com/images/7.jpg"
         },
         new AddTravelerDto
@@ -118,7 +118,7 @@ namespace Mottrist.Repository.SeedData
             LastName = "Wilson",
             Email = "frank.wilson@example.com",
             PhoneNumber = "+12345678908",
-            PasswordHash = "Pass@1234",
+            Password = "Pass@1234",
             ProfileImageUrl = "https://example.com/images/8.jpg"
         },
         new AddTravelerDto
@@ -130,7 +130,7 @@ namespace Mottrist.Repository.SeedData
             LastName = "Moore",
             Email = "grace.moore@example.com",
             PhoneNumber = "+12345678909",
-            PasswordHash = "Pass@1234",
+            Password = "Pass@1234",
             ProfileImageUrl = "https://example.com/images/9.jpg"
         },
         new AddTravelerDto
@@ -142,7 +142,7 @@ namespace Mottrist.Repository.SeedData
             LastName = "Taylor",
             Email = "henry.taylor@example.com",
             PhoneNumber = "+12345678910",
-            PasswordHash = "Pass@1234",
+            Password = "Pass@1234",
             ProfileImageUrl = "https://example.com/images/10.jpg"
         },
         new AddTravelerDto
@@ -154,7 +154,7 @@ namespace Mottrist.Repository.SeedData
             LastName = "Anderson",
             Email = "ivy.anderson@example.com",
             PhoneNumber = "+12345678911",
-            PasswordHash = "Pass@1234",
+            Password = "Pass@1234",
             ProfileImageUrl = "https://example.com/images/11.jpg"
         }
     };

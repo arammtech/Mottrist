@@ -203,19 +203,12 @@ namespace Mottrist.Service.Features.Traveller.Services
                     return Result.Failure("Traveler not found.");
                 }
 
-
-                // Update Traveler details WITHOUT replacing the object
-                _mapper.Map(travelerDto, existingTraveler);
+                //// Update Traveler details
+                TravelerMapper.Map(travelerDto, existingTraveler);
 
                 // Update User details using the existing User instance (so SecurityStamp is preserved)
                 var existingUser = existingTraveler.User;
-
-                //_mapper.Map(travelerDto, existingUser);
-                TravelerMapper.Map(existingTraveler, existingUser);
-
-                existingUser.FirstName = travelerDto.FirstName;
-                existingUser.LastName = travelerDto.LastName;
-                existingUser.PhoneNumber = travelerDto.PhoneNumber;
+                TravelerMapper.Map(travelerDto, existingUser);
 
                 // Ensure SecurityStamp is NOT null before updating
                 if (string.IsNullOrEmpty(existingUser.SecurityStamp))

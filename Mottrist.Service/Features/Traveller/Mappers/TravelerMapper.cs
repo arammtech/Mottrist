@@ -9,15 +9,9 @@ namespace Mottrist.Service.Features.Traveller.Mappers
         // Map properties from AddTravelerDto to Traveler entity.
         public static void Map(AddTravelerDto addTravelerDto, Traveler traveler)
         {
-            // traveler.Id = addTravelerDto.Id; 
             traveler.WhatsAppNumber = addTravelerDto.WhatsAppNumber;
             traveler.NationalityId = addTravelerDto.NationalityId;
             traveler.ProfileImageUrl = addTravelerDto.ProfileImageUrl;
-            //traveler.User.FirstName = addTravelerDto.FirstName;
-            //traveler.User.LastName = addTravelerDto.LastName;
-            //traveler.User.Email = addTravelerDto.Email;
-            //traveler.User.PhoneNumber = addTravelerDto.PhoneNumber;
-            //traveler.User.PasswordHash = addTravelerDto.PasswordHash;
         }
 
         // Map properties from Traveler entity to AddTravelerDto.
@@ -27,8 +21,34 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             addTravelerDto.WhatsAppNumber = traveler.WhatsAppNumber;
             addTravelerDto.NationalityId = traveler.NationalityId;
             addTravelerDto.ProfileImageUrl = traveler.ProfileImageUrl;
-            // Note: Other properties like FirstName, LastName, Email, PhoneNumber, and PasswordHash
-            // come from the associated ApplicationUser and should be mapped separately.
+        }
+
+        // Map properties from updateTravelerDto entity to Traveler.
+        public static void Map(UpdateTravelerDto updateTravelerDto, Traveler traveler)
+        {
+            traveler.WhatsAppNumber = updateTravelerDto.WhatsAppNumber;
+            traveler.NationalityId = updateTravelerDto.NationalityId;
+            traveler.ProfileImageUrl = updateTravelerDto.ProfileImageUrl;
+        }
+
+        // Map properties from Traveler entity to updateTravelerDto.
+        public static void Map(Traveler traveler, UpdateTravelerDto updateTravelerDto)
+        {
+            updateTravelerDto.Id = traveler.Id;
+            updateTravelerDto.WhatsAppNumber = traveler.WhatsAppNumber;
+            updateTravelerDto.NationalityId = traveler.NationalityId;
+            updateTravelerDto.ProfileImageUrl = traveler.ProfileImageUrl;
+        }
+
+        // Map properties from Traveler entity to ApplicationUser.
+        public static void Map(Traveler traveler, ApplicationUser applicationUser)
+        {
+            applicationUser.Id = traveler.UserId;
+            applicationUser.FirstName = traveler.User.FirstName;
+            applicationUser.LastName = traveler.User.LastName;
+            applicationUser.PhoneNumber = traveler.User.PhoneNumber;
+            applicationUser.Email = traveler.User.Email;
+            applicationUser.UserName = traveler.User.UserName;
         }
 
         // Map properties from AddTravelerDto to ApplicationUser.
