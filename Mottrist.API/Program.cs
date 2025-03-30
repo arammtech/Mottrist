@@ -98,6 +98,7 @@ builder.Services.AddScoped<Microsoft.AspNetCore.Identity.UI.Services.IEmailSende
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<ITravelerService, TravelerService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
 builder.Services.AddScoped<ISeedDatabaseTables, SeedDatabaseTables>();
