@@ -69,10 +69,12 @@ namespace Mottrist.Service.Features.Traveller.Services
                            .Include(t => t.Country)
                            .AsQueryable();
 
+                var totalRecordsCount = travelerQuery.Count();
+
                 if (filter != null)
                     travelerQuery = travelerQuery.Where(filter);
 
-                var totalRecordsCount = travelerQuery.Count();
+                var dataRecordsCount= travelerQuery.Count();
 
                 // Apply pagination
                 var paginatedCars = await travelerQuery
@@ -88,6 +90,7 @@ namespace Mottrist.Service.Features.Traveller.Services
                     Data = travelersDto,
                     PageNumber= page,
                     PageSize = pageSize,
+                    DataRecordsCount= dataRecordsCount,
                     TotalRecordsCount = totalRecordsCount
                 };
 
@@ -130,8 +133,10 @@ namespace Mottrist.Service.Features.Traveller.Services
             try
             {
                 // Add user
-                ApplicationUser user = _mapper.Map<ApplicationUser>(travelerDto);
-                user.UserName = user.Email;
+                //ApplicationUser user = _mapper.Map<ApplicationUser>(travelerDto);
+                ApplicationUser user = new();
+
+                TravelerMapper.Map(travelerDto, user);
 
                 var addUserResult = await _userManager.CreateAsync(user);
 
@@ -198,17 +203,12 @@ namespace Mottrist.Service.Features.Traveller.Services
                     return Result.Failure("Traveler not found.");
                 }
 
-
-                // Update Traveler details WITHOUT replacing the object
-                _mapper.Map(travelerDto, existingTraveler);
+                //// Update Traveler details
+                TravelerMapper.Map(travelerDto, existingTraveler);
 
                 // Update User details using the existing User instance (so SecurityStamp is preserved)
                 var existingUser = existingTraveler.User;
-
-                //_mapper.Map(travelerDto, existingUser);
-                existingUser.FirstName = travelerDto.FirstName;
-                existingUser.LastName = travelerDto.LastName;
-                existingUser.PhoneNumber = travelerDto.PhoneNumber;
+                TravelerMapper.Map(travelerDto, existingUser);
 
                 // Ensure SecurityStamp is NOT null before updating
                 if (string.IsNullOrEmpty(existingUser.SecurityStamp))
