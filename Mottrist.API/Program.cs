@@ -10,7 +10,6 @@ using Mottrist.Domain.Identity;
 using Mottrist.Repository.DbInitializer;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 using Mottrist.Repository.Repository;
-using Mottrist.Repository.SeedData;
 using Mottrist.Repository.UnitOfWork;
 using Mottrist.Service.Features.Cars.Interfaces;
 using Mottrist.Service.Features.Cars.Services;
@@ -24,7 +23,6 @@ using Mottrist.Service.Features.Traveller.Services;
 using Mottrist.Service.Features.Traveller.Validators;
 using Mottrist.Service.SeedData;
 using Mottrist.Utilities.Identity;
-using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 
@@ -101,7 +99,6 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<ITravelerService, TravelerService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
-builder.Services.AddScoped<ISeedDatabaseTables, SeedDatabaseTables>();
 #endregion
 
 var app = builder.Build();
