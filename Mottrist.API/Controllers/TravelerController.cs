@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Mottrist.Service.Features.Traveller.DTOs;
 using Mottrist.Service.Features.Traveller.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Mottrist.API.Controllers
 {
@@ -34,8 +36,17 @@ namespace Mottrist.API.Controllers
                 GetTravelerDto? travelerDto = await _travelerService.GetByIdAsync(id);
 
                 return travelerDto != null ?
-                       Ok(travelerDto)
-                     : NotFound(new { Error = $"Traveler with Id {id} was not found." });
+                       Ok(new {
+                            Success = true,
+                            Message = "Traveler retrieved successfully.",
+                            Data = travelerDto
+                           }) :
+                       NotFound(new
+                         {
+                             Success = false,
+                             Message = "Traveler not found.",
+                             Errors = new List<string> { $"Traveler with Id {id} was not found." }
+                         });
             }
             catch (HttpRequestException ex)
             {
@@ -63,8 +74,13 @@ namespace Mottrist.API.Controllers
                 if(travelerDtos?.DataRecordsCount == 0 && travelerDtos?.Data != null)
                        return StatusCode(StatusCodes.Status204NoContent, travelerDtos);
 
-                return  travelerDtos != null ?
-                        Ok(travelerDtos)
+                return travelerDtos != null ?
+                        Ok( new
+                        {
+                            Success = true,
+                            Message = "Travelers retrieved successfully.",
+                            Data = travelerDtos
+                        })
                        : StatusCode(StatusCodes.Status500InternalServerError, new { Error = "No data found." } );
             }
             catch (HttpRequestException ex)
@@ -99,7 +115,12 @@ namespace Mottrist.API.Controllers
                 var travelerDtos = await _travelerService.GetAllWithPaginationAsync(page, pageSize);
 
                 return travelerDtos != null ?
-                        Ok(travelerDtos)
+                        Ok(new
+                        {
+                            Success = true,
+                            Message = "Travelers retrieved successfully.",
+                            Data = travelerDtos
+                        })
                        : StatusCode(StatusCodes.Status500InternalServerError, new { Error = "No data found." });
             }
             catch (HttpRequestException ex)
