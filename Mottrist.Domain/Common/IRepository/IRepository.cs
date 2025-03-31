@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Mottrist.Domain.Common.IRepository
 {
@@ -12,6 +13,9 @@ namespace Mottrist.Domain.Common.IRepository
         IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> filter);
         IQueryable<TEntity> Table { get; }
         IQueryable<TEntity> Include(params Expression<Func<TEntity, object>>[] includeProperties);
+        IQueryable<TEntity> Query();
+        
+        
         #endregion
 
         #region Add

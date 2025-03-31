@@ -84,8 +84,6 @@ namespace Mottrist.Service.Features.Drivers.Validators
                     .NotEmpty().WithMessage("Car fuel type is required when the driver has a car.")
                     .MaximumLength(50).WithMessage("Car fuel type cannot exceed 50 characters.");
 
-                RuleFor(driver => driver.CarImageUrl)
-                    .NotEmpty().WithMessage("Car image URL is required when the driver has a car.");
             });
         }
     }

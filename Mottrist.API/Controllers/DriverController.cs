@@ -33,19 +33,6 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Example endpoint for uploading files (if implemented).
-        /// </summary>
-        /// <remarks>
-        /// To implement file uploads, use the <see cref="IFormFile"/> parameter in a dedicated method.
-        /// </remarks>
-        /// <returns>A placeholder result indicating success or failure of file upload implementation.</returns>
-        [HttpPost("upload")]
-        public IActionResult UploadFile(IFormFile file)
-        {
-            return Ok("File upload functionality has yet to be implemented.");
-        }
-
-        /// <summary>
         /// Retrieves a driver by the specified ID.
         /// </summary>
         /// <param name="id">The unique identifier of the driver to retrieve.</param>
@@ -186,7 +173,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)] // Validation errors
         [ProducesResponseType(StatusCodes.Status409Conflict)] // Duplicate resource
         [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Unexpected errors
-        public async Task<IActionResult> AddAsync(AddDriverDto driverDto)
+        public async Task<IActionResult> AddAsync([FromForm]AddDriverDto driverDto)
         {
             if (!ModelState.IsValid)
             {

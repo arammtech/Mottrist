@@ -1,8 +1,9 @@
-﻿
+﻿using Microsoft.AspNetCore.Http;
+
 namespace Mottrist.Service.Features.Drivers.DTOs
 {
     /// <summary>
-    /// Data Transfer Object for adding a new driver, including personal information and optional car details.
+    /// Data Transfer Object for adding a new driver, including personal information, car details, and image uploads.
     /// </summary>
     public class AddDriverDto
     {
@@ -19,10 +20,19 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public int NationalityId { get; set; }
         public string? Bio { get; set; }
 
-        // Images
-        public string LicenseImageUrl { get; set; } = null!;
-        public string PassportImageUrl { get; set; } = null!;
+        // Driver Info Images URLs
         public string? ProfileImageUrl { get; set; }
+        public string? LicenseImageUrl { get; set; } 
+        public string? PassportImageUrl { get; set; }
+
+        // Image Uploads
+        public IFormFile? ProfileImage { get; set; }
+        public IFormFile LicenseImage { get; set; } = null!;
+        public IFormFile PassportImage { get; set; } = null!;
+        public List<IFormFile>? CarImages { get; set; }
+
+        // NEW: User-selected main image index for car images
+        public byte? MainCarImageIndex { get; set; }
 
         // Professional Information
         public byte YearsOfExperience { get; set; }
@@ -36,6 +46,7 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public int? ColorId { get; set; }
         public int? BodyTypeId { get; set; }
         public int? FuelTypeId { get; set; }
-        public string? CarImageUrl { get; set; }
+        public List<string>? CarImagesUrl { get; set; }
+
     }
 }

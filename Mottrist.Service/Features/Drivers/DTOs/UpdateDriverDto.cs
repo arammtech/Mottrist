@@ -1,4 +1,6 @@
-﻿namespace Mottrist.Service.Features.Drivers.DTOs
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Mottrist.Service.Features.Drivers.DTOs
 {
     /// <summary>
     /// Data Transfer Object for updating driver information, including optional car details.
@@ -17,8 +19,8 @@
         public string? Bio { get; set; }
         
         // Images
-        public string LicenseImageUrl { get; set; } = null!;
-        public string PassportImageUrl { get; set; } = null!;
+        public string? LicenseImageUrl { get; set; } = null!;
+        public string? PassportImageUrl { get; set; } = null!;
         public string? ProfileImageUrl { get; set; } = string.Empty;
 
         // Professional Information
@@ -33,6 +35,7 @@
         public int? ColorId { get; set; }
         public int? BodyTypeId { get; set; }
         public int? FuelTypeId { get; set; }
-        public string? CarImageUrl { get; set; }
+        public string? MainCarImageUrl { get; set; } // Main car image URL
+        public List<string>? CarImageUrl { get; set; } // Additional car image URLs
     }
 }

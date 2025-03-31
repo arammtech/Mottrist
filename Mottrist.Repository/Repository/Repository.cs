@@ -99,12 +99,51 @@ namespace Mottrist.Repository.Repository
             return await _dbSet.FirstOrDefaultAsync(filter);
         }
 
+        //public IQueryable<TEntity> Include(params Expression<Func<TEntity, object>>[] includeProperties)
+        //{
+        //    IQueryable<TEntity> query = _dbSet;
+
+        //    foreach (var includeProperty in includeProperties)
+        //        query = query.Include(includeProperty);
+
+        //    return query;
+        //}
+
+        /// <summary>
+        /// Dynamically includes navigation properties for a query.
+        /// </summary>
+        /// <param name="includeProperties">An array of expressions representing the navigation properties to include.</param>
+        /// <returns>
+        /// An <see cref="IQueryable{TEntity}"/> with the specified navigation properties included.
+        /// </returns>
         public IQueryable<TEntity> Include(params Expression<Func<TEntity, object>>[] includeProperties)
         {
+            // Validate input
+            if (includeProperties == null || includeProperties.Length == 0)
+            {
+                throw new ArgumentException("Include properties cannot be null or empty.", nameof(includeProperties));
+            }
+
             IQueryable<TEntity> query = _dbSet;
 
             foreach (var includeProperty in includeProperties)
-                query = query.Include(includeProperty);
+            {
+                // Validate each includeProperty
+                if (includeProperty == null)
+                {
+                    throw new ArgumentException("One of the include properties is null.", nameof(includeProperties));
+                }
+
+                try
+                {
+                    query = query.Include(includeProperty);
+                }
+                catch (Exception ex)
+                { 
+                    // Re-throw the exception or handle it as needed
+                    throw new InvalidOperationException($"Failed to include property {includeProperty}.", ex);
+                }
+            }
 
             return query;
         }
@@ -174,6 +213,11 @@ namespace Mottrist.Repository.Repository
         public async Task UpdateRangeAsync(IEnumerable<TEntity> entities)
         {
             await Task.Run(() => _dbSet.UpdateRange(entities));
+        }
+
+        public IQueryable<TEntity> Query()
+        {
+            return _context.Set<TEntity>();
         }
     }
 }

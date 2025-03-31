@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.AspNetCore.Http;
+
 namespace Mottrist.Utilities.Global
 {
     public static class GlobalFunctions
@@ -26,12 +28,44 @@ namespace Mottrist.Utilities.Global
         }
 
 
-
-        public static int GetRandom(int min, int max) 
+        /// <summary>
+        /// Saves an uploaded image file to the specified folder and returns its relative URL.
+        /// </summary>
+        /// <param name="imageFile">The uploaded image file to save.</param>
+        /// <param name="folderName">The folder where the image will be stored.</param>
+        /// <returns>The relative URL of the saved image file.</returns>
+        public static async Task<string> SaveImageAsync(IFormFile imageFile, string folderName)
         {
-            return new Random().Next(min, max);
-        }
+            // Ensure the image file is not null
+            if (imageFile == null || imageFile.Length == 0)
+            {
+                throw new ArgumentException("Invalid image file.");
+            }
 
+            // Generate a unique file name to prevent overwriting
+            var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
+
+            // Build the full folder path
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", folderName);
+
+            // Ensure the folder exists
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            // Build the full file path
+            var filePath = Path.Combine(folderPath, uniqueFileName);
+
+            // Save the file to the server
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+
+            // Return the relative URL (to be used for serving the image)
+            return $"/images/{folderName}/{uniqueFileName}";
+        }
 
         // Generic Filter
         public static List<T> _Filter<T>(List<T> collection, string filterProperty, string filterValue)

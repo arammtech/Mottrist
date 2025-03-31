@@ -1,4 +1,5 @@
-﻿using Mottrist.Domain.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using Mottrist.Domain.Entities;
 using Mottrist.Domain.Global;
 using Mottrist.Service.Features.Drivers.DTOs;
 using Mottrist.Service.Features.General;
@@ -9,7 +10,7 @@ using System.Threading;
 namespace Mottrist.Service.Features.Drivers.Interfaces
 {
     /// <summary>
-    /// Interface for Driver service containing CRUD operations and utilities.
+    /// Interface for Driver service containing CRUD operations, utilities, and image management for drivers' cars.
     /// </summary>
     public interface IDriverService : IBaseService
     {
@@ -54,7 +55,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A <see cref="DriverDto"/> object containing driver details if a match is found; otherwise, null.
         /// </returns>
-        public DriverDto? Get(Expression<Func<Driver, bool>> filter);
+        Task<DriverDto?> GetAsync(Expression<Func<Driver, bool>> filter);
 
         #endregion
 
@@ -108,6 +109,42 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// A boolean value indicating whether the driver exists.
         /// </returns>
         Task<bool> DoesDriverExistByIdAsync(int driverId, CancellationToken cancellationToken = default);
+
+        #endregion
+
+        #region Car Image Operations
+
+        /// <summary>
+        /// Deletes a specific car image associated with a driver's car.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver whose car's image is to be deleted.</param>
+        /// <param name="imageUrl">The URL of the image to be deleted.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the operation.
+        /// </returns>
+        Task<Result> DeleteImageCarAsync(int driverId, string imageUrl);
+
+        /// <summary>
+        /// Sets a specific car image as the main image for a driver's car.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver whose car's image is to be set as the main image.</param>
+        /// <param name="imageUrl">The URL of the image to set as the main image.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the operation.
+        /// </returns>
+        Task<Result> SetMainImageAsync(int driverId, string imageUrl);
+
+        /// <summary>
+        /// Updates a car image, either by replacing the image file or updating metadata.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver whose car's image is to be updated.</param>
+        /// <param name="imageUrl">Optional: The URL of the existing image to update metadata.</param>
+        /// <param name="newImageFile">Optional: A new image file to replace the existing image.</param>
+        /// <param name="isMain">Specifies whether the image should be marked as the main image.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the operation.
+        /// </returns>
+        Task<Result> UpdateImageAsync(int driverId, string? imageUrl, IFormFile? newImageFile, bool isMain);
 
         #endregion
     }

@@ -77,7 +77,7 @@ namespace Mottrist.Service.Features.Drivers.Validators
                 RuleFor(driver => driver.NumberOfSeats)
                     .NotNull().WithMessage("Number of seats is required when the driver has a car.");
 
-                RuleFor(driver => driver.CarImageUrl)
+                RuleFor(driver => driver.MainCarImageIndex)
                     .NotEmpty().WithMessage("Car image URL is required when the driver has a car.");
             });
         }
