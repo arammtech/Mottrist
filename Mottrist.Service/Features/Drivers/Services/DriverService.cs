@@ -186,7 +186,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                         CarColor = carDetails.Color.Name,
                         CarBodyType = carDetails.BodyType.Type,
                         CarFuelType = carDetails.FuelType.Type,
-                        CarImageUrl = carDetails.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl
+                        CarImageUrl = carDetails.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty
                     }
                 ).FirstOrDefaultAsync();
 
@@ -216,8 +216,16 @@ namespace Mottrist.Service.Features.Drivers.Services
 
             try
             {
+                // Check if user with the same email already exists
+                var existingUser = await _userManager.FindByEmailAsync(driverDto.Email);
+                if (existingUser != null)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return Result.Exist("User with the same email already exists.");
+                }
+
                 // Step 1: Create user
-               var user = _mapper.Map<ApplicationUser>(driverDto);
+                var user = _mapper.Map<ApplicationUser>(driverDto);
                 var userResult = await AddUserAsync(_userManager,driverDto,user);
                 if (!userResult.IsSuccess)
                 {
@@ -324,7 +332,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// </returns>
         public async Task<Result> UpdateAsync(UpdateDriverDto driverDto)
         {
-            // Start a transaction
+            // Begin transaction
             var transactionResult = await _unitOfWork.StartTransactionAsync();
             if (!transactionResult.IsSuccess)
             {
@@ -333,15 +341,19 @@ namespace Mottrist.Service.Features.Drivers.Services
 
             try
             {
-                // Step 1: Fetch and validate the existing driver
+
+                // Validate driver existence in a single call
                 var existingDriver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverDto.Id);
+                
                 if (existingDriver == null)
                 {
                     await _unitOfWork.RollbackAsync();
-                    return Result.Failure("Driver not found.");
+                    return Result.NotFound("Driver not found.");
                 }
 
-                // Update driver details
+               
+
+                // Step 1: Update driver details
                 _mapper.Map(driverDto, existingDriver);
 
                 // Step 2: Update associated user details
@@ -349,27 +361,27 @@ namespace Mottrist.Service.Features.Drivers.Services
                 if (!userUpdateResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
-                    return userUpdateResult; // Error handling is done in the helper method
+                    return Result.Failure($"Failed to update user details: {userUpdateResult.Errors.FirstOrDefault()}", userUpdateResult.IsException);
                 }
 
-                // Step 3: Update car details if applicable
+                // Step 3: Update or add car details if applicable
                 if (driverDto.HasCar)
                 {
                     var carUpdateResult = await UpdateOrAddCarDetailsAsync(driverDto, existingDriver);
                     if (!carUpdateResult.IsSuccess)
                     {
                         await _unitOfWork.RollbackAsync();
-                        return carUpdateResult; // Error handling is done in the helper method
+                        return Result.Failure($"Failed to update car details: {carUpdateResult.Errors.FirstOrDefault()}", carUpdateResult.IsException);
                     }
                 }
 
-                // Step 4: Save updated driver data
+                // Step 4: Save all changes to the repository
                 _unitOfWork.Repository<Driver>().Update(existingDriver);
-                var driverSaveResult = await _unitOfWork.SaveChangesAsync();
-                if (!driverSaveResult.IsSuccess)
+                var saveResult = await _unitOfWork.SaveChangesAsync();
+                if (!saveResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
-                    return Result.Failure("Failed to update driver details.");
+                    return Result.Failure("Failed to save driver updates.");
                 }
 
                 // Commit the transaction
@@ -383,8 +395,9 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
             catch (Exception ex)
             {
+                // Rollback the transaction in case of an exception
                 await _unitOfWork.RollbackAsync();
-                return Result.Failure($"Error updating driver: {ex.Message}", true);
+                return Result.Failure($"Unexpected error occurred during driver update: {ex.Message}", true);
             }
         }
 
@@ -524,7 +537,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
 
                 // Step 2: Delete the driver and the associated user
-                var userDeletionResult = await _userManager.DeleteAsync(await _userManager.FindByIdAsync(driver.UserId.ToString()));
+                var userDeletionResult = await _userManager.DeleteAsync(await _userManager?.FindByIdAsync(driver?.UserId.ToString()));
                 if (!userDeletionResult.Succeeded)
                 {
                     await _unitOfWork.RollbackAsync();
