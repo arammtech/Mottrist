@@ -575,9 +575,9 @@ namespace Mottrist.Service.Features.Cars.Services
                 if (carImages is null || !carImages.Any())
                     return Result.Failure($"No car images found for CarId: {carId}");
 
-                var targetImage = carImages.FirstOrDefault(ci => ci.ImageUrl == imageUrl);
-                if (targetImage == null)
-                    return Result.Failure($"Image not found. ImageUrl: {imageUrl}, CarId: {carId}");
+                //var targetImage = carImages.FirstOrDefault(ci => ci.ImageUrl == imageUrl);
+                //if (targetImage == null)
+                //    return Result.Failure($"Image not found. ImageUrl: {imageUrl}, CarId: {carId}");
 
                 foreach (var image in carImages)
                 {
@@ -585,8 +585,8 @@ namespace Mottrist.Service.Features.Cars.Services
                     _unitOfWork.Repository<CarImage>().Update(image);
                 }
 
-                targetImage.IsMain = true;
-                _unitOfWork.Repository<CarImage>().Update(targetImage);
+                //targetImage.IsMain = true;
+                //_unitOfWork.Repository<CarImage>().Update(targetImage);
 
                 var saveResult = await _unitOfWork.SaveChangesAsync();
                 return saveResult.IsSuccess

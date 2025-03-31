@@ -15,9 +15,6 @@ namespace Mottrist.Service.Features.Drivers.Validators
         public UpdateDriverDtoValidator()
         {
             // Validate Id
-            RuleFor(driver => driver.Id)
-                .GreaterThan(0).WithMessage("Driver ID must be greater than 0.");
-
             // Validate FirstName
             RuleFor(driver => driver.FirstName)
                 .NotEmpty().WithMessage("First name is required.")

@@ -13,6 +13,7 @@ namespace Mottrist.Service.Features.Cars.Mappers
         {
             CreateMap<Car, AddCarDto>().ReverseMap();
             CreateMap<Car, UpdateCarDto>().ReverseMap();
+            CreateMap<AddCarDto, UpdateCarDto>().ReverseMap();
             CreateMap<Car, CarDto>().ReverseMap();
             CreateMap<CarImage, CarImageDto>().ReverseMap();
 
