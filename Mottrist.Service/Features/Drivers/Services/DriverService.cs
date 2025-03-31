@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Mottrist.Service.Features.General;
 using System.Linq.Expressions;
 using Mottrist.Service.Features.General.DTOs;
-using Mottrist.Service.Features.Traveller.DTOs;
 using Mottrist.Service.Features.Cars.Interfaces;
 using Feature.Car.DTOs;
 using static Mottrist.Service.Features.Drivers.Helpers.UserHelper;
@@ -73,51 +72,53 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// - A set of <see cref="DriverDto"/> objects representing the drivers with their details, or
         /// - Null if an exception occurs or if no matching drivers are found.
         /// </returns>
-        public async Task<DataResult<DriverDto>?> GetAllAsync(Expression<Func<DriverDto, bool>>? filter = null)
+        public async Task<DataResult<DriverDto>?> GetAllAsync(Expression<Func<Driver, bool>>? filter = null)
         {
             try
             {
                 // Build the base query
                 var driverQuery = from driver in _unitOfWork.Repository<Driver>().Table.AsQueryable()
-                                  join user in _unitOfWork.Repository<ApplicationUser>().Table
+                                  join user in _unitOfWork.Repository<ApplicationUser>().Table.AsQueryable()
                                   on driver.UserId equals user.Id
-                                  join country in _unitOfWork.Repository<Country>().Table
+                                  join country in _unitOfWork.Repository<Country>().Table.AsQueryable()
                                   on driver.NationalityId equals country.Id into countryGroup
                                   from countryDetails in countryGroup.DefaultIfEmpty()
-                                  join car in _unitOfWork.Repository<Car>().Table
+                                  join car in _unitOfWork.Repository<Car>().Table.AsQueryable()
                                   on driver.CarId equals car.Id into carGroup
                                   from carDetails in carGroup.DefaultIfEmpty()
-                                  select new DriverDto
-                                  {
-                                      Id = driver.Id,
-                                      WhatsAppNumber = driver.WhatsAppNumber,
-                                      Nationality = countryDetails.Name ?? "Unknown",
-                                      LicenseImageUrl = driver.LicenseImageUrl,
-                                      YearsOfExperience = driver.YearsOfExperience,
-                                      Bio = driver.Bio,
-                                      PassportImageUrl = driver.PassportImageUrl,
-                                      FirstName = user.FirstName,
-                                      LastName = user.LastName,
-                                      Email = user.Email ?? string.Empty,
-                                      PhoneNumber = user.PhoneNumber,
-                                      ProfileImageUrl = driver.ProfileImageUrl,
-                                      HasCar = driver.CarId != null,
-                                      CarBrand = carDetails.Brand.Name,
-                                      CarYear = carDetails.Year,
-                                      CarNumberOfSeats = carDetails.NumberOfSeats,
-                                      CarModel = carDetails.Model.Name,
-                                      CarColor = carDetails.Color.Name,
-                                      CarBodyType = carDetails.BodyType.Type,
-                                      CarFuelType = carDetails.FuelType.Type,
-                                      CarImageUrl = carDetails.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl
-                                  };
+                                  select driver;
 
                 // Apply filter if provided
                 if (filter != null)
                 {
                     driverQuery = driverQuery.Where(filter);
                 }
-                var drivers = await driverQuery.ToListAsync();
+
+
+                var drivers = await driverQuery.Select(x => new DriverDto
+                {
+                    Id = x.Id,
+                    WhatsAppNumber = x.WhatsAppNumber,
+                    Nationality = x.Country.Name ?? "Unknown",
+                    LicenseImageUrl = x.LicenseImageUrl,
+                    YearsOfExperience = x.YearsOfExperience,
+                    Bio = x.Bio,
+                    PassportImageUrl = x.PassportImageUrl,
+                    FirstName = x.User.FirstName,
+                    LastName = x.User.LastName,
+                    Email = x.User.Email ?? string.Empty,
+                    PhoneNumber = x.User.PhoneNumber,
+                    ProfileImageUrl = x.ProfileImageUrl,
+                    HasCar = x.CarId != null,
+                    CarBrand = x.Car.Brand.Name ?? string.Empty,
+                    CarYear = x.Car.Year,
+                    CarNumberOfSeats = x.Car.NumberOfSeats,
+                    CarModel = x.Car.Model.Name,
+                    CarColor = x.Car.Color.Name,
+                    CarBodyType = x.Car.BodyType.Type,
+                    CarFuelType = x.Car.FuelType.Type,
+                    CarImageUrl = x.Car.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty
+                }).ToListAsync();
 
                 DataResult<DriverDto> driversResult = new()
                 {
@@ -199,6 +200,158 @@ namespace Mottrist.Service.Features.Drivers.Services
         }
 
         /// <summary>
+        /// Retrieves a paginated list of drivers based on the provided parameters.
+        /// </summary>
+        /// <param name="page">The current page number.</param>
+        /// <param name="pageSize">The number of records per page. Defaults to 10.</param>
+        /// <param name="filter">An optional filter expression to filter drivers.</param>
+        /// <returns>
+        /// A <see cref="PaginatedResult{DriverDto}"/> object containing the paginated drivers and metadata.
+        /// </returns>
+        public async Task<PaginatedResult<DriverDto>?> GetAllWithPaginationAsync(
+            int page,
+            int pageSize = 10,
+            Expression<Func<Driver, bool>>? filter = null)
+        {
+            // Validate input
+            if (page <= 0) throw new ArgumentException("Page number must be greater than zero.", nameof(page));
+            if (pageSize <= 0) throw new ArgumentException("Page size must be greater than zero.", nameof(pageSize));
+
+            try
+            {
+
+
+                var driverQuery = from driver in _unitOfWork.Repository<Driver>().Table.AsQueryable()
+                                  join user in _unitOfWork.Repository<ApplicationUser>().Table.AsQueryable()
+                                  on driver.UserId equals user.Id
+                                  join country in _unitOfWork.Repository<Country>().Table.AsQueryable()
+                                  on driver.NationalityId equals country.Id into countryGroup
+                                  from countryDetails in countryGroup.DefaultIfEmpty()
+                                  join car in _unitOfWork.Repository<Car>().Table.AsQueryable()
+                                  on driver.CarId equals car.Id into carGroup
+                                  from carDetails in carGroup.DefaultIfEmpty()
+                                  select driver;
+
+                // Apply filter if provided
+                if (filter != null)
+                {
+                    driverQuery = driverQuery.Where(filter);
+                }
+
+
+                // Apply filter if provided
+                if (filter != null)
+                {
+                    driverQuery = driverQuery.Where(filter);
+                }
+
+                // Calculate total count for pagination metadata
+                var totalRecordsCount = await driverQuery.CountAsync();
+
+                // Apply pagination (skip and take)
+                var paginatedDrivers = await driverQuery
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(x => new DriverDto
+                    {
+                        Id = x.Id,
+                        WhatsAppNumber = x.WhatsAppNumber,
+                        Nationality = x.Country.Name ?? "Unknown",
+                        LicenseImageUrl = x.LicenseImageUrl,
+                        YearsOfExperience = x.YearsOfExperience,
+                        Bio = x.Bio,
+                        PassportImageUrl = x.PassportImageUrl,
+                        FirstName = x.User.FirstName,
+                        LastName = x.User.LastName,
+                        Email = x.User.Email ?? string.Empty,
+                        PhoneNumber = x.User.PhoneNumber,
+                        ProfileImageUrl = x.ProfileImageUrl,
+                        HasCar = x.CarId != null,
+                        CarBrand = x.Car.Brand.Name ?? string.Empty,
+                        CarYear = x.Car.Year,
+                        CarNumberOfSeats = x.Car.NumberOfSeats,
+                        CarModel = x.Car.Model.Name,
+                        CarColor = x.Car.Color.Name,
+                        CarBodyType = x.Car.BodyType.Type,
+                        CarFuelType = x.Car.FuelType.Type,
+                        CarImageUrl = x.Car.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty
+                    })
+                    .ToListAsync();
+
+                // Create paginated result object
+                PaginatedResult<DriverDto> paginatedDriverDto = new()
+                {
+                    Data = paginatedDrivers,
+                    PageNumber = page,
+                    PageSize = pageSize,
+                    DataRecordsCount = paginatedDrivers.Count,
+                    TotalRecordsCount = totalRecordsCount
+                };
+
+                return paginatedDriverDto;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        /// <summary>
+        /// Retrieves a single driver based on the provided filter expression.
+        /// </summary>
+        /// <param name="filter">An expression used to filter the driver.</param>
+        /// <returns>
+        /// A <see cref="DriverDto"/> object containing driver details if a match is found; otherwise, null.
+        /// </returns>
+        public DriverDto? Get(Expression<Func<Driver, bool>> filter)
+        {
+            // Validate the filter
+            if (filter == null)
+            {
+                throw new ArgumentNullException(nameof(filter), "The filter expression cannot be null.");
+            }
+
+            try
+            {
+                // Fetch the driver using the filter
+                var driver = _unitOfWork.Repository<Driver>().Table.AsQueryable()
+                    .Where(filter)
+                    .Select(x => new DriverDto
+                    {
+                        Id = x.Id,
+                        WhatsAppNumber = x.WhatsAppNumber,
+                        Nationality = x.Country.Name ?? "Unknown",
+                        LicenseImageUrl = x.LicenseImageUrl,
+                        YearsOfExperience = x.YearsOfExperience,
+                        Bio = x.Bio,
+                        PassportImageUrl = x.PassportImageUrl,
+                        FirstName = x.User.FirstName,
+                        LastName = x.User.LastName,
+                        Email = x.User.Email ?? string.Empty,
+                        PhoneNumber = x.User.PhoneNumber,
+                        ProfileImageUrl = x.ProfileImageUrl,
+                        HasCar = x.CarId != null,
+                        CarBrand = x.Car.Brand.Name ?? string.Empty,
+                        CarYear = x.Car.Year,
+                        CarNumberOfSeats = x.Car.NumberOfSeats,
+                        CarModel = x.Car.Model.Name,
+                        CarColor = x.Car.Color.Name,
+                        CarBodyType = x.Car.BodyType.Type,
+                        CarFuelType = x.Car.FuelType.Type,
+                        CarImageUrl = x.Car.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty
+                    })
+                    .FirstOrDefault();
+
+                // Return the result
+                return driver;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+        }
+        
+        /// <summary>
         /// Adds a new driver to the system, including an associated car and its image if applicable.
         /// </summary>
         /// <param name="driverDto">The DTO containing driver, car, and related details.</param>
@@ -226,6 +379,7 @@ namespace Mottrist.Service.Features.Drivers.Services
 
                 // Step 1: Create user
                 var user = _mapper.Map<ApplicationUser>(driverDto);
+                user.Id = 0;
                 var userResult = await AddUserAsync(_userManager,driverDto,user);
                 if (!userResult.IsSuccess)
                 {
@@ -277,9 +431,6 @@ namespace Mottrist.Service.Features.Drivers.Services
                 return Result.Failure($"Error adding driver: {ex.Message}", true);
             }
         }
-
-
-
 
         /// <summary>
         /// Adds a car to the system using CarService, along with its image if provided.
@@ -416,7 +567,7 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
 
             _mapper.Map(driverDto, existingUser);
-            
+            existingUser.Id = userId;
             var userUpdateResult = await _userManager.UpdateAsync(existingUser);
             if (!userUpdateResult.Succeeded)
             {
