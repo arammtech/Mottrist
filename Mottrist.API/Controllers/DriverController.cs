@@ -3,6 +3,8 @@ using Mottrist.Service.Features.Drivers.Interfaces;
 using global::Mottrist.API.Response;
 using Microsoft.AspNetCore.Mvc;
 using static Mottrist.API.Response.ApiResponseHelper;
+using Mottrist.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace Mottrist.API.Controllers
 {
@@ -117,6 +119,55 @@ namespace Mottrist.API.Controllers
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a paginated list of drivers based on the provided parameters.
+        /// </summary>
+        /// <param name="page">The current page number.</param>
+        /// <param name="pageSize">The number of records per page. Defaults to 10.</param>
+        /// <param name="filter">An optional filter expression to filter drivers (optional).</param>
+        /// <returns>
+        /// An HTTP 200 OK response with a paginated list of drivers, 
+        /// or an HTTP 500 Internal Server Error for unexpected failures.
+        /// </returns>
+        [HttpGet("AllWithPagination", Name = "GetAllDriversWithPaginationAsync")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAllWithPaginationAsync(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                // Validate pagination inputs
+                if (page <= 0 || pageSize <= 0)
+                {
+                    return BadRequestResponse(
+                        "PaginationError",
+                        "Both page and pageSize must be greater than 0.");
+                }
+
+                // Fetch paginated drivers
+                var result = await _driverService.GetAllWithPaginationAsync(page, pageSize);
+
+                if (result?.DataRecordsCount?.Equals(0) ?? false)
+                {
+                    return NoContentResponse("No drivers found for the specified parameters.");
+                }
+
+                // Return paginated drivers
+                return SuccessResponse(result, "Paginated drivers retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseHelper.StatusCodeResponse(
+                    StatusCodes.Status500InternalServerError,
+                    "InternalServerError",
+                    "An unexpected error occurred.",
+                    ex.Message);
             }
         }
 
