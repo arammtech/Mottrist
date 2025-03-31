@@ -60,7 +60,7 @@ namespace Mottrist.Service.Features.Drivers.Mappers
                 CarColor = entity.Car?.Color?.Name,
                 CarBodyType = entity.Car?.BodyType?.Type,
                 CarFuelType = entity.Car?.FuelType?.Type,
-                CarImageUrl = entity.Car?.CarImages.FirstOrDefault(x => x.IsMain)?.ImageUrl
+                MainCarImageUrl = entity.Car?.CarImages.FirstOrDefault(x => x.IsMain)?.ImageUrl
             };
         }
 

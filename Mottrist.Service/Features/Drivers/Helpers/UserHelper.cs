@@ -51,7 +51,7 @@ namespace Mottrist.Service.Features.Drivers.Helpers
         {
             // Map the username from the driver's email
             user.UserName = driverDto.Email;
-
+            user.Id = 0;
             // Attempt to create the user
             var addUserResult = await userManager.CreateAsync(user);
             if (!addUserResult.Succeeded)

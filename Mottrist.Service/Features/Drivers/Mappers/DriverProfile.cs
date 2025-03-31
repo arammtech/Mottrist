@@ -24,7 +24,7 @@ namespace Mottrist.Service.Features.Drivers.Mappers
             CreateMap<Car, AddDriverDto>()
     .ReverseMap();
 
-            CreateMap<CarDto, AddDriverDto>()
+            CreateMap<AddCarDto, AddDriverDto>()
                 .ReverseMap();
 
             CreateMap<Driver, UpdateDriverDto>()
@@ -35,7 +35,7 @@ namespace Mottrist.Service.Features.Drivers.Mappers
                 .ReverseMap()
                 .ForMember(src => src.Id, opt => opt.Ignore()); // Ignore Id during reverse mapping
 
-            CreateMap<CarDto, UpdateDriverDto>()
+            CreateMap<AddCarDto, UpdateDriverDto>()
                 .ReverseMap();
 
             CreateMap<DriverDto, Driver>()

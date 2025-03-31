@@ -16,6 +16,9 @@ using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Cars.Interfaces;
 using Feature.Car.DTOs;
 using static Mottrist.Service.Features.Drivers.Helpers.UserHelper;
+using static Mottrist.Utilities.Global.GlobalFunctions;
+using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 namespace Mottrist.Service.Features.Drivers.Services
 {
     /// <summary>
@@ -64,29 +67,24 @@ namespace Mottrist.Service.Features.Drivers.Services
         }
 
         /// <summary>
-        /// Retrieves a set of drivers with their detailed information, optionally filtered by the specified criteria.
+        /// Retrieves a set of drivers with their detailed information, including car and image details, optionally filtered by the specified criteria.
         /// </summary>
         /// <param name="filter">Optional: A filter expression to apply to the query. Defaults to null.</param>
         /// <returns>
         /// A task that represents the asynchronous operation. The task result contains:
-        /// - A set of <see cref="DriverDto"/> objects representing the drivers with their details, or
-        /// - Null if an exception occurs or if no matching drivers are found.
+        /// - A <see cref="DataResult{DriverDto}"/> object containing the drivers with their details.
+        /// - An empty result if no matching drivers are found.
         /// </returns>
         public async Task<DataResult<DriverDto>?> GetAllAsync(Expression<Func<Driver, bool>>? filter = null)
         {
             try
             {
-                // Build the base query
-                var driverQuery = from driver in _unitOfWork.Repository<Driver>().Table.AsQueryable()
-                                  join user in _unitOfWork.Repository<ApplicationUser>().Table.AsQueryable()
-                                  on driver.UserId equals user.Id
-                                  join country in _unitOfWork.Repository<Country>().Table.AsQueryable()
-                                  on driver.NationalityId equals country.Id into countryGroup
-                                  from countryDetails in countryGroup.DefaultIfEmpty()
-                                  join car in _unitOfWork.Repository<Car>().Table.AsQueryable()
-                                  on driver.CarId equals car.Id into carGroup
-                                  from carDetails in carGroup.DefaultIfEmpty()
-                                  select driver;
+                // Build the base query with necessary includes
+                var driverQuery = _unitOfWork.Repository<Driver>().Query()
+                    .Include(d => d.User) // Include related User entity
+                    .Include(d => d.Country) // Include related Country entity
+                    .Include(d => d.Car) // Include related Car entity
+                        .ThenInclude(c => c.CarImages).AsQueryable(); // Include CarImages within Car
 
                 // Apply filter if provided
                 if (filter != null)
@@ -94,48 +92,47 @@ namespace Mottrist.Service.Features.Drivers.Services
                     driverQuery = driverQuery.Where(filter);
                 }
 
-
-                var drivers = await driverQuery.Select(x => new DriverDto
+                // Transform to DriverDto
+                var drivers = await driverQuery.Select(driver => new DriverDto
                 {
-                    Id = x.Id,
-                    WhatsAppNumber = x.WhatsAppNumber,
-                    Nationality = x.Country.Name ?? "Unknown",
-                    LicenseImageUrl = x.LicenseImageUrl,
-                    YearsOfExperience = x.YearsOfExperience,
-                    Bio = x.Bio,
-                    PassportImageUrl = x.PassportImageUrl,
-                    FirstName = x.User.FirstName,
-                    LastName = x.User.LastName,
-                    Email = x.User.Email ?? string.Empty,
-                    PhoneNumber = x.User.PhoneNumber,
-                    ProfileImageUrl = x.ProfileImageUrl,
-                    HasCar = x.CarId != null,
-                    CarBrand = x.Car.Brand.Name ?? string.Empty,
-                    CarYear = x.Car.Year,
-                    CarNumberOfSeats = x.Car.NumberOfSeats,
-                    CarModel = x.Car.Model.Name,
-                    CarColor = x.Car.Color.Name,
-                    CarBodyType = x.Car.BodyType.Type,
-                    CarFuelType = x.Car.FuelType.Type,
-                    CarImageUrl = x.Car.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty
+                    Id = driver.Id,
+                    WhatsAppNumber = driver.WhatsAppNumber,
+                    Nationality = driver.Country.Name ?? "Unknown", // Handle nullable Country
+                    LicenseImageUrl = driver.LicenseImageUrl,
+                    YearsOfExperience = driver.YearsOfExperience,
+                    Bio = driver.Bio,
+                    PassportImageUrl = driver.PassportImageUrl,
+                    FirstName = driver.User.FirstName,
+                    LastName = driver.User.LastName,
+                    Email = driver.User.Email ?? string.Empty,
+                    PhoneNumber = driver.User.PhoneNumber,
+                    ProfileImageUrl = driver.ProfileImageUrl,
+                    HasCar = driver.CarId != null,
+                    CarBrand = driver.Car.Brand.Name ?? "N/A", // Handle nullable Car
+                    CarYear = driver.Car.Year,
+                    CarNumberOfSeats = driver.Car.NumberOfSeats,
+                    CarModel = driver.Car.Model.Name,
+                    CarColor = driver.Car.Color.Name,
+                    CarBodyType = driver.Car.BodyType.Type,
+                    CarFuelType = driver.Car.FuelType.Type,
+                    MainCarImageUrl = driver.Car.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl, // Main image
+                    AddtionalCarImageUrls = driver.Car.CarImages
+                        .Where(ci => !ci.IsMain)
+                        .Select(ci => ci.ImageUrl)
+                        .ToList() ?? new List<string>() // Additional images
                 }).ToListAsync();
 
-                DataResult<DriverDto> driversResult = new()
+                // Return the result
+                return new DataResult<DriverDto>
                 {
-                    Data = _mapper.Map<IEnumerable<DriverDto>>(drivers)
+                    Data = drivers.Any() ? drivers : Enumerable.Empty<DriverDto>()
                 };
-
-                if (!drivers.Any())
-                    driversResult.Data = Enumerable.Empty<DriverDto>();
-
-
-                // Execute the query and return the result as a set
-                return driversResult;
             }
             catch (Exception)
             {
-                // Log the exception if required
+                // Log the exception for debugging
                 return null;
+
             }
         }
 
@@ -187,7 +184,11 @@ namespace Mottrist.Service.Features.Drivers.Services
                         CarColor = carDetails.Color.Name,
                         CarBodyType = carDetails.BodyType.Type,
                         CarFuelType = carDetails.FuelType.Type,
-                        CarImageUrl = carDetails.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty
+                        MainCarImageUrl = carDetails.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty,
+                        AddtionalCarImageUrls = carDetails.CarImages
+                            .Where(ci => !ci.IsMain)
+                            .Select(ci => ci.ImageUrl)
+                            .ToList() ?? new List<string>()
                     }
                 ).FirstOrDefaultAsync();
 
@@ -221,13 +222,13 @@ namespace Mottrist.Service.Features.Drivers.Services
             {
 
 
-                var driverQuery = from driver in _unitOfWork.Repository<Driver>().Table.AsQueryable()
-                                  join user in _unitOfWork.Repository<ApplicationUser>().Table.AsQueryable()
+                var driverQuery = from driver in _unitOfWork.Repository<Driver>().Query()
+                                  join user in _unitOfWork.Repository<ApplicationUser>().Query()
                                   on driver.UserId equals user.Id
-                                  join country in _unitOfWork.Repository<Country>().Table.AsQueryable()
+                                  join country in _unitOfWork.Repository<Country>().Query()
                                   on driver.NationalityId equals country.Id into countryGroup
                                   from countryDetails in countryGroup.DefaultIfEmpty()
-                                  join car in _unitOfWork.Repository<Car>().Table.AsQueryable()
+                                  join car in _unitOfWork.Repository<Car>().Query()
                                   on driver.CarId equals car.Id into carGroup
                                   from carDetails in carGroup.DefaultIfEmpty()
                                   select driver;
@@ -274,7 +275,11 @@ namespace Mottrist.Service.Features.Drivers.Services
                         CarColor = x.Car.Color.Name,
                         CarBodyType = x.Car.BodyType.Type,
                         CarFuelType = x.Car.FuelType.Type,
-                        CarImageUrl = x.Car.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty
+                        MainCarImageUrl = x.Car.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty,
+                        AddtionalCarImageUrls = x.Car.CarImages
+                            .Where(ci => !ci.IsMain)
+                            .Select(ci => ci.ImageUrl)
+                            .ToList() ?? new List<string>()
                     })
                     .ToListAsync();
 
@@ -302,7 +307,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <returns>
         /// A <see cref="DriverDto"/> object containing driver details if a match is found; otherwise, null.
         /// </returns>
-        public DriverDto? Get(Expression<Func<Driver, bool>> filter)
+        public async Task<DriverDto?> GetAsync(Expression<Func<Driver, bool>> filter)
         {
             // Validate the filter
             if (filter == null)
@@ -313,7 +318,7 @@ namespace Mottrist.Service.Features.Drivers.Services
             try
             {
                 // Fetch the driver using the filter
-                var driver = _unitOfWork.Repository<Driver>().Table.AsQueryable()
+                var driver =await _unitOfWork.Repository<Driver>().Query()
                     .Where(filter)
                     .Select(x => new DriverDto
                     {
@@ -337,9 +342,13 @@ namespace Mottrist.Service.Features.Drivers.Services
                         CarColor = x.Car.Color.Name,
                         CarBodyType = x.Car.BodyType.Type,
                         CarFuelType = x.Car.FuelType.Type,
-                        CarImageUrl = x.Car.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty
+                        MainCarImageUrl = x.Car.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty,
+                        AddtionalCarImageUrls = x.Car.CarImages
+                            .Where(ci => !ci.IsMain)
+                            .Select(ci => ci.ImageUrl)
+                            .ToList() ?? new List<string>()
                     })
-                    .FirstOrDefault();
+                    .FirstOrDefaultAsync();
 
                 // Return the result
                 return driver;
@@ -350,56 +359,54 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
 
         }
-        
+
         /// <summary>
-        /// Adds a new driver to the system, including an associated car and its image if applicable.
+        /// Adds a new driver to the system, including an associated car and its images if applicable.
         /// </summary>
         /// <param name="driverDto">The DTO containing driver, car, and related details.</param>
-        /// <returns>
-        /// A <see cref="Result"/> object indicating the success or failure of the operation.
-        /// </returns>
+        /// <returns>A <see cref="Result"/> object indicating the success or failure of the operation.</returns>
         public async Task<Result> AddAsync(AddDriverDto driverDto)
         {
-            // Start a transaction
-            var transaction = await _unitOfWork.StartTransactionAsync();
-            if (!transaction.IsSuccess)
+            var transactionResult = await _unitOfWork.StartTransactionAsync();
+            if (!transactionResult.IsSuccess)
             {
                 return Result.Failure("Failed to start the transaction.", true);
             }
 
             try
             {
-                // Check if user with the same email already exists
+                // Validate uniqueness of the email
                 var existingUser = await _userManager.FindByEmailAsync(driverDto.Email);
                 if (existingUser != null)
                 {
                     await _unitOfWork.RollbackAsync();
-                    return Result.Exist("User with the same email already exists.");
+                    return Result.Exist("A user with the same email already exists.");
                 }
 
-                // Step 1: Create user
+                // Process driver-related images
+                await ProcessDriverImagesAsync(driverDto);
+
+                // Create user and assign role
                 var user = _mapper.Map<ApplicationUser>(driverDto);
-                user.Id = 0;
-                var userResult = await AddUserAsync(_userManager,driverDto,user);
+                var userResult = await AddUserAsync(_userManager, driverDto, user);
                 if (!userResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
                     return userResult;
                 }
 
-                // Step 2: Assign role
-                var roleResult = await AssignUserRoleAsync(_userManager,user, AppUserRoles.RoleDriver);
+                var roleResult = await AssignUserRoleAsync(_userManager, user, AppUserRoles.RoleDriver);
                 if (!roleResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
                     return roleResult;
                 }
 
-                // Step 3: Create driver entity
+                // Map and save driver entity
                 var driverEntity = _mapper.Map<Driver>(driverDto);
                 driverEntity.UserId = user.Id;
 
-                // Step 4: Add car using CarService if applicable
+                // Add car and its images if applicable
                 if (driverDto.HasCar)
                 {
                     var carResult = await AddCarWithCarServiceAsync(driverDto, driverEntity);
@@ -410,69 +417,115 @@ namespace Mottrist.Service.Features.Drivers.Services
                     }
                 }
 
-                // Step 5: Save driver entity
-                driverEntity.Id = 0;
+                // Save driver entity
                 await _unitOfWork.Repository<Driver>().AddAsync(driverEntity);
-                var driverSaveResult = await _unitOfWork.SaveChangesAsync();
-                if (!driverSaveResult.IsSuccess)
+                var saveDriverResult = await _unitOfWork.SaveChangesAsync();
+                if (!saveDriverResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
-                    return Result.Failure("Failed to save the driver.", true);
+                    return Result.Failure("Failed to save the driver details.", true);
                 }
 
-                // Commit transaction and update DTO with generated ID
+                // Commit transaction
                 await _unitOfWork.CommitAsync();
                 driverDto.Id = driverEntity.Id;
+
                 return Result.Success();
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
-                return Result.Failure($"Error adding driver: {ex.Message}", true);
+                return Result.Failure($"An unexpected error occurred: {ex.Message}", true);
             }
         }
 
         /// <summary>
-        /// Adds a car to the system using CarService, along with its image if provided.
+        /// Adds a car to the system using the CarService, along with its images if provided.
         /// </summary>
-        /// <param name="driverDto">The driver DTO containing car details.</param>
+        /// <param name="driverDto">The DTO containing car details.</param>
         /// <param name="driverEntity">The driver entity to link the car to.</param>
-        /// <returns>A <see cref="Result"/> indicating success or failure.</returns>
+        /// <returns>A <see cref="Result"/> indicating the success or failure of the operation.</returns>
         private async Task<Result> AddCarWithCarServiceAsync(AddDriverDto driverDto, Driver driverEntity)
         {
-            // Map car details to a CarDto
-            var carDto = _mapper.Map<CarDto>(driverDto);
+            var carDto = _mapper.Map<AddCarDto>(driverDto);
+            carDto.Id = 0; // Ensure a new car is created
 
-            // Add the car using the CarService
+            // Add the car via CarService
             var carAddResult = await _carService.AddAsync(carDto);
             if (!carAddResult.IsSuccess)
             {
-                return Result.Failure("Failed to add the car details.", true);
+                return Result.Failure("Failed to add car details.", true);
             }
 
-            // Update the driver's CarId with the newly created car's ID
+            // Update driver's CarId
             driverEntity.CarId = carDto.Id;
 
-            // Handle car image creation using CarService
-            if (!string.IsNullOrEmpty(driverDto.CarImageUrl))
+            // Add main car image
+            if (driverDto.CarImagesUrl != null && driverDto.CarImagesUrl.Any())
             {
-                var carImageDto = new CarImageDto
+                for (int i = 0; i < driverDto.CarImagesUrl.Count; i++)
                 {
-                    CarId = carDto.Id,
-                    ImageUrl = driverDto.CarImageUrl,
-                    IsMain = true
-                };
+                    var carImageDto = new CarImageDto
+                    {
+                        CarId = carDto.Id,
+                        ImageUrl = driverDto.CarImagesUrl[i],
+                        IsMain = i == driverDto.MainCarImageIndex // Set main image
+                    };
 
-                var carImageResult = await _carService.AddCarImageAsync(carImageDto);
-                if (!carImageResult.IsSuccess)
-                {
-                    return Result.Failure("Failed to add the car image.", true);
+                    var carImageResult = await _carService.AddCarImageAsync(carImageDto);
+                    if (!carImageResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to add car images.", true);
+                    }
                 }
             }
 
             return Result.Success();
         }
 
+        /// <summary>
+        /// Processes and saves all driver-related images, including profile, license, passport, and car images.
+        /// </summary>
+        /// <param name="driverDto">The DTO containing the image files.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        private async Task ProcessDriverImagesAsync(AddDriverDto driverDto)
+        {
+            if (driverDto.ProfileImage != null)
+            {
+                driverDto.ProfileImageUrl = await SaveImageAsync(driverDto.ProfileImage, "profiles");
+            }
+
+            if (driverDto.LicenseImage != null)
+            {
+                driverDto.LicenseImageUrl = await SaveImageAsync(driverDto.LicenseImage, "licenses");
+            }
+
+            if (driverDto.PassportImage != null)
+            {
+                driverDto.PassportImageUrl = await SaveImageAsync(driverDto.PassportImage, "passports");
+            }
+
+            if (driverDto.CarImages != null && driverDto.CarImages.Any())
+            {
+                var processedCarImages = new List<string>();
+
+                for (int i = 0; i < driverDto.CarImages.Count; i++)
+                {
+                    var carImage = driverDto.CarImages[i];
+                    var savedImageUrl = await SaveImageAsync(carImage, "cars");
+
+                    processedCarImages.Add(savedImageUrl);
+
+                    // Set the main car image URL based on the selected index
+                    if (driverDto.MainCarImageIndex == i)
+                    {
+                        driverDto.CarImagesUrl = processedCarImages;
+                    }
+                }
+
+                driverDto.CarImagesUrl = processedCarImages;
+            }
+        }
 
         /// <summary>
         /// Updates an existing driver in the system, including associated user and car details if applicable.
@@ -527,7 +580,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
 
                 // Step 4: Save all changes to the repository
-                _unitOfWork.Repository<Driver>().Update(existingDriver);
+                await _unitOfWork.Repository<Driver>().UpdateAsync(existingDriver);
                 var saveResult = await _unitOfWork.SaveChangesAsync();
                 if (!saveResult.IsSuccess)
                 {
@@ -578,55 +631,271 @@ namespace Mottrist.Service.Features.Drivers.Services
         }
 
         /// <summary>
-        /// Updates or adds car details for the driver.
+        /// Updates or adds car details and images for the driver.
         /// </summary>
         /// <param name="driverDto">The driver DTO with updated car details.</param>
         /// <param name="existingDriver">The existing driver entity.</param>
-        /// <returns>A <see cref="Result"/> indicating the outcome of the operation.</returns>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the outcome of the operation.
+        /// </returns>
         private async Task<Result> UpdateOrAddCarDetailsAsync(UpdateDriverDto driverDto, Driver existingDriver)
         {
-            var carDto = _mapper.Map<CarDto>(driverDto);
-
-            if (existingDriver.CarId.HasValue)
+            try
             {
-                // Update existing car
-                carDto.Id = existingDriver.CarId.Value;
-                var carUpdateResult = await _carService.UpdateAsync(carDto);
-                if (!carUpdateResult.IsSuccess)
+                // Map car details from the DTO
+                var carDto = _mapper.Map<AddCarDto>(driverDto);
+
+                // Check if the driver already has a car associated
+                if (existingDriver.CarId.HasValue)
                 {
-                    return Result.Failure("Failed to update car details.");
+                    // Update existing car
+                    var UpdatecarDto = _mapper.Map<UpdateCarDto>(carDto);
+                    UpdatecarDto.Id = existingDriver.CarId.Value;
+                    var carUpdateResult = await _carService.UpdateAsync(UpdatecarDto);
+                    if (!carUpdateResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to update car details.");
+                    }
                 }
+                else
+                {
+                    // Create a new car and link it to the driver
+                    var carAddResult = await _carService.AddAsync(carDto);
+                    if (!carAddResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to add car details.");
+                    }
+                    // Update the driver's CarId with the newly created car
+                    existingDriver.CarId = carDto.Id;
+                }
+
+                // Process and update the car images
+                var imageResult = await ProcessAndUpdateCarImagesAsync(driverDto, existingDriver.CarId.Value);
+                if (!imageResult.IsSuccess)
+                {
+                    return Result.Failure("Failed to update car images.");
+                }
+
+                return Result.Success();
             }
-            else
+            catch (Exception ex)
             {
-                // Create a new car and link it to the driver
-                var carAddResult = await _carService.AddAsync(carDto);
-                if (!carAddResult.IsSuccess)
-                {
-                    return Result.Failure("Failed to add car details.");
-                }
-                existingDriver.CarId = carDto.Id;
+                return Result.Failure($"An error occurred while updating or adding car details: {ex.Message}", true);
             }
-
-            // Handle car image updates
-            if (!string.IsNullOrEmpty(driverDto.CarImageUrl))
-            {
-                var carImageResult = await _carService.AddCarImageAsync(new CarImageDto
-                {
-                    CarId = existingDriver.CarId.Value,
-                    ImageUrl = driverDto.CarImageUrl,
-                    IsMain = true
-                });
-
-                if (!carImageResult.IsSuccess)
-                {
-                    return Result.Failure("Failed to update car image.");
-                }
-            }
-
-            return Result.Success();
         }
 
+        /// <summary>
+        /// Deletes a specific car image associated with a driver's car.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver whose car's image is to be deleted.</param>
+        /// <param name="imageUrl">The URL of the image to be deleted.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the operation.
+        /// </returns>
+        public async Task<Result> DeleteImageCar(int driverId, string imageUrl)
+        {
+            if (driverId <= 0)
+            {
+                return Result.Failure("Driver ID must be greater than zero.");
+            }
+
+            if (string.IsNullOrWhiteSpace(imageUrl))
+            {
+                return Result.Failure("Image URL cannot be null or empty.");
+            }
+
+            try
+            {
+                // Get the driver entity to fetch associated car ID
+                var driver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverId);
+                if (driver == null || driver.CarId == null)
+                {
+                    return Result.Failure("Driver does not have an associated car.");
+                }
+
+                // Delegate to CarService to delete the image
+                var result = await _carService.RemoveCarImageAsync(imageUrl, driver.CarId.Value);
+
+                // Return the result from CarService
+                if (!result.IsSuccess)
+                {
+                    return Result.Failure($"Failed to delete car image. Reason: {result.Errors?.FirstOrDefault()}");
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"An error occurred: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Sets a specific car image as the main image for a driver's car.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver whose car's image is to be set as the main image.</param>
+        /// <param name="imageUrl">The URL of the image to set as the main image.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the operation.
+        /// </returns>
+        public async Task<Result> SetMainImageAsync(int driverId, string imageUrl)
+        {
+            if (driverId <= 0)
+            {
+                return Result.Failure("Driver ID must be greater than zero.");
+            }
+
+            if (string.IsNullOrWhiteSpace(imageUrl))
+            {
+                return Result.Failure("Image URL cannot be null or empty.");
+            }
+
+            try
+            {
+                // Get the driver entity to fetch associated car ID
+                var driver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverId);
+                if (driver == null || driver.CarId == null)
+                {
+                    return Result.Failure("Driver does not have an associated car.");
+                }
+
+                // Delegate to CarService to set the main image
+                var result = await _carService.SetMainImageAsync(driver.CarId.Value, imageUrl);
+
+                // Return the result from CarService
+                if (!result.IsSuccess)
+                {
+                    return Result.Failure($"Failed to set main car image. Reason: {result.Errors?.FirstOrDefault()}");
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"An error occurred: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Updates a car image, either by replacing the image file or updating metadata.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver whose car's image is to be updated.</param>
+        /// <param name="imageUrl">Optional: The URL of the existing image to update metadata.</param>
+        /// <param name="newImageFile">Optional: A new image file to replace the existing image.</param>
+        /// <param name="isMain">Specifies whether the image should be marked as the main image.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the operation.
+        /// </returns>
+        public async Task<Result> UpdateImageAsync(int driverId, string? imageUrl, IFormFile? newImageFile, bool isMain)
+        {
+            if (driverId <= 0)
+            {
+                return Result.Failure("Driver ID must be greater than zero.");
+            }
+
+            if (string.IsNullOrWhiteSpace(imageUrl) && newImageFile == null)
+            {
+                return Result.Failure("Either imageUrl or newImageFile must be provided.");
+            }
+
+            try
+            {
+                // Get the driver entity to fetch associated car ID
+                var driver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverId);
+                if (driver == null || driver.CarId == null)
+                {
+                    return Result.Failure("Driver does not have an associated car.");
+                }
+
+                // Metadata Update (using URL)
+                if (!string.IsNullOrWhiteSpace(imageUrl))
+                {
+                    var result = await _carService.UpdateImageAsync(driver.CarId.Value, imageUrl, null, isMain);
+                    if (!result.IsSuccess)
+                    {
+                        return Result.Failure($"Failed to update car image metadata. Reason: {result.Errors?.FirstOrDefault()}");
+                    }
+                }
+
+                // File Replacement (uploading a new image)
+                if (newImageFile != null)
+                {
+                    var result = await _carService.UpdateImageAsync(driver.CarId.Value, null, newImageFile, isMain);
+                    if (!result.IsSuccess)
+                    {
+                        return Result.Failure($"Failed to replace car image. Reason: {result.Errors?.FirstOrDefault()}");
+                    }
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"An error occurred: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Processes and updates car images, including adding or updating the main image.
+        /// </summary>
+        /// <param name="driverDto">The driver DTO containing car image details.</param>
+        /// <param name="carId">The ID of the car associated with the driver.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the operation was successful or not.
+        /// </returns>
+        private async Task<Result> ProcessAndUpdateCarImagesAsync(UpdateDriverDto driverDto, int carId)
+        {
+            if (string.IsNullOrEmpty(driverDto.MainCarImageUrl) && (driverDto.CarImageUrl == null || !driverDto.CarImageUrl.Any()))
+            {
+                return Result.Success(); // No images to process
+            }
+
+            try
+            {
+                // Update or set the main image if specified
+                if (!string.IsNullOrEmpty(driverDto.MainCarImageUrl))
+                {
+                    var setMainImageResult = await _carService.SetMainImageAsync(carId, driverDto.MainCarImageUrl);
+                    if (!setMainImageResult.IsSuccess)
+                    {
+                        return Result.Failure($"Failed to set the main car image: {driverDto.MainCarImageUrl}");
+                    }
+                }
+
+                // Add or update additional images
+                if (driverDto.CarImageUrl != null && driverDto.CarImageUrl.Any())
+                {
+                    foreach (var imageUrl in driverDto.CarImageUrl)
+                    {
+                        // Check if the image already exists
+                        var existingImage = await _carService.GetCarImagesAsync(carId);
+                        if (existingImage != null && existingImage.Any(ci => ci.ImageUrl == imageUrl))
+                        {
+                            continue; // Skip if the image already exists
+                        }
+
+                        // Add new car image
+                        var addImageResult = await _carService.AddCarImageAsync(new CarImageDto
+                        {
+                            CarId = carId,
+                            ImageUrl = imageUrl,
+                            IsMain = false // Additional images are not marked as main
+                        });
+
+                        if (!addImageResult.IsSuccess)
+                        {
+                            return Result.Failure($"Failed to add car image: {imageUrl}");
+                        }
+                    }
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"An error occurred while processing car images: {ex.Message}", true);
+            }
+        }
 
         /// <summary>
         /// Deletes a driver by their ID, along with associated car details (if applicable).
@@ -745,6 +1014,108 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
         }
 
+        /// <summary>
+        /// Adds a new car image for a driver's car.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver whose car's image is to be added.</param>
+        /// <param name="imageFile">The image file to be uploaded and added.</param>
+        /// <param name="isMain">Specifies whether the new image should be marked as the main image.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the operation.
+        /// </returns>
+        public async Task<Result> AddCarImageAsync(int driverId, IFormFile imageFile, bool isMain = false)
+        {
+            if (driverId <= 0)
+            {
+                return Result.Failure("Driver ID must be greater than zero.");
+            }
+
+            if (imageFile == null || imageFile.Length == 0)
+            {
+                return Result.Failure("Image file cannot be null or empty.");
+            }
+
+            try
+            {
+                // Get the driver entity to fetch associated car ID
+                var driver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverId);
+                if (driver == null || driver.CarId == null)
+                {
+                    return Result.Failure("Driver does not have an associated car.");
+                }
+
+                // Save the image file
+                var imageUrl = await SaveImageAsync(imageFile, "car-images");
+
+                // Delegate to CarService to add the new image
+                var carImageDto = new CarImageDto
+                {
+                    CarId = driver.CarId.Value,
+                    ImageUrl = imageUrl,
+                    IsMain = isMain
+                };
+
+                var result = await _carService.AddCarImageAsync(carImageDto);
+
+                // Return the result from CarService
+                if (!result.IsSuccess)
+                {
+                    return Result.Failure($"Failed to add car image. Reason: {result.Errors?.FirstOrDefault()}");
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"An error occurred: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Deletes a specific car image associated with a driver's car.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver whose car's image is to be deleted.</param>
+        /// <param name="imageUrl">The URL of the image to be deleted.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the operation.
+        /// </returns>
+        public async Task<Result> DeleteImageCarAsync(int driverId, string imageUrl)
+        {
+            if (driverId <= 0)
+            {
+                return Result.Failure("Driver ID must be greater than zero.");
+            }
+
+            if (string.IsNullOrWhiteSpace(imageUrl))
+            {
+                return Result.Failure("Image URL cannot be null or empty.");
+            }
+
+            try
+            {
+                // Retrieve the driver entity to find the associated car ID
+                var driver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverId);
+                if (driver == null || driver.CarId == null)
+                {
+                    return Result.Failure("Driver does not have an associated car.");
+                }
+
+                // Delegate the deletion operation to CarService
+                var result = await _carService.RemoveCarImageAsync(imageUrl, driver.CarId.Value);
+
+                // Return the result from CarService
+                if (!result.IsSuccess)
+                {
+                    return Result.Failure($"Failed to delete car image. Reason: {result.Errors?.FirstOrDefault()}");
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"An error occurred: {ex.Message}");
+            }
+        }
 
     }
 }

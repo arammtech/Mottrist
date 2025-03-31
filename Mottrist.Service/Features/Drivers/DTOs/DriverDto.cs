@@ -34,6 +34,7 @@
         public string? CarColor { get; set; }
         public string? CarBodyType { get; set; }
         public string? CarFuelType { get; set; }
-        public string? CarImageUrl { get; set; }
+        public string? MainCarImageUrl { get; set; }
+        public List<string>? AddtionalCarImageUrls { get; set; }
     }
 }
