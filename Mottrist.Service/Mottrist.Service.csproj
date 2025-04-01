@@ -24,7 +24,7 @@
 	  <ProjectReference Include="..\Mottrist.Utilities\Mottrist.Utilities.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Features\Country\DTOs\" />
+	  <Folder Include="Features\Countries\DTOs\" />
 	</ItemGroup>
 
 </Project>
