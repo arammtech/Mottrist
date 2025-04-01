@@ -3,7 +3,7 @@ using Mottrist.Domain.Common.IUnitOfWork;
 using Mottrist.Domain.Entities;
 using Mottrist.Domain.LookupEntities;
 using Mottrist.Service.Features.Cars.Interfaces;
-using Mottrist.Service.Features.Country.Interfaces;
+using Mottrist.Service.Features.Countries.Interfaces;
 using Mottrist.Service.Features.General;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mottrist.Service.Features.Country.Services
+namespace Mottrist.Service.Features.Countries.Services
 {
     public class Countryservice : BaseService, ICountryService
     {
