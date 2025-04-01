@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Identity;
+using Mottrist.Domain.Identity;
 using Mottrist.Service.Features.Traveller.DTOs;
 
 namespace Mottrist.Service.Features.Traveller.Validators
@@ -9,11 +11,16 @@ namespace Mottrist.Service.Features.Traveller.Validators
     /// </summary>
     public class AddTravelerDtoValidator : AbstractValidator<AddTravelerDto>
     {
+        private readonly UserManager<ApplicationUser> _userManager;
+
+
         /// <summary>
         /// Initializes validation rules for AddTravelerDto.
         /// </summary>
-        public AddTravelerDtoValidator()
+        public AddTravelerDtoValidator(UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
+
             RuleFor(x => x.NationalityId)
                 .InclusiveBetween(1, 5).WithMessage("Nationality ID is required.");
 
@@ -27,7 +34,8 @@ namespace Mottrist.Service.Features.Traveller.Validators
 
             RuleFor(x => x.Email)
                   .NotEmpty().WithMessage("Email is required.")
-                  .EmailAddress().WithMessage("Invalid email format. Expected format: example@domain.com");
+                  .EmailAddress().WithMessage("Invalid email format. Expected format: example@domain.com")
+                    .MustAsync(EmailNotTaken).WithMessage("Email is already taken.");
 
             RuleFor(x => x.PhoneNumber)
                 .Matches(@"^\+?[1-9]\d{9,14}$")
@@ -46,6 +54,13 @@ namespace Mottrist.Service.Features.Traveller.Validators
                 .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _))
                 .WithMessage("Invalid image URL format. Expected format: https://example.com/image.jpg")
                 .When(x => !string.IsNullOrEmpty(x.ProfileImageUrl));
+        }
+
+        private async Task<bool> EmailNotTaken(string email, CancellationToken cancellationToken)
+        {
+            // Check if the email already exists
+            var user = await _userManager.FindByEmailAsync(email);
+            return user == null;  
         }
     }
 }
