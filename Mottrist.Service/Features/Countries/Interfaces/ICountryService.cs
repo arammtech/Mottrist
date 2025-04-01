@@ -1,7 +1,6 @@
-﻿
-using Mottrist.Service.Features.General;
+﻿using Mottrist.Service.Features.General;
 
-namespace Mottrist.Service.Features.Country.Interfaces
+namespace Mottrist.Service.Features.Countries.Interfaces
 {
     public interface ICountryService : IBaseService
     {

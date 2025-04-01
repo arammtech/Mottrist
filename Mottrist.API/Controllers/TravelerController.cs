@@ -14,7 +14,7 @@ namespace Mottrist.API.Controllers
 
         public TravelerController(ITravelerService travelerService)
         {
-            _travelerService = travelerService ?? throw new ArgumentNullException(nameof(travelerService)); 
+            _travelerService = travelerService; 
         }
 
         /// <summary>
