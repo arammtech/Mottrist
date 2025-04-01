@@ -29,33 +29,6 @@ namespace Mottrist.API.Controllers
             _Configuration = configuration;
         }
 
-
-        // Registration 
-        [HttpPost("register")]
-        public async Task<IActionResult> SignUp(UserDto2 userDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Validation error");
-            }
-
-            ApplicationUser user = new()
-            {
-                FirstName = "Mery",
-                LastName = "Mery",
-                Email = "Mery@mery.mery",
-                UserName = "Mery@mery.mery",
-                PasswordHash = "Pass123@",
-                PhoneNumber = "1234321234543",
-            };
-
-            var result = await _userManager.CreateAsync(user, user.PasswordHash);
-
-            return result.Succeeded ? Ok() : StatusCode(500);
-        }
-
-
-
         // Login
         [HttpPost("login")]
         public async Task<IActionResult> SignIn(LoginDto loginDto)
