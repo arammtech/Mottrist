@@ -24,6 +24,10 @@ using Mottrist.Service.Features.Traveller.Validators;
 using Mottrist.Utilities.Identity;
 using System.Reflection;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography.Xml;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +49,31 @@ builder.Services.AddSwaggerGen(options =>
 
     // Tell Swagger to use XML comments
     options.IncludeXmlComments(xmlPath);
+
+    // To Enable authorization using Swagger (JWT)
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter 'Bearer' [space] and then your valid token in the text input"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
 });
 
 // Optional: if you already have an extension method for OpenAPI, you can remove or modify it
@@ -75,6 +104,25 @@ builder.Services.AddCors(options =>
         });
 });
 
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false; // change this to true later
+    options.TokenValidationParameters = new()
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+    };
+});
 
 #region Packages
 builder.Services.AddAutoMapper(typeof(MappingProfile), typeof(TravelerProfile), typeof(DriverProfile));
@@ -114,6 +162,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseCors("MottristPolicy");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
