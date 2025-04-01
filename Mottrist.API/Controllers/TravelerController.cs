@@ -14,7 +14,7 @@ namespace Mottrist.API.Controllers
 
         public TravelerController(ITravelerService travelerService)
         {
-            _travelerService = travelerService;
+            _travelerService = travelerService ?? throw new ArgumentNullException(nameof(travelerService)); 
         }
 
         /// <summary>
@@ -22,10 +22,17 @@ namespace Mottrist.API.Controllers
         /// </summary>
         /// <param name="id">The unique identifier of the traveler.</param>
         /// <returns>
-        /// An <see cref="IActionResult"/> containing the traveler data if found,
-        /// or an error message if not found or in case of an exception.
+        /// Traveler data if found; otherwise, an error message.
         /// </returns>
+        /// <response code="200">Traveler retrieved successfully.</response>
+        /// <response code="400">Invalid traveler id.</response>
+        /// <response code="404">Traveler not found.</response>
+        /// <response code="500">An internal server error occurred.</response>
         [HttpGet("{id:int}", Name = "GetByIdAsync")]
+        [ProducesResponseType(typeof(GetTravelerDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             if (id <= 0)
@@ -52,10 +59,15 @@ namespace Mottrist.API.Controllers
         /// Retrieves all travelers.
         /// </summary>
         /// <returns>
-        /// An <see cref="IActionResult"/> containing a list of all travelers
-        /// or an error message if no data is found or in case of an exception.
+        /// A list of all travelers, or an appropriate error message.
         /// </returns>
+        /// <response code="200">Travelers retrieved successfully.</response>
+        /// <response code="204">No travelers found.</response>
+        /// <response code="500">An internal server error occurred.</response>
         [HttpGet(Name = "GetAll")]
+        [ProducesResponseType(typeof(DataResult<GetTravelerDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
         {
             try
@@ -85,12 +97,15 @@ namespace Mottrist.API.Controllers
         /// <param name="page">The page number (must be greater than 0).</param>
         /// <param name="pageSize">The number of travelers per page (must be greater than 0).</param>
         /// <returns>
-        /// An <see cref="IActionResult"/> containing a paginated list of travelers,
-        /// or an error message if the page parameters are invalid, no data is found,
-        /// or in case of an exception.
+        /// A paginated list of travelers, or an appropriate error message.
         /// </returns>
-
+        /// <response code="200">Travelers retrieved successfully.</response>
+        /// <response code="400">Invalid page or pageSize parameter.</response>
+        /// <response code="500">An internal server error occurred.</response>
         [HttpGet("TravelersPerPage", Name = "TravelersPerPage")]
+        [ProducesResponseType(typeof(PaginatedResult<GetTravelerDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllWithPaginationAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             if (page < 1 || pageSize < 1)
@@ -119,10 +134,15 @@ namespace Mottrist.API.Controllers
         /// </summary>
         /// <param name="travelerDto">The traveler data transfer object.</param>
         /// <returns>
-        /// An <see cref="IActionResult"/> with the result of the creation operation,
-        /// including a location header on success or an error message on failure.
+        /// The created traveler data, along with a location header on success.
         /// </returns>
+        /// <response code="201">Traveler created successfully.</response>
+        /// <response code="400">Validation error or invalid traveler data.</response>
+        /// <response code="500">An internal server error occurred.</response>
         [HttpPost(Name = "Create")]
+        [ProducesResponseType(typeof(AddTravelerDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddAsync(AddTravelerDto travelerDto)
         {
             if (!ModelState.IsValid)
@@ -165,10 +185,15 @@ namespace Mottrist.API.Controllers
         /// <param name="id">The unique identifier of the traveler to update.</param>
         /// <param name="travelerDto">The traveler data transfer object with updated information.</param>
         /// <returns>
-        /// An <see cref="IActionResult"/> indicating the result of the update operation,
-        /// such as NoContent on success or an error message on failure.
+        /// The updated traveler data on success; otherwise, an error message.
         /// </returns>
+        /// <response code="200">Traveler updated successfully.</response>
+        /// <response code="400">Validation error or mismatched traveler id.</response>
+        /// <response code="500">An internal server error occurred.</response>
         [HttpPut("{id:int}", Name = "Update")]
+        [ProducesResponseType(typeof(UpdateTravelerDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAsync(int id, UpdateTravelerDto travelerDto)
         {
             if (!ModelState.IsValid)
@@ -215,10 +240,15 @@ namespace Mottrist.API.Controllers
         /// </summary>
         /// <param name="id">The unique identifier of the traveler to delete.</param>
         /// <returns>
-        /// An <see cref="IActionResult"/> indicating the result of the deletion,
-        /// such as NoContent on success or an error message if the deletion fails.
+        /// No content on successful deletion; otherwise, an error message.
         /// </returns>
+        /// <response code="204">Traveler record deleted successfully.</response>
+        /// <response code="400">Invalid traveler id.</response>
+        /// <response code="500">An internal server error occurred.</response>
         [HttpDelete("{id:int}", Name = "Delete")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             if (id <= 0)
