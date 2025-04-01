@@ -23,5 +23,8 @@
 	  <ProjectReference Include="..\Mottrist.Repository\Mottrist.Repository.csproj" />
 	  <ProjectReference Include="..\Mottrist.Utilities\Mottrist.Utilities.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Features\Country\DTOs\" />
+	</ItemGroup>
 
 </Project>
