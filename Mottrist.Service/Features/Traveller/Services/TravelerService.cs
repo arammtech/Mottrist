@@ -15,12 +15,32 @@ using System.Linq.Expressions;
 
 namespace Mottrist.Service.Features.Traveller.Services
 {
+    /// <summary>
+    /// Service for managing travelers.
+    /// </summary>
     public class TravelerService : BaseService , ITravelerService
     {
+        /// <summary>
+        /// Unit of work for managing database transactions and repositories.
+        /// </summary>
         private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>
+        /// Mapper for handling object-to-object mapping.
+        /// </summary>
         private readonly IMapper _mapper;
+
+        /// <summary>
+        /// User manager for handling user-related operations, such as creating and updating users.
+        /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TravelerService"/> class.
+        /// </summary>
+        /// <param name="unitOfWork">The unit of work instance.</param>
+        /// <param name="mapper">The AutoMapper instance.</param>
+        /// <param name="userManager">The UserManager for ApplicationUser.</param>
         public TravelerService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -28,6 +48,13 @@ namespace Mottrist.Service.Features.Traveller.Services
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
+        /// <summary>
+        /// Retrieves all travelers with an optional filter.
+        /// </summary>
+        /// <param name="filter">An optional filter expression.</param>
+        /// <returns>
+        /// A <see cref="DataResult{GetTravelerDto}"/> containing a collection of travelers if successful; otherwise, null.
+        /// </returns>
         public async Task<DataResult<GetTravelerDto>>? GetAllAsync(Expression<Func<Traveler, bool>>? filter = null)
         {
             try
@@ -57,6 +84,16 @@ namespace Mottrist.Service.Features.Traveller.Services
                 return null;
             }
         }
+
+        /// <summary>
+        /// Retrieves travelers with pagination and an optional filter.
+        /// </summary>
+        /// <param name="page">The page number (must be greater than 0).</param>
+        /// <param name="pageSize">The number of travelers per page (default is 10).</param>
+        /// <param name="filter">An optional filter expression.</param>
+        /// <returns>
+        /// A <see cref="PaginatedResult{GetTravelerDto}"/> containing the paginated travelers if successful; otherwise, null.
+        /// </returns>
         public async Task<PaginatedResult<GetTravelerDto>?> GetAllWithPaginationAsync(int page, int pageSize = 10, Expression<Func<Traveler, bool>>? filter = null)
         {
             if (page < 1 || pageSize < 1)
@@ -101,6 +138,14 @@ namespace Mottrist.Service.Features.Traveller.Services
                 return null;
             }
         }
+
+        /// <summary>
+        /// Retrieves a traveler by their unique identifier.
+        /// </summary>
+        /// <param name="travelerId">The unique identifier of the traveler.</param>
+        /// <returns>
+        /// A <see cref="GetTravelerDto"/> containing the traveler data if found; otherwise, null.
+        /// </returns>
         public async Task<GetTravelerDto>? GetByIdAsync(int travelerId)
         {
             try
@@ -123,6 +168,14 @@ namespace Mottrist.Service.Features.Traveller.Services
                 return null;
             }
         }
+
+        /// <summary>
+        /// Creates a new traveler.
+        /// </summary>
+        /// <param name="travelerDto">The traveler data transfer object.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating success or failure of the creation operation.
+        /// </returns>
         public async Task<Result> AddAsync(AddTravelerDto travelerDto)
         {
             var transactionResult = await _unitOfWork.StartTransactionAsync();
@@ -138,7 +191,7 @@ namespace Mottrist.Service.Features.Traveller.Services
 
                 TravelerMapper.Map(travelerDto, user);
 
-                var addUserResult = await _userManager.CreateAsync(user);
+                var addUserResult = await _userManager.CreateAsync(user, user.PasswordHash);
 
                 if (!addUserResult.Succeeded)
                 {
@@ -183,6 +236,14 @@ namespace Mottrist.Service.Features.Traveller.Services
                 return Result.Failure($"Error creating a traveler: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Updates an existing traveler.
+        /// </summary>
+        /// <param name="travelerDto">The traveler data transfer object with updated information.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating success or failure of the update operation.
+        /// </returns>
         public async Task<Result> UpdateAsync(UpdateTravelerDto travelerDto)
         {
             var transactionResult = await _unitOfWork.StartTransactionAsync();
@@ -242,6 +303,14 @@ namespace Mottrist.Service.Features.Traveller.Services
                 return Result.Failure($"Error updating traveler: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Deletes a traveler by their unique identifier.
+        /// </summary>
+        /// <param name="travelerId">The unique identifier of the traveler to delete.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating success or failure of the deletion operation.
+        /// </returns>
         public async Task<Result> DeleteAsync(int travelerId)
         {
             try
@@ -285,30 +354,71 @@ namespace Mottrist.Service.Features.Traveller.Services
             }
         }
 
+        /// <summary>
+        /// Not implemented: Retrieves a traveler based on a given filter.
+        /// </summary>
+        /// <param name="filter">The filter expression.</param>
+        /// <returns>A <see cref="GetTravelerDto"/> matching the filter.</returns>
         GetTravelerDto? ITravelerService.Get(Expression<Func<Traveler, bool>> filter)
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Not implemented: Retrieves all travelers based on a given filter.
+        /// </summary>
+        /// <param name="filter">An optional filter expression.</param>
+        /// <returns>A collection of <see cref="GetTravelerDto"/>.</returns>
         IEnumerable<GetTravelerDto>? ITravelerService.GetAll(Expression<Func<Traveler, bool>>? filter)
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Not implemented: Adds a traveler.
+        /// </summary>
+        /// <param name="travelerDto">The traveler data transfer object.</param>
+        /// <returns>A <see cref="Result"/> indicating success or failure.</returns>
         Result ITravelerService.Add(AddTravelerDto travelerDto)
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Not implemented: Adds a range of travelers.
+        /// </summary>
+        /// <param name="travelerDtos">A collection of traveler data transfer objects.</param>
+        /// <returns>A <see cref="Result"/> indicating success or failure.</returns>
         Result ITravelerService.AddRange(IEnumerable<AddTravelerDto> travelerDtos)
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Not implemented: Asynchronously adds a range of travelers.
+        /// </summary>
+        /// <param name="travelerDtos">A collection of traveler data transfer objects.</param>
+        /// <returns>A task that represents the asynchronous operation, containing a <see cref="Result"/>.</returns>
         Task<Result> ITravelerService.AddRangeAsync(IEnumerable<AddTravelerDto> travelerDtos)
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Not implemented: Updates a traveler.
+        /// </summary>
+        /// <param name="travelerDto">The traveler data transfer object.</param>
+        /// <returns>A <see cref="Result"/> indicating success or failure.</returns>
         Result ITravelerService.Update(UpdateTravelerDto travelerDto)
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Not implemented: Deletes a traveler.
+        /// </summary>
+        /// <param name="travelerId">The unique identifier of the traveler to delete.</param>
+        /// <returns>A <see cref="Result"/> indicating success or failure.</returns>
         Result ITravelerService.Delete(int travelerId)
         {
             throw new NotImplementedException();

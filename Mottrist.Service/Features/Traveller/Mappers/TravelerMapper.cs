@@ -4,9 +4,14 @@ using Mottrist.Service.Features.Traveller.DTOs;
 
 namespace Mottrist.Service.Features.Traveller.Mappers
 {
+    /// <summary>
+    /// Provides mapping methods between Traveler-related DTOs and entity models.
+    /// </summary>
     public static class TravelerMapper
     {
-        // Map properties from AddTravelerDto to Traveler entity.
+        /// <summary>
+        /// Maps properties from <see cref="AddTravelerDto"/> to <see cref="Traveler"/> entity.
+        /// </summary>
         public static void Map(AddTravelerDto addTravelerDto, Traveler traveler)
         {
             traveler.WhatsAppNumber = addTravelerDto.WhatsAppNumber;
@@ -14,7 +19,9 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             traveler.ProfileImageUrl = addTravelerDto.ProfileImageUrl;
         }
 
-        // Map properties from Traveler entity to AddTravelerDto.
+        /// <summary>
+        /// Maps properties from <see cref="Traveler"/> entity to <see cref="AddTravelerDto"/>.
+        /// </summary>
         public static void Map(Traveler traveler, AddTravelerDto addTravelerDto)
         {
             addTravelerDto.Id = traveler.Id;
@@ -23,7 +30,9 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             addTravelerDto.ProfileImageUrl = traveler.ProfileImageUrl;
         }
 
-        // Map properties from updateTravelerDto entity to Traveler.
+        /// <summary>
+        /// Maps properties from <see cref="UpdateTravelerDto"/> to <see cref="Traveler"/> entity.
+        /// </summary>
         public static void Map(UpdateTravelerDto updateTravelerDto, Traveler traveler)
         {
             traveler.WhatsAppNumber = updateTravelerDto.WhatsAppNumber;
@@ -31,7 +40,9 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             traveler.ProfileImageUrl = updateTravelerDto.ProfileImageUrl;
         }
 
-        // Map properties from Traveler entity to updateTravelerDto.
+        /// <summary>
+        /// Maps properties from <see cref="Traveler"/> entity to <see cref="UpdateTravelerDto"/>.
+        /// </summary>
         public static void Map(Traveler traveler, UpdateTravelerDto updateTravelerDto)
         {
             updateTravelerDto.Id = traveler.Id;
@@ -40,7 +51,9 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             updateTravelerDto.ProfileImageUrl = traveler.ProfileImageUrl;
         }
 
-        // Map properties from Traveler entity to ApplicationUser.
+        /// <summary>
+        /// Maps properties from <see cref="Traveler"/> entity to <see cref="ApplicationUser"/>.
+        /// </summary>
         public static void Map(Traveler traveler, ApplicationUser applicationUser)
         {
             applicationUser.Id = traveler.UserId;
@@ -51,20 +64,22 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             applicationUser.UserName = traveler.User.UserName;
         }
 
-        // Map properties from AddTravelerDto to ApplicationUser.
+        /// <summary>
+        /// Maps properties from <see cref="AddTravelerDto"/> to <see cref="ApplicationUser"/>.
+        /// </summary>
         public static void Map(AddTravelerDto addTravelerDto, ApplicationUser applicationUser)
         {
-            // Assuming ApplicationUser has these properties.
             applicationUser.FirstName = addTravelerDto.FirstName;
             applicationUser.LastName = addTravelerDto.LastName;
             applicationUser.Email = addTravelerDto.Email;
             applicationUser.UserName = addTravelerDto.Email;
             applicationUser.PhoneNumber = addTravelerDto.PhoneNumber;
             applicationUser.PasswordHash = addTravelerDto.Password;
-
         }
 
-        // Map properties from ApplicationUser to AddTravelerDto.
+        /// <summary>
+        /// Maps properties from <see cref="ApplicationUser"/> to <see cref="AddTravelerDto"/>.
+        /// </summary>
         public static void Map(ApplicationUser applicationUser, AddTravelerDto addTravelerDto)
         {
             addTravelerDto.FirstName = applicationUser.FirstName;
@@ -74,7 +89,9 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             addTravelerDto.Password = applicationUser.PasswordHash;
         }
 
-        // Map properties from UpdateTravelerDto to ApplicationUser.
+        /// <summary>
+        /// Maps properties from <see cref="UpdateTravelerDto"/> to <see cref="ApplicationUser"/>.
+        /// </summary>
         public static void Map(UpdateTravelerDto updateTravelerDto, ApplicationUser applicationUser)
         {
             applicationUser.FirstName = updateTravelerDto.FirstName;
@@ -82,7 +99,9 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             applicationUser.PhoneNumber = updateTravelerDto.PhoneNumber;
         }
 
-        // Map properties from ApplicationUser to UpdateTravelerDto.
+        /// <summary>
+        /// Maps properties from <see cref="ApplicationUser"/> to <see cref="UpdateTravelerDto"/>.
+        /// </summary>
         public static void Map(ApplicationUser applicationUser, UpdateTravelerDto updateTravelerDto)
         {
             updateTravelerDto.FirstName = applicationUser.FirstName;
