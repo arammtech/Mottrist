@@ -3,8 +3,15 @@ using Mottrist.Service.Features.Traveller.DTOs;
 
 namespace Mottrist.Service.Features.Traveller.Validators
 {
+    /// <summary>
+    /// Validator for adding a new traveler.
+    /// Ensures required fields are provided and meet validation criteria.
+    /// </summary>
     public class AddTravelerDtoValidator : AbstractValidator<AddTravelerDto>
     {
+        /// <summary>
+        /// Initializes validation rules for AddTravelerDto.
+        /// </summary>
         public AddTravelerDtoValidator()
         {
             RuleFor(x => x.NationalityId)
