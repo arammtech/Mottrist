@@ -27,14 +27,14 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography.Xml;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+#region  APIsControllers Configuration
 builder.Services.AddControllers();
+#endregion
 
-// Configure Swagger/OpenAPI including XML comments
+#region Swagger/OpenAPI Configuration
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -78,23 +78,30 @@ builder.Services.AddSwaggerGen(options =>
 
 // Optional: if you already have an extension method for OpenAPI, you can remove or modify it
 // builder.Services.AddOpenApi();
+#endregion
 
+#region ApiBehaviorOptions  Configuration
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = false; // To allow automatic validation!
 });
 
+#endregion
 
+#region EF Configuration
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+#endregion
 
+#region Identity Configuration
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+#endregion
 
-
+#region Cors Configuration
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("MottristPolicy",
@@ -103,8 +110,9 @@ builder.Services.AddCors(options =>
             CorsPolicyBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
         });
 });
+#endregion
 
-
+#region Authentication (JWT) Configuration
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -123,8 +131,9 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
     };
 });
+#endregion
 
-#region Packages
+#region Packages 
 builder.Services.AddAutoMapper(typeof(MappingProfile), typeof(TravelerProfile), typeof(DriverProfile));
 builder.Services.AddFluentValidationAutoValidation()
                 .AddValidatorsFromAssembly(typeof(AddTravelerDtoValidator).Assembly);
