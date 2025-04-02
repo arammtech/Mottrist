@@ -1,5 +1,8 @@
 ﻿using FluentValidation;
+using Mottrist.Domain.Entities;
 using Mottrist.Service.Features.Drivers.DTOs;
+using System.ComponentModel;
+using System.Security.Cryptography;
 
 namespace Mottrist.Service.Features.Drivers.Validators
 {
@@ -38,13 +41,18 @@ namespace Mottrist.Service.Features.Drivers.Validators
             RuleFor(driver => driver.NationalityId)
                 .GreaterThan(0).WithMessage("Nationality ID must be greater than 0.");
 
-            // Validate LicenseImageUrl
-            RuleFor(driver => driver.LicenseImageUrl)
-                .NotEmpty().WithMessage("License image URL is required.");
+            RuleFor(driver => driver.LicenseImage)
+                .NotNull().WithMessage("License image is required.");
+            RuleFor(driver => driver.PassportImage)
+                .NotNull().WithMessage("Passport image is required.");
 
-            // Validate PassportImageUrl
-            RuleFor(driver => driver.PassportImageUrl)
-                .NotEmpty().WithMessage("Passport image URL is required.");
+            //// Validate LicenseImageUrl
+            //RuleFor(driver => driver.LicenseImageUrl)
+            //    .NotEmpty().WithMessage("License image URL is required.");
+
+            //// Validate PassportImageUrl
+            //RuleFor(driver => driver.PassportImageUrl)
+            //    .NotEmpty().WithMessage("Passport image URL is required.");
 
             //// Optional Fields
             //RuleFor(driver => driver.PhoneNumber)
@@ -76,9 +84,14 @@ namespace Mottrist.Service.Features.Drivers.Validators
 
                 RuleFor(driver => driver.NumberOfSeats)
                     .NotNull().WithMessage("Number of seats is required when the driver has a car.");
+                RuleFor(driver => driver.CarImages)
+                        .NotEmpty().WithMessage("Car images are required when the driver has a car.");
 
                 RuleFor(driver => driver.MainCarImageIndex)
-                    .NotEmpty().WithMessage("Car image URL is required when the driver has a car.");
+                    .NotNull()
+                    .WithMessage("Main car image index is required when the driver has a car.")
+                    .When(driver => driver.CarImages != null && driver.CarImages.Count > 0);
+
             });
         }
     }
