@@ -3,17 +3,16 @@ using Mottrist.Service.Features.Drivers.Interfaces;
 using global::Mottrist.API.Response;
 using Microsoft.AspNetCore.Mvc;
 using static Mottrist.API.Response.ApiResponseHelper;
-using Mottrist.Domain.Entities;
-using System.Linq.Expressions;
+using Mottrist.Service.Features.General.DTOs;
 
 namespace Mottrist.API.Controllers
 {
     /// <summary>
     /// API Controller for managing driver-related operations.
     /// </summary>
-    [Route("api/Driver")]
+    [Route("api/Drivers")]
     [ApiController]
-    public class DriverController : ControllerBase
+    public class DriversController : ControllerBase
     {
         /// <summary>
         /// Driver service instance for handling driver-related operations.
@@ -21,13 +20,13 @@ namespace Mottrist.API.Controllers
         private readonly IDriverService _driverService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DriverController"/> class.
+        /// Initializes a new instance of the <see cref="DriversController"/> class.
         /// </summary>
         /// <param name="driverService">The driver service to manage driver-related operations.</param>
         /// <remarks>
         /// The driver service is injected using dependency injection.
         /// </remarks>
-        public DriverController(IDriverService driverService)
+        public DriversController(IDriverService driverService)
         {
             _driverService = driverService ?? throw new ArgumentNullException(nameof(driverService));
         }
@@ -37,7 +36,6 @@ namespace Mottrist.API.Controllers
         /// </summary>
         /// <param name="id">The unique identifier of the driver to retrieve.</param>
         /// <returns>
-        /// Returns:
         /// - HTTP 200 OK with the driver details if successful.
         /// - HTTP 404 Not Found if no driver is found with the given ID.
         /// - HTTP 400 Bad Request if the driver ID is invalid.
@@ -45,9 +43,9 @@ namespace Mottrist.API.Controllers
         /// </returns>
         [HttpGet("{id:int}", Name = "GetDriverByIdAsync")]
         [ProducesResponseType(typeof(ApiResponse<DriverDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             if (id <= 0)
@@ -76,19 +74,21 @@ namespace Mottrist.API.Controllers
         /// Retrieves all drivers from the service.
         /// </summary>
         /// <returns>
-        /// Returns an HTTP 200 OK status with the list of drivers if successful, 
-        /// or an HTTP 500 Internal Server Error in case of failure.
+        /// - HTTP 200 OK with the list of drivers if successful.
+        /// - HTTP 204 No Content if no drivers are found.
+        /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
         [HttpGet("All", Name = "GetAllDriversAsync")]
-        [ProducesResponseType(typeof(ApiResponse<DriverDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
         {
             try
             {
                 var dataResult = await _driverService.GetAllAsync();
 
+                // If no data is found, return a NoContent response.
                 if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
                 {
                     return NoContentResponse("No data content available.");
@@ -113,47 +113,44 @@ namespace Mottrist.API.Controllers
         /// </summary>
         /// <param name="page">The current page number.</param>
         /// <param name="pageSize">The number of records per page. Defaults to 10.</param>
-        /// <param name="filter">An optional filter expression to filter drivers (optional).</param>
         /// <returns>
-        /// An HTTP 200 OK response with a paginated list of drivers, 
-        /// or an HTTP 500 Internal Server Error for unexpected failures.
+        /// - HTTP 200 OK with a paginated list of drivers.
+        /// - HTTP 400 Bad Request if the pagination parameters are invalid.
+        /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
         [HttpGet("AllWithPagination", Name = "GetAllDriversWithPaginationAsync")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>?>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllWithPaginationAsync(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
             try
             {
-                // Validate pagination inputs
+                // Validate pagination input parameters.
                 if (page <= 0 || pageSize <= 0)
                 {
-                    return BadRequestResponse(
-                        "PaginationError",
-                        "Both page and pageSize must be greater than 0.");
+                    return BadRequestResponse("PaginationError", "Both page and pageSize must be greater than 0.");
                 }
 
-                // Fetch paginated drivers
                 var result = await _driverService.GetAllWithPaginationAsync(page, pageSize);
 
+                // If no drivers are found, return a NoContent response.
                 if (result?.DataRecordsCount?.Equals(0) ?? false)
                 {
                     return NoContentResponse("No drivers found for the specified parameters.");
                 }
 
-                // Return paginated drivers
                 return SuccessResponse(result, "Paginated drivers retrieved successfully.");
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
-                return ApiResponseHelper.StatusCodeResponse(
-                    StatusCodes.Status500InternalServerError,
-                    "InternalServerError",
-                    "An unexpected error occurred.",
-                    ex.Message);
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
             }
         }
 
@@ -162,25 +159,24 @@ namespace Mottrist.API.Controllers
         /// </summary>
         /// <param name="driverDto">The DTO containing the details of the driver to be added.</param>
         /// <returns>
-        /// Returns:
         /// - HTTP 201 Created if the operation is successful.
         /// - HTTP 400 Bad Request if there are validation errors.
         /// - HTTP 409 Conflict if a driver with the same unique details already exists.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
         [HttpPost("Add", Name = "AddNewDriverAsync")]
-        [ProducesResponseType(StatusCodes.Status201Created)] // Successful creation
-        [ProducesResponseType(StatusCodes.Status400BadRequest)] // Validation errors
-        [ProducesResponseType(StatusCodes.Status409Conflict)] // Duplicate resource
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Unexpected errors
-        public async Task<IActionResult> AddAsync([FromForm]AddDriverDto driverDto)
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> AddAsync([FromForm] AddDriverDto driverDto)
         {
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
+                                       .SelectMany(v => v.Errors)
+                                       .Select(e => e.ErrorMessage)
+                                       .ToList();
 
                 return BadRequestResponse("ValidationError", "Invalid data provided.", errors.ToArray());
             }
@@ -192,7 +188,7 @@ namespace Mottrist.API.Controllers
                 return result.IsExist
                     ? StatusCodeResponse(StatusCodes.Status409Conflict, "DuplicateUser", "Driver already exists.")
                     : result.IsSuccess
-                        ? CreatedResponse("GetByIdAsync", new { id = driverDto.Id }, driverDto, "Driver created successfully.")
+                        ? CreatedResponse("GetDriverByIdAsync", new { id = driverDto.Id }, driverDto, "Driver created successfully.")
                         : StatusCodeResponse(StatusCodes.Status500InternalServerError, "CreationError", "Failed to create driver.");
             }
             catch (HttpRequestException ex)
@@ -218,12 +214,13 @@ namespace Mottrist.API.Controllers
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
         [HttpPut("{id:int}", Name = "UpdateDriverDetailsAsync")]
-        [ProducesResponseType(StatusCodes.Status200OK)] // Successful update
-        [ProducesResponseType(StatusCodes.Status400BadRequest)] // Validation errors
-        [ProducesResponseType(StatusCodes.Status404NotFound)] // Driver not found
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Unexpected errors
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)] // Successful update
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)] // Validation errors
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)] // Driver not found
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)] // Unexpected errors
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateDriverDto driverDto)
         {
+            // Validate the input model
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
@@ -234,6 +231,7 @@ namespace Mottrist.API.Controllers
                 return BadRequestResponse("ValidationError", "Invalid data provided.", errors.ToArray());
             }
 
+            // Ensure a valid id is provided
             if (id < 1)
             {
                 return BadRequestResponse("InvalidId", $"The parameter '{nameof(id)}' must be a positive integer.");
@@ -241,15 +239,20 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                // Pass ID and DTO to the service layer; let it handle existence validation
+                bool isFound = await _driverService.DoesDriverExistByIdAsync(id);
+
+                if (!isFound)
+                {
+                    return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
+                }
+
+                // Set the driver id based on the route parameter.
                 driverDto.Id = id;
                 var result = await _driverService.UpdateAsync(driverDto);
 
                 return result.IsSuccess
                     ? SuccessResponse(result, "Driver details updated successfully.")
-                    : result.IsNotFound
-                        ? NotFoundResponse("DriverNotFound", "No driver found with the provided ID.")
-                        : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UpdateError", "An error occurred during update.");
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UpdateError", "An error occurred during update.");
             }
             catch (HttpRequestException ex)
             {
@@ -260,7 +263,7 @@ namespace Mottrist.API.Controllers
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
             }
         }
-
+    
         /// <summary>
         /// Deletes a driver by the specified ID.
         /// </summary>
@@ -272,32 +275,31 @@ namespace Mottrist.API.Controllers
         /// - HTTP 500 Internal Server Error with detailed error information for failures.
         /// </returns>
         [HttpDelete("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK)] // Deletion successful
-        [ProducesResponseType(StatusCodes.Status400BadRequest)] // Invalid ID
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)] // Unexpected errors
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)] // Driver deleted successfully
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)] // Invalid driver ID provided
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)] // Unexpected errors
         public async Task<IActionResult> DeleteAsync(int id)
         {
             if (id < 1)
             {
-                return BadRequestResponse("InvalidId", "The driver ID provided is invalid.");
+                return ApiResponseHelper.BadRequestResponse("InvalidId", "The driver ID provided is invalid.");
             }
 
             try
             {
                 var result = await _driverService.DeleteAsync(id);
                 return result.IsSuccess
-                    ? SuccessResponse("Driver deleted successfully.")
-                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "DeletionError", "Failed to delete the driver.");
+                    ? ApiResponseHelper.SuccessResponse("Driver deleted successfully.")
+                    : ApiResponseHelper.StatusCodeResponse(StatusCodes.Status500InternalServerError, "DeletionError", "Failed to delete the driver.");
             }
             catch (HttpRequestException ex)
             {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+                return ApiResponseHelper.StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
+                return ApiResponseHelper.StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
             }
         }
-
     }
 }

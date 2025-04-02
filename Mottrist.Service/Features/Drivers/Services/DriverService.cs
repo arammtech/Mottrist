@@ -15,10 +15,10 @@ using System.Linq.Expressions;
 using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Cars.Interfaces;
 using Feature.Car.DTOs;
+using Microsoft.AspNetCore.Http;
 using static Mottrist.Service.Features.Drivers.Helpers.UserHelper;
 using static Mottrist.Utilities.Global.GlobalFunctions;
-using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
+
 namespace Mottrist.Service.Features.Drivers.Services
 {
     /// <summary>
@@ -318,7 +318,7 @@ namespace Mottrist.Service.Features.Drivers.Services
             try
             {
                 // Fetch the driver using the filter
-                var driver =await _unitOfWork.Repository<Driver>().Query()
+                var driver = await _unitOfWork.Repository<Driver>().Query()
                     .Where(filter)
                     .Select(x => new DriverDto
                     {
@@ -685,52 +685,6 @@ namespace Mottrist.Service.Features.Drivers.Services
         }
 
         /// <summary>
-        /// Deletes a specific car image associated with a driver's car.
-        /// </summary>
-        /// <param name="driverId">The ID of the driver whose car's image is to be deleted.</param>
-        /// <param name="imageUrl">The URL of the image to be deleted.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating the success or failure of the operation.
-        /// </returns>
-        public async Task<Result> DeleteImageCar(int driverId, string imageUrl)
-        {
-            if (driverId <= 0)
-            {
-                return Result.Failure("Driver ID must be greater than zero.");
-            }
-
-            if (string.IsNullOrWhiteSpace(imageUrl))
-            {
-                return Result.Failure("Image URL cannot be null or empty.");
-            }
-
-            try
-            {
-                // Get the driver entity to fetch associated car ID
-                var driver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverId);
-                if (driver == null || driver.CarId == null)
-                {
-                    return Result.Failure("Driver does not have an associated car.");
-                }
-
-                // Delegate to CarService to delete the image
-                var result = await _carService.RemoveCarImageAsync(imageUrl, driver.CarId.Value);
-
-                // Return the result from CarService
-                if (!result.IsSuccess)
-                {
-                    return Result.Failure($"Failed to delete car image. Reason: {result.Errors?.FirstOrDefault()}");
-                }
-
-                return Result.Success();
-            }
-            catch (Exception ex)
-            {
-                return Result.Failure($"An error occurred: {ex.Message}");
-            }
-        }
-
-        /// <summary>
         /// Sets a specific car image as the main image for a driver's car.
         /// </summary>
         /// <param name="driverId">The ID of the driver whose car's image is to be set as the main image.</param>
@@ -738,7 +692,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <returns>
         /// A <see cref="Result"/> indicating the success or failure of the operation.
         /// </returns>
-        public async Task<Result> SetMainImageAsync(int driverId, string imageUrl)
+        public async Task<Result> SetMainCarImageAsync(int driverId, string imageUrl)
         {
             if (driverId <= 0)
             {
@@ -786,7 +740,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <returns>
         /// A <see cref="Result"/> indicating the success or failure of the operation.
         /// </returns>
-        public async Task<Result> UpdateImageAsync(int driverId, string? imageUrl, IFormFile? newImageFile, bool isMain)
+        public async Task<Result> UpdateCarImageAsync(int driverId, string? imageUrl, IFormFile? newImageFile, bool isMain)
         {
             if (driverId <= 0)
             {
@@ -1079,7 +1033,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <returns>
         /// A <see cref="Result"/> indicating the success or failure of the operation.
         /// </returns>
-        public async Task<Result> DeleteImageCarAsync(int driverId, string imageUrl)
+        public async Task<Result> DeleteCarImageAsync(int driverId, string imageUrl)
         {
             if (driverId <= 0)
             {

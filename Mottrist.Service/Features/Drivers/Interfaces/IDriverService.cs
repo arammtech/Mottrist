@@ -122,7 +122,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A <see cref="Result"/> indicating the success or failure of the operation.
         /// </returns>
-        Task<Result> DeleteImageCarAsync(int driverId, string imageUrl);
+        Task<Result> DeleteCarImageAsync(int driverId, string imageUrl);
 
         /// <summary>
         /// Sets a specific car image as the main image for a driver's car.
@@ -132,7 +132,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A <see cref="Result"/> indicating the success or failure of the operation.
         /// </returns>
-        Task<Result> SetMainImageAsync(int driverId, string imageUrl);
+        Task<Result> SetMainCarImageAsync(int driverId, string imageUrl);
 
         /// <summary>
         /// Updates a car image, either by replacing the image file or updating metadata.
@@ -144,7 +144,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A <see cref="Result"/> indicating the success or failure of the operation.
         /// </returns>
-        Task<Result> UpdateImageAsync(int driverId, string? imageUrl, IFormFile? newImageFile, bool isMain);
+        Task<Result> UpdateCarImageAsync(int driverId, string? imageUrl, IFormFile? newImageFile, bool isMain);
 
         #endregion
     }
