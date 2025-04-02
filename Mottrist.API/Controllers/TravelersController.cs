@@ -6,13 +6,16 @@ using static Mottrist.API.Response.ApiResponseHelper;
 
 namespace Mottrist.API.Controllers
 {
-    [Route("api/Traveler")]
+    /// <summary>
+    /// API Controller for managing traveler-related operations.
+    /// </summary>
+    [Route("api/Travelers")]
     [ApiController]
-    public class TravelerController : ControllerBase
+    public class TravelersController : ControllerBase
     {
         private readonly ITravelerService _travelerService;
 
-        public TravelerController(ITravelerService travelerService)
+        public TravelersController(ITravelerService travelerService)
         {
             _travelerService = travelerService; 
         }
@@ -28,7 +31,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid traveler id.</response>
         /// <response code="404">Traveler not found.</response>
         /// <response code="500">An internal server error occurred.</response>
-        [HttpGet("{id:int}", Name = "GetByIdAsync")]
+        [HttpGet("{id:int}", Name = "GetTravelerByIdAsync")]
         [ProducesResponseType(typeof(GetTravelerDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -64,7 +67,7 @@ namespace Mottrist.API.Controllers
         /// <response code="200">Travelers retrieved successfully.</response>
         /// <response code="204">No travelers found.</response>
         /// <response code="500">An internal server error occurred.</response>
-        [HttpGet(Name = "GetAll")]
+        [HttpGet(Name = "GetAllTravelers")]
         [ProducesResponseType(typeof(DataResult<GetTravelerDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -139,7 +142,7 @@ namespace Mottrist.API.Controllers
         /// <response code="201">Traveler created successfully.</response>
         /// <response code="400">Validation error or invalid traveler data.</response>
         /// <response code="500">An internal server error occurred.</response>
-        [HttpPost(Name = "Create")]
+        [HttpPost(Name = "CreateTraveler")]
         [ProducesResponseType(typeof(AddTravelerDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -190,7 +193,7 @@ namespace Mottrist.API.Controllers
         /// <response code="200">Traveler updated successfully.</response>
         /// <response code="400">Validation error or mismatched traveler id.</response>
         /// <response code="500">An internal server error occurred.</response>
-        [HttpPut("{id:int}", Name = "Update")]
+        [HttpPut("{id:int}", Name = "UpdateTraveler")]
         [ProducesResponseType(typeof(UpdateTravelerDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -245,7 +248,7 @@ namespace Mottrist.API.Controllers
         /// <response code="204">Traveler record deleted successfully.</response>
         /// <response code="400">Invalid traveler id.</response>
         /// <response code="500">An internal server error occurred.</response>
-        [HttpDelete("{id:int}", Name = "Delete")]
+        [HttpDelete("{id:int}", Name = "DeleteTraveler")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
