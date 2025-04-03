@@ -470,7 +470,7 @@ namespace Mottrist.Service.Features.Cars.Services
                 var transaction = await _unitOfWork.StartTransactionAsync();
                 if (!transaction.IsSuccess)
                 {
-                    return Result.Failure("Failed to start transaction.", true);
+                    return Result.Failure("Failed to start transaction.");
                 }
 
                 var carId = carImageDtos.FirstOrDefault()?.CarId ?? 0;
@@ -627,7 +627,7 @@ namespace Mottrist.Service.Features.Cars.Services
                 var transactionResult = await _unitOfWork.StartTransactionAsync();
                 if (!transactionResult.IsSuccess)
                 {
-                    return Result.Failure("Failed to start a transaction.", true);
+                    return Result.Failure("Failed to start a transaction.");
                 }
 
                 // Metadata Update (using URL)

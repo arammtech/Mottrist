@@ -94,7 +94,7 @@ namespace Mottrist.Service.Features.Drivers.Helpers
             if (!userUpdateResult.Succeeded)
             {
                 var errors = userUpdateResult.Errors?.Select(e => e.Code).ToArray() ?? new[] { "Unknown error." };
-                return Result.Failure(string.Join(", ", errors), true);
+                return Result.Failure(string.Join(", ", errors));
             }
 
             return Result.Success();

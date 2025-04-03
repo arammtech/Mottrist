@@ -4,6 +4,8 @@ using global::Mottrist.API.Response;
 using Microsoft.AspNetCore.Mvc;
 using static Mottrist.API.Response.ApiResponseHelper;
 using Mottrist.Service.Features.General.DTOs;
+using Microsoft.AspNetCore.Identity;
+using Mottrist.Domain.Global;
 
 namespace Mottrist.API.Controllers
 {
@@ -36,9 +38,9 @@ namespace Mottrist.API.Controllers
         /// </summary>
         /// <param name="id">The unique identifier of the driver to retrieve.</param>
         /// <returns>
-        /// - HTTP 200 OK with the driver details if successful.
-        /// - HTTP 404 Not Found if no driver is found with the given ID.
-        /// - HTTP 400 Bad Request if the driver ID is invalid.
+        /// - HTTP 200 OK with the driver details if found.
+        /// - HTTP 404 Not Found if no driver exists with the given ID.
+        /// - HTTP 400 Bad Request if the provided ID is invalid.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
         [HttpGet("{id:int}", Name = "GetDriverByIdAsync")]
@@ -50,25 +52,33 @@ namespace Mottrist.API.Controllers
         {
             if (id <= 0)
             {
-                return BadRequestResponse("InvalidId", "The driver ID provided is invalid.");
+                return BadRequestResponse("InvalidId", "The provided driver ID is invalid.");
             }
 
             try
             {
-                var result = await _driverService.GetByIdAsync(id);
-                return result != null
-                    ? SuccessResponse(result, "Driver retrieved successfully.")
-                    : NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
+                // Attempt to retrieve the driver details by the specified ID.
+                var driver = await _driverService.GetByIdAsync(id);
+
+                if (driver == null)
+                {
+                    return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
+                }
+
+                return SuccessResponse(driver, "Driver retrieved successfully.");
             }
-            catch (HttpRequestException ex)
+            catch (HttpRequestException httpEx)
             {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+                // This exception is typically thrown for issues related to HTTP requests.
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", httpEx.Message);
             }
             catch (Exception ex)
             {
+                // Catch-all for any unexpected exceptions.
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
             }
         }
+
 
         /// <summary>
         /// Retrieves all drivers from the service.
@@ -183,13 +193,19 @@ namespace Mottrist.API.Controllers
 
             try
             {
+                // Validate uniqueness of the email
+                var existingUser = await _driverService.DoesDriverExistByEmailAsync(driverDto.Email);
+                if (existingUser)
+                {
+                    return StatusCodeResponse(StatusCodes.Status409Conflict, "DuplicateUser", "Driver already exists.");
+                }
+
                 var result = await _driverService.AddAsync(driverDto);
 
-                return result.IsExist
-                    ? StatusCodeResponse(StatusCodes.Status409Conflict, "DuplicateUser", "Driver already exists.")
-                    : result.IsSuccess
-                        ? CreatedResponse("GetDriverByIdAsync", new { id = driverDto.Id }, driverDto, "Driver created successfully.")
-                        : StatusCodeResponse(StatusCodes.Status500InternalServerError, "CreationError", "Failed to create driver.");
+
+                return result.IsSuccess
+                    ? CreatedResponse("GetDriverByIdAsync", new { id = driverDto.Id }, driverDto, "Driver created successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "CreationError", "Failed to create driver.");
             }
             catch (HttpRequestException ex)
             {
@@ -263,7 +279,7 @@ namespace Mottrist.API.Controllers
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
             }
         }
-    
+
         /// <summary>
         /// Deletes a driver by the specified ID.
         /// </summary>
@@ -282,23 +298,30 @@ namespace Mottrist.API.Controllers
         {
             if (id < 1)
             {
-                return ApiResponseHelper.BadRequestResponse("InvalidId", "The driver ID provided is invalid.");
+                return BadRequestResponse("InvalidId", "The driver ID provided is invalid.");
             }
 
             try
             {
+                bool isFound = await _driverService.DoesDriverExistByIdAsync(id);
+
+                if (!isFound)
+                {
+                    return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
+                }
+
                 var result = await _driverService.DeleteAsync(id);
                 return result.IsSuccess
-                    ? ApiResponseHelper.SuccessResponse("Driver deleted successfully.")
-                    : ApiResponseHelper.StatusCodeResponse(StatusCodes.Status500InternalServerError, "DeletionError", "Failed to delete the driver.");
+                    ? SuccessResponse("Driver deleted successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "DeletionError", "Failed to delete the driver.");
             }
             catch (HttpRequestException ex)
             {
-                return ApiResponseHelper.StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
-                return ApiResponseHelper.StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
             }
         }
     }
