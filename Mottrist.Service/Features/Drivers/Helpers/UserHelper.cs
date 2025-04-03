@@ -53,7 +53,7 @@ namespace Mottrist.Service.Features.Drivers.Helpers
             user.UserName = driverDto.Email;
             user.Id = 0;
             // Attempt to create the user
-            var addUserResult = await userManager.CreateAsync(user);
+            var addUserResult = await userManager.CreateAsync(user,user.PasswordHash ?? driverDto.Password);
             if (!addUserResult.Succeeded)
             {
                 // Extract and combine error codes into a single error message
