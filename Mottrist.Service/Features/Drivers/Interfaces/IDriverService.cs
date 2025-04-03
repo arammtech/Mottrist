@@ -110,6 +110,20 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// </returns>
         Task<bool> DoesDriverExistByIdAsync(int driverId, CancellationToken cancellationToken = default);
 
+
+        /// <summary>
+        /// Asynchronously checks whether a user with the specified email exists,
+        /// ensuring email uniqueness across all user types managed by the identity system.
+        /// </summary>
+        /// <param name="email">The email address to search for in the user table.</param>
+        /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation. The task result is <c>true</c> if a user
+        /// with the specified email exists; otherwise, <c>false</c>.
+        /// </returns>
+        Task<bool> DoesDriverExistByEmailAsync(string email, CancellationToken cancellationToken = default);
+
+
         #endregion
 
         #region Car Image Operations
