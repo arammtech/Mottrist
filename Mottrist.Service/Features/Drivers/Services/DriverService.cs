@@ -369,7 +369,6 @@ namespace Mottrist.Service.Features.Drivers.Services
         #endregion
 
         #region Driver Addition Operations
-
         /// <summary>
         /// Adds a new driver to the system, including an associated car and its images if applicable.
         /// </summary>
@@ -390,14 +389,14 @@ namespace Mottrist.Service.Features.Drivers.Services
 
                 // Create the user and assign the driver role.
                 var user = _mapper.Map<ApplicationUser>(driverDto);
-                var userResult = await AddUserAsync(_userManager, driverDto, user);
+                var userResult = await _AddUserAsync(driverDto, user);
                 if (!userResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
                     return userResult;
                 }
 
-                var roleResult = await AssignUserRoleAsync(_userManager, user, AppUserRoles.RoleDriver);
+                var roleResult = await _AssignUserRoleAsync(user, AppUserRoles.RoleDriver);
                 if (!roleResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
@@ -447,10 +446,59 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
         }
 
+        #region User Addition Operations
+        /// <summary>
+        /// Creates a new user based on the details provided in the driver DTO.
+        /// </summary>
+        /// <param name="driverDto">The DTO containing the user's details, such as email, password, and name.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the user creation process.
+        /// On success, returns <see cref="Result.Success()"/>.
+        /// On failure, returns <see cref="Result.Failure(string)"/> containing error details.
+        /// </returns>
+        private async Task<Result> _AddUserAsync(AddDriverDto driverDto, ApplicationUser user)
+        {
+            // Map the username from the driver's email
+            //user.UserName = driverDto.Email;
+            //user.Id = 0;
+            // Attempt to create the user
+            var addUserResult = await _userManager.CreateAsync(user, user.PasswordHash ?? driverDto.Password);
+            if (!addUserResult.Succeeded)
+            {
+                // Extract and combine error codes into a single error message
+                var errors = addUserResult.Errors?.Select(e => e.Code).ToArray() ?? new[] { "Unknown error." };
+                return Result.Failure(string.Join(", ", errors));
+            }
+
+            return Result.Success();
+        }
+
+        /// <summary>
+        /// Assigns a specified role to a given user.
+        /// </summary>
+        /// <param name="userManager">The <see cref="UserManager{TUser}"/> instance for user management.</param>
+        /// <param name="user">The user to assign the role to.</param>
+        /// <param name="role">The role to assign to the user.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the operation.
+        /// On success, returns <see cref="Result.Success()"/>.
+        /// On failure, returns <see cref="Result.Failure(string)"/> containing error details.
+        /// </returns>
+        private  async Task<Result> _AssignUserRoleAsync(ApplicationUser user, string role)
+        {
+            var roleResult = await _userManager.AddToRoleAsync(user, role);
+            if (!roleResult.Succeeded)
+            {
+                // Extract and combine error codes into a single error message
+                var errors = roleResult.Errors?.Select(e => e.Code).ToArray() ?? new[] { "Unknown error." };
+                return Result.Failure(string.Join(", ", errors));
+            }
+
+            return Result.Success();
+        }
         #endregion
 
         #region Car Addition Operations
-
         /// <summary>
         /// Adds a car to the system using the CarService, along with its images if provided.
         /// </summary>
@@ -498,8 +546,9 @@ namespace Mottrist.Service.Features.Drivers.Services
 
         #endregion
 
-        #region Driver Image Processing Operations
+        #endregion
 
+        #region Driver Image Processing Operations
         /// <summary>
         /// Processes and saves all driver-related images, including profile, license, passport, and car images.
         /// </summary>
@@ -617,10 +666,7 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
         }
 
-        #endregion
-
         #region Update Helper Functions
-
         /// <summary>
         /// Updates the associated user details of the driver.
         /// </summary>
@@ -656,13 +702,10 @@ namespace Mottrist.Service.Features.Drivers.Services
         {
             try
             {
-                // Map driver DTO to a car DTO.
-                var carDto = _mapper.Map<AddCarDto>(driverDto);
-
                 if (existingDriver.CarId.HasValue)
                 {
                     // Update existing car.
-                    var updateCarDto = _mapper.Map<UpdateCarDto>(carDto);
+                    var updateCarDto = _mapper.Map<UpdateCarDto>(driverDto);
                     updateCarDto.Id = existingDriver.CarId.Value;
                     var carUpdateResult = await _carService.UpdateAsync(updateCarDto);
                     if (!carUpdateResult.IsSuccess)
@@ -672,7 +715,9 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
                 else
                 {
-                    // Add a new car and link it to the driver.
+                    var carDto = _mapper.Map<AddCarDto>(driverDto);
+                    carDto.Id = 0;
+
                     var carAddResult = await _carService.AddAsync(carDto);
                     if (!carAddResult.IsSuccess)
                     {
@@ -680,7 +725,6 @@ namespace Mottrist.Service.Features.Drivers.Services
                     }
                     existingDriver.CarId = carDto.Id;
                 }
-
                 // Process and update the car images.
                 var imageResult = await ProcessAndUpdateCarImagesAsync(driverDto, existingDriver.CarId.Value);
                 if (!imageResult.IsSuccess)
@@ -760,8 +804,9 @@ namespace Mottrist.Service.Features.Drivers.Services
 
         #endregion
 
-        #region Driver Deletion Operations
+        #endregion
 
+        #region Driver Deletion Operations
         /// <summary>
         /// Deletes a driver by their ID, along with associated car details (if applicable).
         /// </summary>
@@ -828,8 +873,6 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
         }
 
-        #endregion
-
         #region Deletion Helper Functions
 
         /// <summary>
@@ -888,6 +931,8 @@ namespace Mottrist.Service.Features.Drivers.Services
 
             return Result.Success();
         }
+
+        #endregion
 
         #endregion
 

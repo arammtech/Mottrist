@@ -19,16 +19,26 @@ namespace Mottrist.Service.Features.Drivers.Mappers
                 .ForMember(dest => dest.Id, opt => opt.Ignore()) // Ignore the Id property during mapping
                 .ReverseMap()
                 .ForMember(src => src.Id, opt => opt.Ignore()) // Ignore Id during reverse mapping
-                .ForMember(src => src.PasswordHash, opt => opt.MapFrom(dest => dest.Password));
+                .ForMember(src => src.PasswordHash, opt => opt.MapFrom(dest => dest.Password))
+                .ForMember(src => src.UserName, opt => opt.MapFrom(dest => dest.Email));
+
 
 
             CreateMap<Car, AddDriverDto>()
-                .ReverseMap();
+                .ForMember(dest => dest.Id, opt => opt.Ignore()) // Ignore the Id property during mapping
+                .ReverseMap()
+                .ForMember(src => src.Id, opt => opt.Ignore()); // Ignore Id during reverse mapping
 
             CreateMap<AddCarDto, AddDriverDto>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore()) // Ignore the Id property during mapping
                 .ReverseMap()
                 .ForMember(src => src.Id, opt => opt.Ignore());
+
+            CreateMap<UpdateCarDto, UpdateDriverDto>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore()) // Ignore the Id property during mapping
+                .ReverseMap()
+                .ForMember(src => src.Id, opt => opt.Ignore());
+
 
             CreateMap<Driver, UpdateDriverDto>()
                 .ReverseMap();
@@ -48,6 +58,16 @@ namespace Mottrist.Service.Features.Drivers.Mappers
                 .ForPath(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
                 .ForPath(dest => dest.Nationality, opt => opt.MapFrom(src => src.Country.Name))
                 .ReverseMap();
+
+            CreateMap<Driver, ApplicationUser>()
+                .ForPath(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                .ForPath(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
+                .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Email))
+                .ForPath(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.User.Email))
+                .ForPath(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
+                .ReverseMap();
+
 
         }
     }
