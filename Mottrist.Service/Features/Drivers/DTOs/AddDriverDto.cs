@@ -49,4 +49,6 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public List<string>? CarImagesUrl { get; set; }
 
     }
+    
+
 }

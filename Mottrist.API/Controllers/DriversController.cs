@@ -6,6 +6,8 @@ using static Mottrist.API.Response.ApiResponseHelper;
 using Mottrist.Service.Features.General.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Mottrist.Domain.Global;
+using Mottrist.Domain.Entities;
+using Mottrist.Domain.Enums;
 
 namespace Mottrist.API.Controllers
 {
@@ -145,6 +147,92 @@ namespace Mottrist.API.Controllers
                 }
 
                 var result = await _driverService.GetAllWithPaginationAsync(page, pageSize);
+
+                // If no drivers are found, return a NoContent response.
+                if (result?.DataRecordsCount?.Equals(0) ?? false)
+                {
+                    return NoContentResponse("No drivers found for the specified parameters.");
+                }
+
+                return SuccessResponse(result, "Paginated drivers retrieved successfully.");
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all drivers based on their status.
+        /// </summary>
+        /// <param name="status">The status to filter drivers by.</param>
+        /// <returns>
+        /// - HTTP 200 OK with the list of drivers.
+        /// - HTTP 204 No Content if no drivers are found.
+        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// </returns>
+        [HttpGet("ByStatus/{status}", Name = "GetDriversByStatusAsync")]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetDriversByStatusAsync(DriverStatus status)
+        {
+            try
+            {
+                var dataResult = await _driverService.GetAllAsync(driver => driver.Status == status);
+
+                // If no data is found, return a NoContent response.
+                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
+                {
+                    return NoContentResponse("No drivers found with the specified status.");
+                }
+
+                return SuccessResponse(dataResult, "Drivers retrieved successfully.");
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a paginated list of drivers based on their status.
+        /// </summary>
+        /// <param name="status">The status to filter drivers by.</param>
+        /// <param name="page">The current page number.</param>
+        /// <param name="pageSize">The number of records per page. Defaults to 10.</param>
+        /// <returns>
+        /// - HTTP 200 OK with a paginated list of drivers.
+        /// - HTTP 400 Bad Request if pagination parameters are invalid.
+        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// </returns>
+        [HttpGet("ByStatusWithPagination", Name = "GetDriversByStatusWithPaginationAsync")]
+        [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>?>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetDriversByStatusWithPaginationAsync(
+            DriverStatus status,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                // Validate pagination input parameters.
+                if (page <= 0 || pageSize <= 0)
+                {
+                    return BadRequestResponse("PaginationError", "Both page and pageSize must be greater than 0.");
+                }
+
+                var result = await _driverService.GetAllWithPaginationAsync(
+                    page, pageSize, driver => driver.Status == status);
 
                 // If no drivers are found, return a NoContent response.
                 if (result?.DataRecordsCount?.Equals(0) ?? false)

@@ -18,6 +18,8 @@ using Feature.Car.DTOs;
 using Microsoft.AspNetCore.Http;
 using static Mottrist.Service.Features.Drivers.Helpers.UserHelper;
 using static Mottrist.Utilities.Global.GlobalFunctions;
+using Mottrist.Domain.Enums;
+using Mottrist.Service.Features.Cities.Dtos;
 
 namespace Mottrist.Service.Features.Drivers.Services
 {
@@ -936,6 +938,76 @@ namespace Mottrist.Service.Features.Drivers.Services
 
         #endregion
 
+        #region Driver Status Operations
+
+        /// <summary>
+        /// Updates the status of a driver.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver to update.</param>
+        /// <param name="newStatus">The new status to assign to the driver.</param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating the success or failure of the operation.
+        /// </returns>
+        public async Task<Result> UpdateDriverStatusAsync(int driverId, DriverStatus newStatus)
+        {
+            try
+            {
+                // Validate the driver exists
+                var driver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverId);
+                if (driver == null)
+                {
+                    return Result.Failure("Driver not found.");
+                }
+
+                // Update the driver status
+                driver.Status = newStatus;
+                await _unitOfWork.Repository<Driver>().UpdateAsync(driver);
+
+                // Commit the changes
+                var saveResult = await _unitOfWork.CommitAsync();
+                if (!saveResult.IsSuccess)
+                {
+                    return Result.Failure("Failed to update driver status.");
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected errors
+                return Result.Failure($"An error occurred while updating driver status: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the current status of a driver.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver.</param>
+        /// <returns>
+        /// The current <see cref="DriverStatus"/> of the driver, or null if the driver does not exist.
+        /// </returns>
+        public async Task<DriverStatus?> GetDriverStatusAsync(int driverId)
+        {
+            try
+            {
+                // Fetch the driver
+                var driver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverId);
+                if (driver == null)
+                {
+                    return null;
+                }
+
+                return driver.Status;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"An error occurred while retrieving driver status: {ex.Message}", ex);
+            }
+        }
+
+        #endregion
+
+
         #region Existence Checks
 
         /// <summary>
@@ -1219,6 +1291,154 @@ namespace Mottrist.Service.Features.Drivers.Services
                 return Result.Failure($"An error occurred: {ex.Message}");
             }
         }
+
+        #endregion
+
+        #region Driver Cities Operations
+        /// <summary>
+        /// Adds a list of cities to a driver with the specified work status.
+        /// </summary>
+        /// <param name="dto">The DTO containing driver ID, city IDs, and work status.</param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating the success or failure of the operation.
+        /// </returns>
+        public async Task<Result> AddDriverCitiesAsync(AddDriverCitiesDto dto)
+        {
+            return null;
+        }
+
+        public async Task<bool> IsCityAlreadyAssignedAsync(int driverId, int cityId)
+        {
+            return await _unitOfWork.Repository<DriverCity>().Query()
+                                .AnyAsync(dc => dc.DriverId == driverId && dc.CityId == cityId);
+        }
+
+        /// <summary>
+        /// Removes a city association from a driver.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver.</param>
+        /// <param name="cityId">The ID of the city.</param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating the success or failure of the operation.
+        /// </returns>
+        public async Task<Result> RemoveDriverCityAsync(int driverId, int cityId)
+        {
+            try
+            {
+                var driverCity = await _unitOfWork.Repository<DriverCity>().GetAsync(dc => dc.DriverId == driverId && dc.CityId == cityId);
+
+                if (driverCity == null)
+                {
+                    return Result.Failure("City not found for the specified driver.");
+                }
+
+                await _unitOfWork.Repository<DriverCity>().DeleteAsync(driverCity);
+
+                var saveResult = await _unitOfWork.CommitAsync();
+                if (!saveResult.IsSuccess)
+                {
+                    return Result.Failure("Failed to remove driver city association.");
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Unexpected error occurred while removing driver city: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Updates the work status for a specific driver-city association.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver.</param>
+        /// <param name="cityId">The ID of the city.</param>
+        /// <param name="newStatus">The new work status to set.</param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating the success or failure of the operation.
+        /// </returns>
+        public async Task<Result> UpdateDriverCityWorkStatusAsync(int driverId, int cityId, WorkStatus newStatus)
+        {
+            try
+            {
+                var driverCity = await _unitOfWork.Repository<DriverCity>().GetAsync(dc => dc.DriverId == driverId && dc.CityId == cityId);
+
+                if (driverCity == null)
+                {
+                    return Result.Failure("City not found for the specified driver.");
+                }
+
+                driverCity.WorkStatus = newStatus;
+                await _unitOfWork.Repository<DriverCity>().UpdateAsync(driverCity);
+
+                var saveResult = await _unitOfWork.CommitAsync();
+                if (!saveResult.IsSuccess)
+                {
+                    return Result.Failure("Failed to save driver city work status updates.");
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Unexpected error occurred while updating work status: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all cities associated with a specific driver.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver.</param>
+        /// <returns>
+        /// A <see cref="DataResult{DriverCity}"/> containing the cities associated with the driver.
+        /// </returns>
+        public async Task<GetDriverCitiesDto?> GetDriverCitiesAsync(int driverId)
+        {
+            try
+            {
+                if (driverId <= 0)
+                {
+                    throw new ArgumentException("Driver ID must be greater than zero.", nameof(driverId));
+                }
+
+                // Retrieve all DriverCity entities for the given driver ID
+                var driverCities = await _unitOfWork.Repository<DriverCity>()
+
+                    .GetAllAsync(dc => dc.DriverId == driverId);
+
+                if (driverCities == null || !driverCities.Any())
+                {
+                    return null;
+                }
+
+                // Map DriverCity entities to GetDriverCitiesDto
+                var driverCitiesDto = driverCities.Select(dc => new CityDto
+                {
+                    Id = dc.CityId,
+                    Name = dc.City.Name
+
+                });
+
+                return new GetDriverCitiesDto
+                {
+                    DriverId = driverId,
+                    Cities = driverCitiesDto.ToList()
+                };
+            }
+            catch (ArgumentException ex)
+            {
+                // Log and rethrow for validation errors
+                Console.WriteLine($"Validation Error: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"Unexpected Error: {ex.Message}");
+                throw new ApplicationException("An error occurred while retrieving driver cities.", ex);
+            }
+        }
+
 
         #endregion
     }
