@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Traveller.DTOs;
 using Mottrist.Service.Features.Traveller.Interfaces;
@@ -36,6 +37,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             if (id <= 0)
@@ -166,7 +168,7 @@ namespace Mottrist.API.Controllers
                 var result = await _travelerService.AddAsync(travelerDto);
 
                 if (result.IsSuccess)
-                    return CreatedResponse<AddTravelerDto>("GetByIdAsync", new { id = travelerDto.Id }, travelerDto);
+                    return CreatedResponse<AddTravelerDto>("GetTravelerByIdAsync", new { id = travelerDto.Id }, travelerDto);
                 else
                 {
                     return StatusCodeResponse(StatusCodes.Status500InternalServerError, "FAILD_CREATED_TRAVELER", "Error creating traveler.", result.Errors.ToArray());
