@@ -29,6 +29,8 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Mottrist.Service.Features.Cities.Interfaces;
 using Mottrist.Service.Features.Cities.Services;
+using Mottrist.Service.Features.Countries.Interfaces;
+using Mottrist.Service.Features.Countries.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -152,6 +154,7 @@ builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<ITravelerService, TravelerService>();
 builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
+builder.Services.AddScoped<ICountryService, CountryService>();
 
 #endregion
 
