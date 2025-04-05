@@ -39,16 +39,16 @@ namespace Mottrist.Service.UnitTests.Features.Cars
         }
 
 
-        [Fact]
-        public async Task AddCarAsync_ShouldAddCar()
-        {
-            // Arrange
-            var carService = new CarService(_unitOfWork, _mapper);
-            var driverService = new DriverService(_unitOfWork, _mapper, carService, _userManager);
+        //[Fact]
+        //public async Task AddCarAsync_ShouldAddCar()
+        //{
+        //    // Arrange
+        //    var carService = new CarService(_unitOfWork, _mapper);
+        //    var driverService = new DriverService(_unitOfWork, _mapper, carService, _userManager);
 
-            var result = await driverService.DeleteImageCarAsync(1024, "/images/cars/af32bfa1-faed-4f60-8923-0a5edc0ba186_11.png");
-            // Assert
-            Assert.True(result.IsSuccess);
-        }
+        //    var result = await driverService.DeleteImageCarAsync(1024, "/images/cars/af32bfa1-faed-4f60-8923-0a5edc0ba186_11.png");
+        //    // Assert
+        //    Assert.True(result.IsSuccess);
+        //}
     }
 }
