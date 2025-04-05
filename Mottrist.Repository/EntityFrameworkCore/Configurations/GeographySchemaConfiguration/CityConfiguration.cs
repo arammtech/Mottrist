@@ -21,6 +21,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.GeographySchema
                    .OnDelete(DeleteBehavior.Restrict);
 
             builder.ToTable("Cities", schema: "Geography");
+
         }
     } 
 }

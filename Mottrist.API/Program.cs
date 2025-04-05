@@ -33,6 +33,7 @@ using Mottrist.Service.Features.Countries.Interfaces;
 using Mottrist.Service.Features.Countries.Services;
 using Mottrist.Service.Features.Cars.Interfaces.CarFields;
 using Mottrist.Service.Features.Cars.Services.CarFields;
+using Mottrist.Service.SeedData;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -162,7 +163,7 @@ builder.Services.AddScoped<ICarColorService, CarColorService>();
 builder.Services.AddScoped<ICarBodyTypeService, CarBodyTypeService>();
 builder.Services.AddScoped<ICarFuelTypeService, CarFuelTypeService>();
 builder.Services.AddScoped<ICarBrandService, CarBrandService>();
-
+builder.Services.AddScoped<ISeedDb, SeedDb>();
 #endregion
 
 var app = builder.Build();
@@ -204,5 +205,4 @@ void SeedDatabase()
         IDbInitializer initializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
         initializer.Initialize();
     }
-
 }
