@@ -27,6 +27,8 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Mottrist.Service.Features.Cities.Interfaces;
+using Mottrist.Service.Features.Cities.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -148,7 +150,9 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<ITravelerService, TravelerService>();
+builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
+
 #endregion
 
 var app = builder.Build();
