@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Mottrist.API.Response;
+using Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs;
 using Mottrist.Service.Features.Cars.Interfaces;
 using Mottrist.Service.Features.Cars.Interfaces.CarFields;
 using Mottrist.Service.Features.Cities.Dtos;
@@ -198,6 +199,35 @@ namespace Mottrist.API.Controllers
                 }
 
                 return SuccessResponse(dataResult, "Car's models retrieved successfully.");
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all car fields.
+        /// </summary>
+        /// <returns>A list of car fields.</returns>
+        /// - HTTP 200 OK with the list of car fields if successful.
+        /// - HTTP 204 No Content if no car fields are found.
+        /// - HTTP 500 Internal Server Error for unexpected errors.
+        [HttpGet("All/CarFields", Name = "GetAllCarFields")]
+        [ProducesResponseType(typeof(ApiResponse<CarFieldsDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAllCarFields()
+        {
+            try
+            {
+                var carModelDto = await _carService.GetAllCarFieldsAsync();
+
+                return SuccessResponse(carModelDto, "Car's models retrieved successfully.");
             }
             catch (HttpRequestException ex)
             {

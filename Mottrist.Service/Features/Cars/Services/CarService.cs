@@ -11,17 +11,50 @@ using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Cars.DTOs;
 using Microsoft.AspNetCore.Http;
 using static Mottrist.Utilities.Global.GlobalFunctions;
+using Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs;
+using AutoMapper.QueryableExtensions;
+using Mottrist.Service.Features.Cars.Interfaces.CarFields;
+using Mottrist.Service.Features.Cars.Services.CarFields;
 namespace Mottrist.Service.Features.Cars.Services
 {
     public class CarService : BaseService, ICarService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        /// <summary>
+        /// Service for managing car brands.
+        /// </summary>
+        private readonly ICarBrandService _carBrandService;
 
-        public CarService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
+        /// <summary>
+        /// Service for managing car body types.
+        /// </summary>
+        private readonly ICarBodyTypeService _carBodyTypeService;
+
+        /// <summary>
+        /// Service for managing car fuel types.
+        /// </summary>
+        private readonly ICarFuelTypeService _carFuelTypeService;
+
+        /// <summary>
+        /// Service for managing car models.
+        /// </summary>
+        private readonly ICarModelService _carModelService;
+
+        /// <summary>
+        /// Service for managing car colors.
+        /// </summary>
+        public readonly ICarColorService _carColorService;
+
+        public CarService(IUnitOfWork unitOfWork, IMapper mapper, ICarModelService carModelService, ICarColorService carColorService, ICarBrandService carBrandService, ICarBodyTypeService carBodyTypeService, ICarFuelTypeService carFuelTypeService) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _carBrandService = carBrandService;
+            _carBodyTypeService = carBodyTypeService;
+            _carFuelTypeService = carFuelTypeService;
+            _carModelService = carModelService;
+            _carColorService = carColorService;
         }
 
         /// <summary>
@@ -690,6 +723,34 @@ namespace Mottrist.Service.Features.Cars.Services
             {
                 await _unitOfWork.RollbackAsync();
                 return Result.Failure($"An error occurred: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all car-related fields including models, body types, brands, colors, and fuel types.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="CarFieldsDto"/> object containing lists of car models, body types, brands, colors, and fuel types.
+        /// If an exception occurs, the method returns null.
+        /// </returns>
+        public async Task<CarFieldsDto> GetAllCarFieldsAsync()
+        {
+            try
+            {
+                CarFieldsDto carFields = new CarFieldsDto
+                {
+                    CarModels = await _carModelService.GetAllAsync(),
+                    CarBodyTypes = await _carBodyTypeService.GetAllAsync(),
+                    CarBrands = await _carBrandService.GetAllAsync(),
+                    CarColors = await _carColorService.GetAllAsync(),
+                    CarFuelTypes = await _carFuelTypeService.GetAllAsync()
+                };
+
+                return carFields;
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
     }
