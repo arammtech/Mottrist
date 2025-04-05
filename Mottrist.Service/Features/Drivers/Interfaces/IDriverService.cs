@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Mottrist.Domain.Entities;
+using Mottrist.Domain.Enums;
 using Mottrist.Domain.Global;
 using Mottrist.Service.Features.Drivers.DTOs;
 using Mottrist.Service.Features.General;
@@ -161,5 +162,28 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         Task<Result> UpdateCarImageAsync(int driverId, string? imageUrl, IFormFile? newImageFile, bool isMain);
 
         #endregion
+
+        #region Driver Status Operations
+        /// <summary>
+        /// Updates the status of a driver.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver to update.</param>
+        /// <param name="newStatus">The new status to assign to the driver.</param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating the success or failure of the operation.
+        /// </returns>
+        Task<Result> UpdateDriverStatusAsync(int driverId, DriverStatus newStatus);
+
+        /// <summary>
+        /// Retrieves the current status of a driver.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver.</param>
+        /// <returns>
+        /// The current <see cref="DriverStatus"/> of the driver, or null if the driver does not exist.
+        /// </returns>
+        Task<DriverStatus?> GetDriverStatusAsync(int driverId);
+
+        #endregion
+
     }
 }

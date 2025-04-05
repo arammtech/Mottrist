@@ -9,7 +9,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
     {
         public void Configure(EntityTypeBuilder<DriverCountry> builder)
         {
-            builder.HasKey(dcc => new { dcc.DriverId, dcc.CountryId});
+            builder.HasKey(dcc => dcc.Id);
 
             builder.Property(dcc => dcc.WorkStatus)
                 .IsRequired()
@@ -18,7 +18,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
                     builder => (WorkStatus)builder);
 
             builder.HasOne(dcc => dcc.Driver) 
-                .WithMany(d => d.DriverCountrites)
+                .WithMany(d => d.DriverCountries)
                 .IsRequired()
                 .HasForeignKey(dcc => dcc.DriverId)
                 .OnDelete(DeleteBehavior.Restrict);

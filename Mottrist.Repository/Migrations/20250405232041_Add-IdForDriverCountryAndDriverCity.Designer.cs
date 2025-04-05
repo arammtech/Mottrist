@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 
@@ -11,9 +12,11 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250405232041_Add-IdForDriverCountryAndDriverCity")]
+    partial class AddIdForDriverCountryAndDriverCity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -166,81 +169,6 @@ namespace Mottrist.Repository.Migrations
                         {
                             Id = 5,
                             Type = "Pickup"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Type = "Convertible"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Type = "Wagon"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Type = "Minivan"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Type = "Roadster"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Type = "Crossover"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Type = "Limousine"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Type = "Van"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Type = "Sports Car"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Type = "Luxury Sedan"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Type = "Coupe Convertible"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Type = "Station Wagon"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Type = "Supercar"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Type = "Hypercar"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Type = "Off-road"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Type = "Targa"
                         });
                 });
 
@@ -285,81 +213,6 @@ namespace Mottrist.Repository.Migrations
                         {
                             Id = 5,
                             Name = "BMW"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Chevrolet"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Mercedes-Benz"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Audi"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "Nissan"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "Volkswagen"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "Hyundai"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "Kia"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name = "Subaru"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name = "Mazda"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Name = "Lexus"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Name = "Jaguar"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Name = "Porsche"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Name = "Land Rover"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Name = "Ferrari"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "Lamborghini"
                         });
                 });
 
@@ -531,81 +384,6 @@ namespace Mottrist.Repository.Migrations
                         {
                             Id = 5,
                             Name = "Green"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Yellow"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Orange"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Purple"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "Silver"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "Gray"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "Brown"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "Beige"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name = "Pink"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name = "Gold"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Name = "Turquoise"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Name = "Teal"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Name = "Magenta"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Name = "Copper"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Name = "Ivory"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "Champagne"
                         });
                 });
 
@@ -646,86 +424,6 @@ namespace Mottrist.Repository.Migrations
                         {
                             Id = 4,
                             Type = "Hybrid"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Type = "CNG"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Type = "LPG"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Type = "Ethanol"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Type = "Biofuel"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Type = "Hydrogen"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Type = "Propane"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Type = "Methanol"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Type = "Butanol"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Type = "Natural Gas"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Type = "Biodiesel"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Type = "Alcohol"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Type = "Fischer-Tropsch"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Type = "Electric + Petrol"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Type = "Electric + Diesel"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Type = "Electric + Hydrogen"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Type = "Compressed Natural Gas (CNG)"
                         });
                 });
 
@@ -770,81 +468,6 @@ namespace Mottrist.Repository.Migrations
                         {
                             Id = 5,
                             Name = "X5"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "F-150"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Accord"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "A4"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "Camry"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "Q5"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "RX"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "Tucson"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name = "Explorer"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name = "Kona"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Name = "911"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Name = "Grand Cherokee"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Name = "Range Rover"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Name = "Charger"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Name = "Cherokee"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "X6"
                         });
                 });
 
@@ -1123,512 +746,122 @@ namespace Mottrist.Repository.Migrations
                         new
                         {
                             Id = 6,
-                            CountryId = 1,
-                            Name = "Philadelphia"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CountryId = 1,
-                            Name = "San Antonio"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CountryId = 1,
-                            Name = "San Diego"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CountryId = 1,
-                            Name = "Dallas"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CountryId = 1,
-                            Name = "San Jose"
-                        },
-                        new
-                        {
-                            Id = 11,
                             CountryId = 2,
                             Name = "Toronto"
                         },
                         new
                         {
-                            Id = 12,
+                            Id = 7,
                             CountryId = 2,
                             Name = "Montreal"
                         },
                         new
                         {
-                            Id = 13,
+                            Id = 8,
                             CountryId = 2,
                             Name = "Vancouver"
                         },
                         new
                         {
-                            Id = 14,
+                            Id = 9,
                             CountryId = 2,
                             Name = "Calgary"
                         },
                         new
                         {
-                            Id = 15,
+                            Id = 10,
                             CountryId = 2,
                             Name = "Ottawa"
                         },
                         new
                         {
-                            Id = 16,
-                            CountryId = 2,
-                            Name = "Edmonton"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CountryId = 2,
-                            Name = "Winnipeg"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CountryId = 2,
-                            Name = "Quebec City"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CountryId = 2,
-                            Name = "Hamilton"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CountryId = 2,
-                            Name = "Kitchener"
-                        },
-                        new
-                        {
-                            Id = 21,
+                            Id = 11,
                             CountryId = 3,
                             Name = "London"
                         },
                         new
                         {
-                            Id = 22,
+                            Id = 12,
                             CountryId = 3,
                             Name = "Manchester"
                         },
                         new
                         {
-                            Id = 23,
+                            Id = 13,
                             CountryId = 3,
                             Name = "Birmingham"
                         },
                         new
                         {
-                            Id = 24,
+                            Id = 14,
                             CountryId = 3,
                             Name = "Liverpool"
                         },
                         new
                         {
-                            Id = 25,
+                            Id = 15,
                             CountryId = 3,
                             Name = "Leeds"
                         },
                         new
                         {
-                            Id = 26,
-                            CountryId = 3,
-                            Name = "Sheffield"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            CountryId = 3,
-                            Name = "Edinburgh"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            CountryId = 3,
-                            Name = "Glasgow"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            CountryId = 3,
-                            Name = "Bristol"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            CountryId = 3,
-                            Name = "Nottingham"
-                        },
-                        new
-                        {
-                            Id = 31,
+                            Id = 16,
                             CountryId = 4,
                             Name = "Berlin"
                         },
                         new
                         {
-                            Id = 32,
+                            Id = 17,
                             CountryId = 4,
                             Name = "Munich"
                         },
                         new
                         {
-                            Id = 33,
+                            Id = 18,
                             CountryId = 4,
                             Name = "Frankfurt"
                         },
                         new
                         {
-                            Id = 34,
+                            Id = 19,
                             CountryId = 4,
                             Name = "Hamburg"
                         },
                         new
                         {
-                            Id = 35,
+                            Id = 20,
                             CountryId = 4,
                             Name = "Cologne"
                         },
                         new
                         {
-                            Id = 36,
-                            CountryId = 4,
-                            Name = "Stuttgart"
-                        },
-                        new
-                        {
-                            Id = 37,
-                            CountryId = 4,
-                            Name = "Düsseldorf"
-                        },
-                        new
-                        {
-                            Id = 38,
-                            CountryId = 4,
-                            Name = "Dortmund"
-                        },
-                        new
-                        {
-                            Id = 39,
-                            CountryId = 4,
-                            Name = "Essen"
-                        },
-                        new
-                        {
-                            Id = 40,
-                            CountryId = 4,
-                            Name = "Bremen"
-                        },
-                        new
-                        {
-                            Id = 41,
+                            Id = 21,
                             CountryId = 5,
                             Name = "Paris"
                         },
                         new
                         {
-                            Id = 42,
+                            Id = 22,
                             CountryId = 5,
                             Name = "Marseille"
                         },
                         new
                         {
-                            Id = 43,
+                            Id = 23,
                             CountryId = 5,
                             Name = "Lyon"
                         },
                         new
                         {
-                            Id = 44,
+                            Id = 24,
                             CountryId = 5,
                             Name = "Toulouse"
                         },
                         new
                         {
-                            Id = 45,
+                            Id = 25,
                             CountryId = 5,
                             Name = "Nice"
-                        },
-                        new
-                        {
-                            Id = 46,
-                            CountryId = 5,
-                            Name = "Nantes"
-                        },
-                        new
-                        {
-                            Id = 47,
-                            CountryId = 5,
-                            Name = "Strasbourg"
-                        },
-                        new
-                        {
-                            Id = 48,
-                            CountryId = 5,
-                            Name = "Montpellier"
-                        },
-                        new
-                        {
-                            Id = 49,
-                            CountryId = 5,
-                            Name = "Bordeaux"
-                        },
-                        new
-                        {
-                            Id = 50,
-                            CountryId = 5,
-                            Name = "Lille"
-                        },
-                        new
-                        {
-                            Id = 51,
-                            CountryId = 6,
-                            Name = "Sydney"
-                        },
-                        new
-                        {
-                            Id = 52,
-                            CountryId = 6,
-                            Name = "Melbourne"
-                        },
-                        new
-                        {
-                            Id = 53,
-                            CountryId = 6,
-                            Name = "Brisbane"
-                        },
-                        new
-                        {
-                            Id = 54,
-                            CountryId = 6,
-                            Name = "Perth"
-                        },
-                        new
-                        {
-                            Id = 55,
-                            CountryId = 6,
-                            Name = "Adelaide"
-                        },
-                        new
-                        {
-                            Id = 56,
-                            CountryId = 6,
-                            Name = "Gold Coast"
-                        },
-                        new
-                        {
-                            Id = 57,
-                            CountryId = 6,
-                            Name = "Hobart"
-                        },
-                        new
-                        {
-                            Id = 58,
-                            CountryId = 6,
-                            Name = "Canberra"
-                        },
-                        new
-                        {
-                            Id = 59,
-                            CountryId = 6,
-                            Name = "Newcastle"
-                        },
-                        new
-                        {
-                            Id = 60,
-                            CountryId = 6,
-                            Name = "Wollongong"
-                        },
-                        new
-                        {
-                            Id = 61,
-                            CountryId = 7,
-                            Name = "São Paulo"
-                        },
-                        new
-                        {
-                            Id = 62,
-                            CountryId = 7,
-                            Name = "Rio de Janeiro"
-                        },
-                        new
-                        {
-                            Id = 63,
-                            CountryId = 7,
-                            Name = "Brasília"
-                        },
-                        new
-                        {
-                            Id = 64,
-                            CountryId = 7,
-                            Name = "Salvador"
-                        },
-                        new
-                        {
-                            Id = 65,
-                            CountryId = 7,
-                            Name = "Fortaleza"
-                        },
-                        new
-                        {
-                            Id = 66,
-                            CountryId = 7,
-                            Name = "Belo Horizonte"
-                        },
-                        new
-                        {
-                            Id = 67,
-                            CountryId = 7,
-                            Name = "Manaus"
-                        },
-                        new
-                        {
-                            Id = 68,
-                            CountryId = 7,
-                            Name = "Curitiba"
-                        },
-                        new
-                        {
-                            Id = 69,
-                            CountryId = 7,
-                            Name = "Recife"
-                        },
-                        new
-                        {
-                            Id = 70,
-                            CountryId = 7,
-                            Name = "Porto Alegre"
-                        },
-                        new
-                        {
-                            Id = 71,
-                            CountryId = 8,
-                            Name = "Buenos Aires"
-                        },
-                        new
-                        {
-                            Id = 72,
-                            CountryId = 8,
-                            Name = "Córdoba"
-                        },
-                        new
-                        {
-                            Id = 73,
-                            CountryId = 8,
-                            Name = "Rosario"
-                        },
-                        new
-                        {
-                            Id = 74,
-                            CountryId = 8,
-                            Name = "Mendoza"
-                        },
-                        new
-                        {
-                            Id = 75,
-                            CountryId = 8,
-                            Name = "La Plata"
-                        },
-                        new
-                        {
-                            Id = 76,
-                            CountryId = 8,
-                            Name = "San Miguel de Tucumán"
-                        },
-                        new
-                        {
-                            Id = 77,
-                            CountryId = 8,
-                            Name = "Mar del Plata"
-                        },
-                        new
-                        {
-                            Id = 78,
-                            CountryId = 8,
-                            Name = "Salta"
-                        },
-                        new
-                        {
-                            Id = 79,
-                            CountryId = 8,
-                            Name = "Santa Fe"
-                        },
-                        new
-                        {
-                            Id = 80,
-                            CountryId = 8,
-                            Name = "Santiago del Estero"
-                        },
-                        new
-                        {
-                            Id = 81,
-                            CountryId = 9,
-                            Name = "Beijing"
-                        },
-                        new
-                        {
-                            Id = 82,
-                            CountryId = 9,
-                            Name = "Shanghai"
-                        },
-                        new
-                        {
-                            Id = 83,
-                            CountryId = 9,
-                            Name = "Guangzhou"
-                        },
-                        new
-                        {
-                            Id = 84,
-                            CountryId = 9,
-                            Name = "Shenzhen"
-                        },
-                        new
-                        {
-                            Id = 85,
-                            CountryId = 9,
-                            Name = "Chengdu"
-                        },
-                        new
-                        {
-                            Id = 86,
-                            CountryId = 9,
-                            Name = "Hangzhou"
-                        },
-                        new
-                        {
-                            Id = 87,
-                            CountryId = 9,
-                            Name = "Xi'an"
-                        },
-                        new
-                        {
-                            Id = 88,
-                            CountryId = 9,
-                            Name = "Wuhan"
-                        },
-                        new
-                        {
-                            Id = 89,
-                            CountryId = 9,
-                            Name = "Chongqing"
-                        },
-                        new
-                        {
-                            Id = 90,
-                            CountryId = 9,
-                            Name = "Tianjin"
                         });
                 });
 
@@ -1682,96 +915,6 @@ namespace Mottrist.Repository.Migrations
                             Id = 5,
                             Continent = (byte)4,
                             Name = "France"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Continent = (byte)6,
-                            Name = "Australia"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Continent = (byte)7,
-                            Name = "Brazil"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Continent = (byte)7,
-                            Name = "Argentina"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Continent = (byte)3,
-                            Name = "China"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Continent = (byte)3,
-                            Name = "Japan"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Continent = (byte)3,
-                            Name = "India"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Continent = (byte)3,
-                            Name = "South Korea"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Continent = (byte)1,
-                            Name = "South Africa"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Continent = (byte)1,
-                            Name = "Nigeria"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Continent = (byte)1,
-                            Name = "Egypt"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Continent = (byte)5,
-                            Name = "Mexico"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Continent = (byte)4,
-                            Name = "Italy"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Continent = (byte)4,
-                            Name = "Spain"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Continent = (byte)4,
-                            Name = "Russia"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Continent = (byte)3,
-                            Name = "Turkey"
                         });
                 });
 

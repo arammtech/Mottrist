@@ -40,13 +40,6 @@ namespace Mottrist.Service.Features.Drivers.Validators
             RuleFor(driver => driver.NationalityId)
                 .GreaterThan(0).WithMessage("Nationality ID must be greater than 0.");
 
-            // Validate LicenseImageUrl
-            RuleFor(driver => driver.LicenseImageUrl)
-                .NotEmpty().WithMessage("License image URL is required.");
-
-            // Validate PassportImageUrl
-            RuleFor(driver => driver.PassportImageUrl)
-                .NotEmpty().WithMessage("Passport image URL is required.");
 
 
             // Validate HasCar and related car details
@@ -69,8 +62,6 @@ namespace Mottrist.Service.Features.Drivers.Validators
                 RuleFor(driver => driver.NumberOfSeats)
                     .NotNull().WithMessage("Number of seats is required when the driver has a car.");
 
-                RuleFor(driver => driver.CarImageUrl)
-                    .NotEmpty().WithMessage("Car image URL is required when the driver has a car.");
             });
         }
     }

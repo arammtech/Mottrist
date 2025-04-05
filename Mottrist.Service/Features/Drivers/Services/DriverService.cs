@@ -16,8 +16,8 @@ using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Cars.Interfaces;
 using Feature.Car.DTOs;
 using Microsoft.AspNetCore.Http;
-using static Mottrist.Service.Features.Drivers.Helpers.UserHelper;
 using static Mottrist.Utilities.Global.GlobalFunctions;
+using Mottrist.Domain.Enums;
 
 namespace Mottrist.Service.Features.Drivers.Services
 {
@@ -125,7 +125,13 @@ namespace Mottrist.Service.Features.Drivers.Services
                     AddtionalCarImageUrls = driver.Car.CarImages
                         .Where(ci => !ci.IsMain)
                         .Select(ci => ci.ImageUrl)
-                        .ToList() ?? new List<string>() // Additional images
+                        .ToList() ?? new List<string>(), // Additional images
+                    Status = driver.Status.ToString(),
+                    CitiesCoverNow = string.Join(", ", driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x=> x.City.Name)),
+                    CitiesWorkedOn = string.Join(", ", driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name)),
+                    CountriesCoverNow = string.Join(", ", driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name)),
+                    CountriesWorkedOn = string.Join(", ", driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name)),
+                    LanguagesSpoken = string.Join(", ", driver.DriverLanguages.Select(x => x.Language.Name))
                 }).ToListAsync();
 
                 // Return the result
@@ -194,7 +200,14 @@ namespace Mottrist.Service.Features.Drivers.Services
                         AddtionalCarImageUrls = carDetails.CarImages
                             .Where(ci => !ci.IsMain)
                             .Select(ci => ci.ImageUrl)
-                            .ToList() ?? new List<string>()
+                            .ToList() ?? new List<string>(),
+                        Status = driver.Status.ToString(),
+                        CitiesCoverNow = string.Join(", ", driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.City.Name)),
+                        CitiesWorkedOn = string.Join(", ", driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name)),
+                        CountriesCoverNow = string.Join(", ", driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name)),
+                        CountriesWorkedOn = string.Join(", ", driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name)),
+                        LanguagesSpoken = string.Join(", ", driver.DriverLanguages.Select(x => x.Language.Name))
+
                     }
                 ).FirstOrDefaultAsync();
 
@@ -285,7 +298,13 @@ namespace Mottrist.Service.Features.Drivers.Services
                         AddtionalCarImageUrls = x.Car.CarImages
                             .Where(ci => !ci.IsMain)
                             .Select(ci => ci.ImageUrl)
-                            .ToList() ?? new List<string>()
+                            .ToList() ?? new List<string>(),
+                        Status = x.Status.ToString(),
+                        CitiesCoverNow = string.Join(", ", x.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.City.Name)),
+                        CitiesWorkedOn = string.Join(", ", x.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name)),
+                        CountriesCoverNow = string.Join(", ", x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name)),
+                        CountriesWorkedOn = string.Join(", ", x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name)),
+                        LanguagesSpoken = string.Join(", ", x.DriverLanguages.Select(x => x.Language.Name))
                     })
                     .ToListAsync();
 
@@ -352,7 +371,13 @@ namespace Mottrist.Service.Features.Drivers.Services
                         AddtionalCarImageUrls = x.Car.CarImages
                             .Where(ci => !ci.IsMain)
                             .Select(ci => ci.ImageUrl)
-                            .ToList() ?? new List<string>()
+                            .ToList() ?? new List<string>(),
+                        Status = x.Status.ToString(),
+                        CitiesCoverNow = string.Join(", ", x.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.City.Name)),
+                        CitiesWorkedOn = string.Join(", ", x.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name)),
+                        CountriesCoverNow = string.Join(", ", x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name)),
+                        CountriesWorkedOn = string.Join(", ", x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name)),
+                        LanguagesSpoken = string.Join(", ", x.DriverLanguages.Select(x => x.Language.Name))
                     })
                     .FirstOrDefaultAsync();
 
@@ -384,10 +409,10 @@ namespace Mottrist.Service.Features.Drivers.Services
 
             try
             {
-                // Process all driver-related images.
-                await ProcessDriverImagesAsync(driverDto);
+                // Process all driver-related images
+                await _ProcessDriverImagesAsync(driverDto);
 
-                // Create the user and assign the driver role.
+                // Create user and assign driver role
                 var user = _mapper.Map<ApplicationUser>(driverDto);
                 var userResult = await _AddUserAsync(driverDto, user);
                 if (!userResult.IsSuccess)
@@ -403,14 +428,14 @@ namespace Mottrist.Service.Features.Drivers.Services
                     return roleResult;
                 }
 
-                // Map the driver DTO to a driver entity and assign the user's id.
+                // Map DTO to driver entity
                 var driverEntity = _mapper.Map<Driver>(driverDto);
                 driverEntity.UserId = user.Id;
 
-                // If the driver includes car details, add the car (and associated images) through CarService.
+                // Add car details if HasCar is true
                 if (driverDto.HasCar)
                 {
-                    var carResult = await AddCarWithCarServiceAsync(driverDto, driverEntity);
+                    var carResult = await _AddCarWithCarServiceAsync(driverDto, driverEntity);
                     if (!carResult.IsSuccess)
                     {
                         await _unitOfWork.RollbackAsync();
@@ -418,7 +443,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                     }
                 }
 
-                // Add the driver entity to the repository.
+                // Add driver entity to the repository
                 await _unitOfWork.Repository<Driver>().AddAsync(driverEntity);
                 var saveDriverResult = await _unitOfWork.SaveChangesAsync();
                 if (!saveDriverResult.IsSuccess)
@@ -427,7 +452,23 @@ namespace Mottrist.Service.Features.Drivers.Services
                     return Result.Failure("Failed to save the driver details.");
                 }
 
-                // Commit the transaction.
+                // Add all associations in one batch
+                var associationsResult = await _AddDriverAssociationsAsync(
+                    driverEntity.Id,
+                    driverDto.LanguagesSpoken,
+                    driverDto.CitiesWorkedOn,
+                    driverDto.CitiesCoverNow,
+                    driverDto.CountriesWorkedOn,
+                    driverDto.CountriesCoverNow
+                );
+
+                if (!associationsResult.IsSuccess)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return associationsResult;
+                }
+
+                // Commit transaction
                 var commitResult = await _unitOfWork.CommitAsync();
                 if (!commitResult.IsSuccess)
                 {
@@ -435,7 +476,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                     return Result.Failure("Failed to commit the transaction.");
                 }
 
-                // Assign the generated driver id back to the DTO.
+                // Assign generated driver ID back to DTO
                 driverDto.Id = driverEntity.Id;
                 return Result.Success();
             }
@@ -445,6 +486,102 @@ namespace Mottrist.Service.Features.Drivers.Services
                 return Result.Failure($"An unexpected error occurred: {ex.Message}");
             }
         }
+
+        #region Additional Methods
+        /// <summary>
+        /// Adds languages, cities, and countries associated with a driver to their respective tables in a single batch.
+        /// </summary>
+        /// <param name="driverId">The unique ID of the driver.</param>
+        /// <param name="languages">The list of language IDs to add.</param>
+        /// <param name="citiesWorkedOn">The list of city IDs marked as worked-on to add.</param>
+        /// <param name="citiesCoverNow">The list of city IDs currently covered to add.</param>
+        /// <param name="countriesWorkedOn">The list of country IDs marked as worked-on to add.</param>
+        /// <param name="countriesCoverNow">The list of country IDs currently covered to add.</param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating the success or failure of the batch operation.
+        /// </returns>
+        private async Task<Result> _AddDriverAssociationsAsync(
+            int driverId,
+            List<int> languages,
+            List<int> citiesWorkedOn,
+            List<int> citiesCoverNow,
+            List<int> countriesWorkedOn,
+            List<int> countriesCoverNow)
+        {
+            try
+            {
+                // Languages
+                if (languages != null && languages.Any())
+                {
+                    var driverLanguages = languages.Select(languageId => new DriverLanguage
+                    {
+                        DriverId = driverId,
+                        LanguageId = languageId
+                    }).ToList();
+
+                    await _unitOfWork.Repository<DriverLanguage>().AddRangeAsync(driverLanguages);
+                }
+
+                // Cities Worked On
+                if (citiesWorkedOn != null && citiesWorkedOn.Any())
+                {
+                    var driverCitiesWorkedOn = citiesWorkedOn.Select(cityId => new DriverCity
+                    {
+                        DriverId = driverId,
+                        CityId = cityId,
+                        WorkStatus = WorkStatus.WorkedOn
+                    }).ToList();
+
+                    await _unitOfWork.Repository<DriverCity>().AddRangeAsync(driverCitiesWorkedOn);
+                }
+
+                // Cities Cover Now
+                if (citiesCoverNow != null && citiesCoverNow.Any())
+                {
+                    var driverCitiesCoverNow = citiesCoverNow.Select(cityId => new DriverCity
+                    {
+                        DriverId = driverId,
+                        CityId = cityId,
+                        WorkStatus = WorkStatus.CoverNow
+                    }).ToList();
+
+                    await _unitOfWork.Repository<DriverCity>().AddRangeAsync(driverCitiesCoverNow);
+                }
+
+                // Countries Worked On
+                if (countriesWorkedOn != null && countriesWorkedOn.Any())
+                {
+                    var driverCountriesWorkedOn = countriesWorkedOn.Select(countryId => new DriverCountry
+                    {
+                        DriverId = driverId,
+                        CountryId = countryId,
+                        WorkStatus = WorkStatus.WorkedOn
+                    }).ToList();
+
+                    await _unitOfWork.Repository<DriverCountry>().AddRangeAsync(driverCountriesWorkedOn);
+                }
+
+                // Countries Cover Now
+                if (countriesCoverNow != null && countriesCoverNow.Any())
+                {
+                    var driverCountriesCoverNow = countriesCoverNow.Select(countryId => new DriverCountry
+                    {
+                        DriverId = driverId,
+                        CountryId = countryId,
+                        WorkStatus = WorkStatus.CoverNow
+                    }).ToList();
+
+                    await _unitOfWork.Repository<DriverCountry>().AddRangeAsync(driverCountriesCoverNow);
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"An unexpected error occurred while adding associations: {ex.Message}");
+            }
+        }
+        #endregion
 
         #region User Addition Operations
         /// <summary>
@@ -458,9 +595,6 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// </returns>
         private async Task<Result> _AddUserAsync(AddDriverDto driverDto, ApplicationUser user)
         {
-            // Map the username from the driver's email
-            //user.UserName = driverDto.Email;
-            //user.Id = 0;
             // Attempt to create the user
             var addUserResult = await _userManager.CreateAsync(user, user.PasswordHash ?? driverDto.Password);
             if (!addUserResult.Succeeded)
@@ -505,7 +639,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <param name="driverDto">The DTO containing car details.</param>
         /// <param name="driverEntity">The driver entity to link the car to.</param>
         /// <returns>A <see cref="Result"/> indicating the success or failure of the operation.</returns>
-        private async Task<Result> AddCarWithCarServiceAsync(AddDriverDto driverDto, Driver driverEntity)
+        private async Task<Result> _AddCarWithCarServiceAsync(AddDriverDto driverDto, Driver driverEntity)
         {
             // Map the driver DTO to a car DTO.
             var carDto = _mapper.Map<AddCarDto>(driverDto);
@@ -554,7 +688,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// </summary>
         /// <param name="driverDto">The DTO containing the image files.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        private async Task ProcessDriverImagesAsync(AddDriverDto driverDto)
+        private async Task _ProcessDriverImagesAsync(AddDriverDto driverDto)
         {
             // Process profile image.
             if (driverDto.ProfileImage != null)
@@ -622,7 +756,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 _mapper.Map(driverDto, existingDriver);
 
                 // Step 2: Update associated user details.
-                var userUpdateResult = await UpdateUserDetailsAsync(driverDto, existingDriver.UserId);
+                var userUpdateResult = await _UpdateUserDetailsAsync(driverDto, existingDriver.UserId);
                 if (!userUpdateResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
@@ -632,7 +766,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 // Step 3: Update or add car details (if applicable).
                 if (driverDto.HasCar)
                 {
-                    var carUpdateResult = await UpdateOrAddCarDetailsAsync(driverDto, existingDriver);
+                    var carUpdateResult = await _UpdateOrAddCarDetailsAsync(driverDto, existingDriver);
                     if (!carUpdateResult.IsSuccess)
                     {
                         await _unitOfWork.RollbackAsync();
@@ -640,7 +774,23 @@ namespace Mottrist.Service.Features.Drivers.Services
                     }
                 }
 
-                // Step 4: Save updated driver details.
+                // Step 4: Update languages, cities, and countries.
+                var associationsResult = await _UpdateDriverAssociationsAsync(
+                    driverDto.Id,
+                    driverDto.LanguagesSpoken,
+                    driverDto.CitiesWorkedOn,
+                    driverDto.CitiesCoverNow,
+                    driverDto.CountriesWorkedOn,
+                    driverDto.CountriesCoverNow
+                );
+
+                if (!associationsResult.IsSuccess)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return associationsResult;
+                }
+
+                // Step 5: Save updated driver details.
                 await _unitOfWork.Repository<Driver>().UpdateAsync(existingDriver);
                 var saveResult = await _unitOfWork.SaveChangesAsync();
                 if (!saveResult.IsSuccess)
@@ -668,12 +818,183 @@ namespace Mottrist.Service.Features.Drivers.Services
 
         #region Update Helper Functions
         /// <summary>
+        /// Updates the languages, cities, and countries associated with the driver.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver.</param>
+        /// <param name="languages">The updated list of language IDs.</param>
+        /// <param name="citiesWorkedOn">The updated list of worked-on city IDs.</param>
+        /// <param name="citiesCoverNow">The updated list of currently covered city IDs.</param>
+        /// <param name="countriesWorkedOn">The updated list of worked-on country IDs.</param>
+        /// <param name="countriesCoverNow">The updated list of currently covered country IDs.</param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating the success or failure of the update operation.
+        /// </returns>
+        private async Task<Result> _UpdateDriverAssociationsAsync(
+            int driverId,
+            List<int> languages,
+            List<int> citiesWorkedOn,
+            List<int> citiesCoverNow,
+            List<int> countriesWorkedOn,
+            List<int> countriesCoverNow)
+        {
+            try
+            {
+                // --- Languages ---
+                var existingLanguages = await _unitOfWork.Repository<DriverLanguage>().GetAllAsync(dl => dl.DriverId == driverId);
+                if (existingLanguages != null && existingLanguages.Any())
+                {
+                    await _unitOfWork.Repository<DriverLanguage>().DeleteRangeAsync(existingLanguages);
+                    var deleteLangResult = await _unitOfWork.SaveChangesAsync();
+                    if (!deleteLangResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to delete existing driver languages.");
+                    }
+                }
+                if (languages != null && languages.Any())
+                {
+                    var newLanguages = languages.Select(languageId => new DriverLanguage
+                    {
+                        DriverId = driverId,
+                        LanguageId = languageId
+                    }).ToList();
+                    await _unitOfWork.Repository<DriverLanguage>().AddRangeAsync(newLanguages);
+                    var saveLangResult = await _unitOfWork.SaveChangesAsync();
+                    if (!saveLangResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to save driver languages.");
+                    }
+                }
+
+                // --- Cities Worked On ---
+                var existingWorkedOnCities = await _unitOfWork.Repository<DriverCity>()
+                    .Query().AsNoTracking()
+                    .Where(dc => dc.DriverId == driverId && dc.WorkStatus == WorkStatus.WorkedOn)
+                    .ToListAsync();
+                if (existingWorkedOnCities != null && existingWorkedOnCities.Any())
+                {
+                    await _unitOfWork.Repository<DriverCity>().DeleteRangeAsync(existingWorkedOnCities);
+                    var deleteWorkedOnCitiesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!deleteWorkedOnCitiesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to delete existing worked-on cities for the driver.");
+                    }
+                }
+                if (citiesWorkedOn != null && citiesWorkedOn.Any())
+                {
+                    var newWorkedOnCities = citiesWorkedOn.Select(cityId => new DriverCity
+                    {
+                        DriverId = driverId,
+                        CityId = cityId,
+                        WorkStatus = WorkStatus.WorkedOn
+                    }).ToList();
+                    await _unitOfWork.Repository<DriverCity>().AddRangeAsync(newWorkedOnCities);
+                    var saveWorkedOnCitiesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!saveWorkedOnCitiesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to save driver worked-on cities.");
+                    }
+                }
+
+                // --- Cities Cover Now ---
+                var existingCoverNowCities = await _unitOfWork.Repository<DriverCity>()
+                    .GetAllAsync(dc => dc.DriverId == driverId && dc.WorkStatus == WorkStatus.CoverNow);
+                if (existingCoverNowCities != null && existingCoverNowCities.Any())
+                {
+                    await _unitOfWork.Repository<DriverCity>().DeleteRangeAsync(existingCoverNowCities);
+                    var deleteCoverNowCitiesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!deleteCoverNowCitiesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to delete existing cover now cities for the driver.");
+                    }
+                }
+                if (citiesCoverNow != null && citiesCoverNow.Any())
+                {
+                    var newCoverNowCities = citiesCoverNow.Select(cityId => new DriverCity
+                    {
+                        DriverId = driverId,
+                        CityId = cityId,
+                        WorkStatus = WorkStatus.CoverNow
+                    }).ToList();
+                    await _unitOfWork.Repository<DriverCity>().AddRangeAsync(newCoverNowCities);
+                    var saveCoverNowCitiesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!saveCoverNowCitiesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to save driver cover now cities.");
+                    }
+                }
+
+                // --- Countries Worked On ---
+                var existingWorkedOnCountries = await _unitOfWork.Repository<DriverCountry>()
+                    .GetAllAsync(dc => dc.DriverId == driverId && dc.WorkStatus == WorkStatus.WorkedOn);
+                if (existingWorkedOnCountries != null && existingWorkedOnCountries.Any())
+                {
+                    await _unitOfWork.Repository<DriverCountry>().DeleteRangeAsync(existingWorkedOnCountries);
+                    var deleteWorkedOnCountriesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!deleteWorkedOnCountriesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to delete existing worked-on countries for the driver.");
+                    }
+                }
+                if (countriesWorkedOn != null && countriesWorkedOn.Any())
+                {
+                    var newWorkedOnCountries = countriesWorkedOn.Select(countryId => new DriverCountry
+                    {
+                        DriverId = driverId,
+                        CountryId = countryId,
+                        WorkStatus = WorkStatus.WorkedOn
+                    }).ToList();
+                    await _unitOfWork.Repository<DriverCountry>().AddRangeAsync(newWorkedOnCountries);
+                    var saveWorkedOnCountriesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!saveWorkedOnCountriesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to save driver worked-on countries.");
+                    }
+                }
+
+                // --- Countries Cover Now ---
+                var existingCoverNowCountries = await _unitOfWork.Repository<DriverCountry>()
+                    .GetAllAsync(dc => dc.DriverId == driverId && dc.WorkStatus == WorkStatus.CoverNow);
+                if (existingCoverNowCountries != null && existingCoverNowCountries.Any())
+                {
+                    await _unitOfWork.Repository<DriverCountry>().DeleteRangeAsync(existingCoverNowCountries);
+                    var deleteCoverNowCountriesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!deleteCoverNowCountriesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to delete existing cover now countries for the driver.");
+                    }
+                }
+                if (countriesCoverNow != null && countriesCoverNow.Any())
+                {
+                    var newCoverNowCountries = countriesCoverNow.Select(countryId => new DriverCountry
+                    {
+                        DriverId = driverId,
+                        CountryId = countryId,
+                        WorkStatus = WorkStatus.CoverNow
+                    }).ToList();
+                    await _unitOfWork.Repository<DriverCountry>().AddRangeAsync(newCoverNowCountries);
+                    var saveCoverNowCountriesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!saveCoverNowCountriesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to save driver cover now countries.");
+                    }
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed to update driver associations: {ex.Message}");
+            }
+        }
+
+
+        /// <summary>
         /// Updates the associated user details of the driver.
         /// </summary>
         /// <param name="driverDto">The driver DTO with updated details.</param>
         /// <param name="userId">The ID of the associated user to update.</param>
         /// <returns>A <see cref="Result"/> indicating the outcome of the operation.</returns>
-        private async Task<Result> UpdateUserDetailsAsync(UpdateDriverDto driverDto, int userId)
+        private async Task<Result> _UpdateUserDetailsAsync(UpdateDriverDto driverDto, int userId)
         {
             var existingUser = await _userManager.FindByIdAsync(userId.ToString());
             if (existingUser == null)
@@ -698,7 +1019,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <param name="driverDto">The driver DTO with updated car details.</param>
         /// <param name="existingDriver">The existing driver entity.</param>
         /// <returns>A <see cref="Result"/> indicating the outcome of the operation.</returns>
-        private async Task<Result> UpdateOrAddCarDetailsAsync(UpdateDriverDto driverDto, Driver existingDriver)
+        private async Task<Result> _UpdateOrAddCarDetailsAsync(UpdateDriverDto driverDto, Driver existingDriver)
         {
             try
             {
@@ -726,7 +1047,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                     existingDriver.CarId = carDto.Id;
                 }
                 // Process and update the car images.
-                var imageResult = await ProcessAndUpdateCarImagesAsync(driverDto, existingDriver.CarId.Value);
+                var imageResult = await _ProcessAndUpdateCarImagesAsync(driverDto, existingDriver.CarId.Value);
                 if (!imageResult.IsSuccess)
                 {
                     return Result.Failure("Failed to update car images.");
@@ -748,7 +1069,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <returns>
         /// A <see cref="Result"/> indicating whether the operation was successful or not.
         /// </returns>
-        private async Task<Result> ProcessAndUpdateCarImagesAsync(UpdateDriverDto driverDto, int carId)
+        private async Task<Result> _ProcessAndUpdateCarImagesAsync(UpdateDriverDto driverDto, int carId)
         {
             if (driverDto.HasCar && string.IsNullOrEmpty(driverDto.MainCarImageUrl) && (driverDto.CarImageUrl == null || !driverDto.CarImageUrl.Any()))
             {
@@ -933,6 +1254,75 @@ namespace Mottrist.Service.Features.Drivers.Services
         }
 
         #endregion
+
+        #endregion
+
+        #region Driver Status Operations
+
+        /// <summary>
+        /// Updates the status of a driver.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver to update.</param>
+        /// <param name="newStatus">The new status to assign to the driver.</param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating the success or failure of the operation.
+        /// </returns>
+        public async Task<Result> UpdateDriverStatusAsync(int driverId, DriverStatus newStatus)
+        {
+            try
+            {
+                // Validate the driver exists
+                var driver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverId);
+                if (driver == null)
+                {
+                    return Result.Failure("Driver not found.");
+                }
+
+                // Update the driver status
+                driver.Status = newStatus;
+                await _unitOfWork.Repository<Driver>().UpdateAsync(driver);
+
+                // Commit the changes
+                var saveResult = await _unitOfWork.SaveChangesAsync();
+                if (!saveResult.IsSuccess)
+                {
+                    return Result.Failure("Failed to update driver status.");
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected errors
+                return Result.Failure($"An error occurred while updating driver status: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the current status of a driver.
+        /// </summary>
+        /// <param name="driverId">The ID of the driver.</param>
+        /// <returns>
+        /// The current <see cref="DriverStatus"/> of the driver, or null if the driver does not exist.
+        /// </returns>
+        public async Task<DriverStatus?> GetDriverStatusAsync(int driverId)
+        {
+            try
+            {
+                // Fetch the driver
+                var driver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverId);
+                if (driver == null)
+                {
+                    return null;
+                }
+
+                return driver.Status;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"An error occurred while retrieving driver status: {ex.Message}", ex);
+            }
+        }
 
         #endregion
 
@@ -1221,5 +1611,6 @@ namespace Mottrist.Service.Features.Drivers.Services
         }
 
         #endregion
+
     }
 }

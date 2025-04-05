@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Mottrist.Domain.Entities;
+using Mottrist.Domain.Enums;
 
 namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaConfiguration
 {
@@ -21,6 +22,13 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
 
             builder.Property(d => d.CarId)
                 .IsRequired(false); 
+
+            builder.Property(d => d.Status)
+                .HasConversion
+                (
+                    builder => (byte)builder,
+                    builder => (DriverStatus)builder)
+                .HasDefaultValue(DriverStatus.Binding);
 
             builder.HasOne(d => d.Car)
                 .WithOne()
