@@ -22,7 +22,7 @@ namespace Mottrist.Service.Features.Drivers.DTOs
 
         // Driver Info Images URLs
         public string? ProfileImageUrl { get; set; }
-        public string? LicenseImageUrl { get; set; } 
+        public string? LicenseImageUrl { get; set; }
         public string? PassportImageUrl { get; set; }
 
         // Image Uploads
@@ -48,7 +48,11 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public int? FuelTypeId { get; set; }
         public List<string>? CarImagesUrl { get; set; }
 
+        // Cities and Countries worked on and covered
+        public List<int> CitiesWorkedOn { get; set; } = new List<int>();
+        public List<int> CitiesCoverNow { get; set; } = new List<int>();
+        public List<int> CountriesWorkedOn { get; set; } = new List<int>();
+        public List<int> CountriesCoverNow { get; set; } = new List<int>();
+        public List<int> LanguagesSpoken { get; set; } = new List<int>();
     }
-    
-
 }

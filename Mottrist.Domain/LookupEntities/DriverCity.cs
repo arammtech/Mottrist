@@ -1,9 +1,10 @@
-﻿using Mottrist.Domain.Entities;
+﻿using Mottrist.Domain.Common;
+using Mottrist.Domain.Entities;
 using Mottrist.Domain.Enums;
 
 namespace Mottrist.Domain.LookupEntities
 {
-    public class DriverCity
+    public class DriverCity : BaseEntity
     {
         public int DriverId { get; set; }
         public int CityId { get; set; }

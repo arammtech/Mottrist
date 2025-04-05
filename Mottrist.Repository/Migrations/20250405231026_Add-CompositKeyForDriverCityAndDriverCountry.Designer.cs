@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 
@@ -11,9 +12,11 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250405231026_Add-CompositKeyForDriverCityAndDriverCountry")]
+    partial class AddCompositKeyForDriverCityAndDriverCountry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -917,52 +920,36 @@ namespace Mottrist.Repository.Migrations
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.DriverCity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("DriverId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DriverId")
                         .HasColumnType("int");
 
                     b.Property<byte>("WorkStatus")
                         .HasColumnType("tinyint");
 
-                    b.HasKey("Id");
+                    b.HasKey("DriverId", "CityId", "WorkStatus");
 
                     b.HasIndex("CityId");
-
-                    b.HasIndex("DriverId");
 
                     b.ToTable("DriverCities", "Drivers");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.DriverCountry", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("DriverId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CountryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DriverId")
                         .HasColumnType("int");
 
                     b.Property<byte>("WorkStatus")
                         .HasColumnType("tinyint");
 
-                    b.HasKey("Id");
+                    b.HasKey("DriverId", "CountryId", "WorkStatus");
 
                     b.HasIndex("CountryId");
-
-                    b.HasIndex("DriverId");
 
                     b.ToTable("DriverCountries", "Drivers");
                 });

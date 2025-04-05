@@ -31,6 +31,8 @@ using Mottrist.Service.Features.Cities.Interfaces;
 using Mottrist.Service.Features.Cities.Services;
 using Mottrist.Service.Features.Countries.Interfaces;
 using Mottrist.Service.Features.Countries.Services;
+using Mottrist.Service.Features.Languages.Interfaces;
+using Mottrist.Service.Features.Languages.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -155,6 +157,8 @@ builder.Services.AddScoped<ITravelerService, TravelerService>();
 builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddScoped<ILanguageService, LanguageService>();
+
 
 #endregion
 

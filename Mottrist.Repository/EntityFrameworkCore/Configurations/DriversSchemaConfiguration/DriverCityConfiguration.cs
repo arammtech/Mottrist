@@ -10,7 +10,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
         public void Configure(EntityTypeBuilder<DriverCity> builder)
         {
             // Composite key for uniqueness
-            builder.HasKey(dcc => new { dcc.DriverId, dcc.CityId});
+            builder.HasKey(dcc=> dcc.Id);
 
 
             builder.Property(dcc => dcc.WorkStatus)

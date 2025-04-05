@@ -38,7 +38,7 @@ namespace Mottrist.Domain.Entities
         public virtual Car? Car { get; set; }
         public virtual Country Country { get; set; } = null!;
         public virtual ICollection<DriverCity> DriverCities { get; set; } = new List<DriverCity>();
-        public virtual ICollection<DriverCountry> DriverCountrites { get; set; } = new List<DriverCountry>();
+        public virtual ICollection<DriverCountry> DriverCountries { get; set; } = new List<DriverCountry>();
         public virtual ICollection<DriverLanguage> DriverLanguages { get; set; } = new List<DriverLanguage>();
 
         #endregion

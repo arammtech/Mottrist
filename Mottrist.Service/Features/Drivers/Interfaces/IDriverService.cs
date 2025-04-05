@@ -163,46 +163,25 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
 
         #endregion
 
-        #region Driver Cities Operations
-
+        #region Driver Status Operations
         /// <summary>
-        /// Adds a list of cities to a driver with the specified work status.
+        /// Updates the status of a driver.
         /// </summary>
-        /// <param name="dto">The DTO containing driver ID, city IDs, and work status.</param>
+        /// <param name="driverId">The ID of the driver to update.</param>
+        /// <param name="newStatus">The new status to assign to the driver.</param>
         /// <returns>
         /// A <see cref="Result"/> object indicating the success or failure of the operation.
         /// </returns>
-        Task<Result> AddDriverCitiesAsync(AddDriverCitiesDto dto);
+        Task<Result> UpdateDriverStatusAsync(int driverId, DriverStatus newStatus);
 
         /// <summary>
-        /// Updates the work status for a specific driver-city association.
+        /// Retrieves the current status of a driver.
         /// </summary>
         /// <param name="driverId">The ID of the driver.</param>
-        /// <param name="cityId">The ID of the city.</param>
-        /// <param name="newStatus">The new work status to set.</param>
         /// <returns>
-        /// A <see cref="Result"/> object indicating the success or failure of the operation.
+        /// The current <see cref="DriverStatus"/> of the driver, or null if the driver does not exist.
         /// </returns>
-        Task<Result> UpdateDriverCityWorkStatusAsync(int driverId, int cityId, WorkStatus newStatus);
-
-        /// <summary>
-        /// Removes a city association from a driver.
-        /// </summary>
-        /// <param name="driverId">The ID of the driver.</param>
-        /// <param name="cityId">The ID of the city.</param>
-        /// <returns>
-        /// A <see cref="Result"/> object indicating the success or failure of the operation.
-        /// </returns>
-        Task<Result> RemoveDriverCityAsync(int driverId, int cityId);
-
-        /// <summary>
-        /// Retrieves all cities linked to a specific driver in the system.
-        /// </summary>
-        /// <param name="driverId">The unique identifier of the driver whose cities are to be retrieved.</param>
-        /// <returns>
-        /// A <see cref="GetDriverCitiesDto"/> object containing the list of associated cities, or null if no cities are found.
-        /// </returns>
-        Task<GetDriverCitiesDto?> GetDriverCitiesAsync(int driverId);
+        Task<DriverStatus?> GetDriverStatusAsync(int driverId);
 
         #endregion
 

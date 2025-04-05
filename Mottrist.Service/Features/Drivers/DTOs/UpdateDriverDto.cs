@@ -37,5 +37,13 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public int? FuelTypeId { get; set; }
         public string? MainCarImageUrl { get; set; } // Main car image URL
         public List<string>? CarImageUrl { get; set; } // Additional car image URLs
+
+        // Cities and Countries worked on and covered
+        public List<int> CitiesWorkedOn { get; set; } = new List<int>();
+        public List<int> CitiesCoverNow { get; set; } = new List<int>();
+        public List<int> CountriesWorkedOn { get; set; } = new List<int>();
+        public List<int> CountriesCoverNow { get; set; } = new List<int>();
+        public List<int> LanguagesSpoken { get; set; } = new List<int>();
+
     }
 }
