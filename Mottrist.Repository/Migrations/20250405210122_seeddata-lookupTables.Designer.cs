@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 
@@ -11,9 +12,11 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250405210122_seeddata-lookupTables")]
+    partial class seeddatalookupTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -875,11 +878,6 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<string>("ProfileImageUrl")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint")
-                        .HasDefaultValue((byte)2);
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -1777,52 +1775,36 @@ namespace Mottrist.Repository.Migrations
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.DriverCity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("DriverId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DriverId")
                         .HasColumnType("int");
 
                     b.Property<byte>("WorkStatus")
                         .HasColumnType("tinyint");
 
-                    b.HasKey("Id");
+                    b.HasKey("DriverId", "CityId");
 
                     b.HasIndex("CityId");
-
-                    b.HasIndex("DriverId");
 
                     b.ToTable("DriverCities", "Drivers");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.DriverCountry", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("DriverId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CountryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DriverId")
                         .HasColumnType("int");
 
                     b.Property<byte>("WorkStatus")
                         .HasColumnType("tinyint");
 
-                    b.HasKey("Id");
+                    b.HasKey("DriverId", "CountryId");
 
                     b.HasIndex("CountryId");
-
-                    b.HasIndex("DriverId");
 
                     b.ToTable("DriverCountries", "Drivers");
                 });
@@ -1858,28 +1840,6 @@ namespace Mottrist.Repository.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Languages", "Localization");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "English"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Arabic"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "French"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Spanish"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -2071,7 +2031,7 @@ namespace Mottrist.Repository.Migrations
                         .IsRequired();
 
                     b.HasOne("Mottrist.Domain.Entities.Driver", "Driver")
-                        .WithMany("DriverCountries")
+                        .WithMany("DriverCountrites")
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -2109,7 +2069,7 @@ namespace Mottrist.Repository.Migrations
                 {
                     b.Navigation("DriverCities");
 
-                    b.Navigation("DriverCountries");
+                    b.Navigation("DriverCountrites");
 
                     b.Navigation("DriverLanguages");
                 });

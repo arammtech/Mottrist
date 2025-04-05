@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Mottrist.Domain.Entities.CarDetails;
 using Mottrist.Domain.Global;
 using Mottrist.Service.Features.Cars.DTOs;
+using Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs;
 using Mottrist.Service.Features.General;
 using Mottrist.Service.Features.General.DTOs;
 using System.Linq.Expressions;
@@ -54,6 +55,12 @@ namespace Mottrist.Service.Features.Cars.Interfaces
         /// </returns>
         Task<CarDto?> GetByIdAsync(int carId);
 
+        /// <summary>
+        /// Retrieves all car fields.
+        /// </summary>
+        /// A task representing the asynchronous operation. 
+        /// </returns>
+        Task<CarFieldsDto> GetAllCarFieldsAsync();
         #endregion
 
         #region CRUD Methods

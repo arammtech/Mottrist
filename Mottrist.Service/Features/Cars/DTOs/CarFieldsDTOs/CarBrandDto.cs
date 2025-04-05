@@ -1,9 +1,8 @@
-﻿namespace Mottrist.Service.Features.Countries.DTOs
+﻿namespace Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs
 {
-    public class CitiesPerCountryDto
+    public class CarBrandDto
     {
         public int Id { get; set; }
-
         public string Name { get; set; } = null!;
     }
 }
