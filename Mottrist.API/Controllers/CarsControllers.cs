@@ -18,28 +18,5 @@ namespace Mottrist.API.Controllers
         {
             _carService = carService;
         }
-
-        public async Task<IActionResult> GetAllBrands()
-        {
-            try
-            {
-                var dataResult = await _carService.GetAllAsync();
-
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No countries found.");
-                }
-
-                return SuccessResponse(dataResult, "Countries retrieved successfully.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
-            }
-        }
     }
 }

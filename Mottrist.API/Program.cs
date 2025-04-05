@@ -158,10 +158,10 @@ builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<ICarModelService, CarModelService>();
-//builder.Services.AddScoped<ICarColorService, CarColorService>();
-//builder.Services.AddScoped<ICarBodyTypeService, CarBodyTypeService>();
-//builder.Services.AddScoped<ICarFuelTypeService, CarFuelTypeService>();
-//builder.Services.AddScoped<ICarBrandService, CarBrandService>();
+builder.Services.AddScoped<ICarColorService, CarColorService>();
+builder.Services.AddScoped<ICarBodyTypeService, CarBodyTypeService>();
+builder.Services.AddScoped<ICarFuelTypeService, CarFuelTypeService>();
+builder.Services.AddScoped<ICarBrandService, CarBrandService>();
 
 #endregion
 
