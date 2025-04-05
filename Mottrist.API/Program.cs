@@ -31,6 +31,8 @@ using Mottrist.Service.Features.Cities.Interfaces;
 using Mottrist.Service.Features.Cities.Services;
 using Mottrist.Service.Features.Countries.Interfaces;
 using Mottrist.Service.Features.Countries.Services;
+using Mottrist.Service.Features.Cars.Interfaces.CarFields;
+using Mottrist.Service.Features.Cars.Services.CarFields;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -155,6 +157,11 @@ builder.Services.AddScoped<ITravelerService, TravelerService>();
 builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
+builder.Services.AddScoped<ICarModelService, CarModelService>();
+builder.Services.AddScoped<ICarColorService, CarColorService>();
+builder.Services.AddScoped<ICarBodyTypeService, CarBodyTypeService>();
+builder.Services.AddScoped<ICarFuelTypeService, CarFuelTypeService>();
+builder.Services.AddScoped<ICarBrandService, CarBrandService>();
 
 #endregion
 
@@ -172,7 +179,6 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Mottrist V1");
     });
 }
-
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
