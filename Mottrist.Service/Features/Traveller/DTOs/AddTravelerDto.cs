@@ -42,6 +42,7 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         /// </summary>
         [Required]
         [EmailAddress(ErrorMessage = "Invalid email format. Expected format: example@domain.com")]
+        [UniqueUser]
         public string Email { get; set; } = null!;
 
         /// <summary>
