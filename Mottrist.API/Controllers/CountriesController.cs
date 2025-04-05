@@ -9,7 +9,7 @@ namespace Mottrist.API.Controllers
     /// The <see cref="CountriesController"/> class handles HTTP requests related to countries.
     /// It provides endpoints for retrieving country details by ID and fetching all countries.
     /// </summary>
-    [Route("api/country")]
+    [Route("api/countries")]
     [ApiController]
     public class CountriesController : ControllerBase
     {
