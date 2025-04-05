@@ -37,7 +37,6 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             if (id <= 0)
