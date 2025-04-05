@@ -48,12 +48,7 @@ namespace Mottrist.Service.Features.Traveller.Validators
                 .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter.")
                 .Matches(@"\d").WithMessage("Password must contain at least one number.")
                 .Matches(@"[\W]").WithMessage("Password must contain at least one special character.")
-                .When(x => !string.IsNullOrEmpty(x.Password));
 
-            RuleFor(x => x.ProfileImageUrl)
-                .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _))
-                .WithMessage("Invalid image URL format. Expected format: https://example.com/image.jpg")
-                .When(x => !string.IsNullOrEmpty(x.ProfileImageUrl));
         }
 
         private async Task<bool> EmailNotTaken(string email, CancellationToken cancellationToken)

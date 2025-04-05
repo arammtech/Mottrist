@@ -26,10 +26,6 @@ namespace Mottrist.Service.Features.Traveller.Validators
                 .NotEmpty().WithMessage("Last name is required.")
                 .MinimumLength(2).MaximumLength(50);
 
-            RuleFor(x => x.ProfileImageUrl)
-            .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _))
-            .WithMessage("Invalid image URL format. Expected format: https://example.com/image.jpg")
-            .When(x => !string.IsNullOrEmpty(x.ProfileImageUrl));
         }
     }
 }
