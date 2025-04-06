@@ -18,6 +18,10 @@ using Feature.Car.DTOs;
 using Microsoft.AspNetCore.Http;
 using static Mottrist.Utilities.Global.GlobalFunctions;
 using Mottrist.Domain.Enums;
+using Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs;
+using Mottrist.Service.Features.Languages.Interfaces;
+using Mottrist.Service.Features.Countries.Interfaces;
+using Mottrist.Service.Features.Cities.Interfaces;
 
 namespace Mottrist.Service.Features.Drivers.Services
 {
@@ -49,6 +53,21 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
 
+        /// <summary>
+        /// Service for managing language-related operations.
+        /// </summary>
+        private readonly ILanguageService _languageService;
+
+        /// <summary>
+        /// Service for managing country-related operations.
+        /// </summary>
+        private readonly ICountryService _countryService;
+
+        /// <summary>
+        /// Service for managing city-related operations.
+        /// </summary>
+        private readonly ICityService _cityService;
+
         #endregion
 
         /// <summary>
@@ -58,19 +77,33 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <param name="mapper">The mapper instance for object mapping.</param>
         /// <param name="carService">The service for managing car operations.</param>
         /// <param name="userManager">The user manager for handling user-related operations.</param>
+        /// <param name="languageService">The service for managing language-related operations.</param>
+        /// <param name="countryService">The service for managing country-related operations.</param>
+        /// <param name="cityService">The service for managing city-related operations.</param>
         /// <exception cref="ArgumentNullException">
         /// Thrown if any of the injected dependencies are null.
         /// </exception>
-        public DriverService(IUnitOfWork unitOfWork, IMapper mapper, ICarService carService, UserManager<ApplicationUser> userManager)
+        public DriverService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ICarService carService,
+            UserManager<ApplicationUser> userManager,
+            ILanguageService languageService,
+            ICountryService countryService,
+            ICityService cityService)
             : base(unitOfWork)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _languageService = languageService ?? throw new ArgumentNullException(nameof(languageService));
+            _countryService = countryService ?? throw new ArgumentNullException(nameof(countryService));
+            _cityService = cityService ?? throw new ArgumentNullException(nameof(cityService));
             _carService = carService ?? throw new ArgumentNullException(nameof(carService));
         }
 
         #region Driver Get Operations
+
 
         /// <summary>
         /// Retrieves a set of drivers with their detailed information, including car and image details, optionally filtered by the specified criteria.
@@ -390,6 +423,35 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
 
         }
+
+        /// <summary>
+        /// Retrieves all necessary form fields for driver registration, including car-related fields, languages, countries, and cities.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="DriverFormFieldsDto"/> object containing car fields, languages, countries, and cities.
+        /// Returns null if an exception occurs.
+        /// </returns>
+        public async Task<DriverFormFieldsDto?> GetAllDriverFormFields()
+        {
+            try
+            {
+                DriverFormFieldsDto driverFormFieldsDto = new DriverFormFieldsDto
+                {
+                    CarFieldsDto = await _carService.GetAllCarFieldsAsync(),
+                    Languages = await _languageService.GetAllAsync(),
+                    Countries = await _countryService.GetAllAsync(),
+                    Cities = await _cityService.GetAllAsync()
+                 
+                };
+
+                return driverFormFieldsDto;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
 
         #endregion
 
@@ -1609,6 +1671,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 return Result.Failure($"An error occurred: {ex.Message}");
             }
         }
+
 
         #endregion
 

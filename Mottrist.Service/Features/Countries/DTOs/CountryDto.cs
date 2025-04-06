@@ -3,7 +3,7 @@ using Mottrist.Service.Features.Cities.Dtos;
 
 namespace Mottrist.Service.Features.Countries.DTOs
 {
-    public class GetCountryDto
+    public class CountryDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

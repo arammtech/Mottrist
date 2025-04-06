@@ -58,6 +58,16 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// </returns>
         Task<DriverDto?> GetAsync(Expression<Func<Driver, bool>> filter);
 
+        /// <summary>
+        /// Retrieves all necessary form fields required for driver registration,  
+        /// including car-related fields, languages, countries, and cities.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="DriverFormFieldsDto"/> object containing car fields, languages, countries, and cities.  
+        /// Returns null if an error occurs.
+        /// </returns>
+        Task<DriverFormFieldsDto?> GetAllDriverFormFields();
+
         #endregion
 
         #region Create Operation
