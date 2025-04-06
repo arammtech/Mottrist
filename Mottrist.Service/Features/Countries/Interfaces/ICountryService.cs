@@ -16,28 +16,28 @@ namespace Mottrist.Service.Features.Countries.Interfaces
         /// Retrieves a country by its unique identifier.
         /// </summary>
         /// <param name="id">The unique identifier of the country.</param>
-        /// <returns>A <see cref="GetCountryDto"/> representing the country, or null if not found.</returns>
-        GetCountryDto? GetById(int id);
+        /// <returns>A <see cref="CountryDto"/> representing the country, or null if not found.</returns>
+        CountryDto? GetById(int id);
 
         /// <summary>
         /// Asynchronously retrieves a country by its unique identifier.
         /// </summary>
         /// <param name="id">The unique identifier of the country.</param>
-        /// <returns>A task that resolves to a <see cref="GetCountryDto"/> or null if not found.</returns>
-        Task<GetCountryDto?> GetByIdAsync(int id);
+        /// <returns>A task that resolves to a <see cref="CountryDto"/> or null if not found.</returns>
+        Task<CountryDto?> GetByIdAsync(int id);
 
         /// <summary>
         /// Retrieves a list of countries, optionally filtered.
         /// </summary>
         /// <param name="filter">An optional filter expression to apply.</param>
         /// <returns>A <see cref="DataResult{T}"/> containing a list of country DTOs.</returns>
-        DataResult<GetCountryDto>? GetAll(Expression<Func<Country, bool>>? filter = null);
+        DataResult<CountryDto>? GetAll(Expression<Func<Country, bool>>? filter = null);
 
         /// <summary>
         /// Asynchronously retrieves a list of countries, optionally filtered.
         /// </summary>
         /// <param name="filter">An optional filter expression to apply.</param>
         /// <returns>A task that resolves to a <see cref="DataResult{T}"/> containing a list of country DTOs.</returns>
-        Task<DataResult<GetCountryDto>?> GetAllAsync(Expression<Func<Country, bool>>? filter = null);
+        Task<DataResult<CountryDto>?> GetAllAsync(Expression<Func<Country, bool>>? filter = null);
     }
 }
