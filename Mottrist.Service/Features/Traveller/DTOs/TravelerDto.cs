@@ -3,7 +3,7 @@
     /// <summary>
     /// Data Transfer Object (DTO) for retrieving traveler information.
     /// </summary>
-    public class GetTravelerDto
+    public class TravelerDto
     {
         /// <summary>
         /// Gets or sets the unique identifier for the traveler.

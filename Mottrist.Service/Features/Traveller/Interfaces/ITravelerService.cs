@@ -17,28 +17,28 @@ namespace Mottrist.Service.Features.Traveller.Interfaces
         /// </summary>
         /// <param name="travelerId">The ID of the traveler.</param>
         /// <returns>The traveler details if found.</returns>
-        Task<GetTravelerDto>? GetByIdAsync(int travelerId);
+        Task<TravelerDto>? GetByIdAsync(int travelerId);
 
         /// <summary>
         /// Retrieves a traveler based on a specified filter.
         /// </summary>
         /// <param name="filter">Expression filter to find the traveler.</param>
         /// <returns>The matched traveler details.</returns>
-        GetTravelerDto? Get(Expression<Func<Traveler, bool>> filter);
+        TravelerDto? Get(Expression<Func<Traveler, bool>> filter);
 
         /// <summary>
         /// Retrieves all travelers based on an optional filter.
         /// </summary>
         /// <param name="filter">Optional filter for retrieving travelers.</param>
         /// <returns>List of travelers.</returns>
-        IEnumerable<GetTravelerDto>? GetAll(Expression<Func<Traveler, bool>>? filter = null);
+        IEnumerable<TravelerDto>? GetAll(Expression<Func<Traveler, bool>>? filter = null);
 
         /// <summary>
         /// Retrieves all travelers asynchronously based on an optional filter.
         /// </summary>
         /// <param name="filter">Optional filter for retrieving travelers.</param>
         /// <returns>Data result containing travelers.</returns>
-        Task<DataResult<GetTravelerDto>>? GetAllAsync(Expression<Func<Traveler, bool>>? filter = null);
+        Task<DataResult<TravelerDto>>? GetAllAsync(Expression<Func<Traveler, bool>>? filter = null);
 
         /// <summary>
         /// Retrieves all travelers with pagination support.
@@ -47,7 +47,7 @@ namespace Mottrist.Service.Features.Traveller.Interfaces
         /// <param name="pageSize">Number of records per page.</param>
         /// <param name="filter">Optional filter for retrieving travelers.</param>
         /// <returns>Paginated result of travelers.</returns>
-        Task<PaginatedResult<GetTravelerDto>>? GetAllWithPaginationAsync(
+        Task<PaginatedResult<TravelerDto>>? GetAllWithPaginationAsync(
          int page,
          int pageSize = 10,
          Expression<Func<Traveler, bool>>? filter = null);

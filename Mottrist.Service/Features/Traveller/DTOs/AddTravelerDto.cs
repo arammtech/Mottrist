@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Mottrist.Service.Features.Traveller.DTOs
 {
@@ -57,8 +58,14 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         public string? Password { get; set; }
 
         /// <summary>
-        /// Profile image URL. Example: https://example.com/image.jpg
+        /// Profile image URL
         /// </summary>
         public string? ProfileImageUrl { get; set; }
+
+        /// <summary>
+        /// Profile image as file
+        /// </summary>
+        public IFormFile? ProfileImage { get; set; }
+
     }
 }

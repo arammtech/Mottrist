@@ -229,7 +229,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 204 No Content if no drivers are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
-        [HttpGet("All/{status}", Name = "GetDriversByStatusAsync")]
+        [HttpGet("ByStatus", Name = "GetDriversByStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
