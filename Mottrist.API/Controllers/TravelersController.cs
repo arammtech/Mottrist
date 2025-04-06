@@ -258,18 +258,13 @@ namespace Mottrist.API.Controllers
             if (id <= 0)
                 return BadRequestResponse("INVALID_TRAVELER_ID", "Traveler id not valid.", "Traveler Id should be positive number");
 
-
             try
             {
                 var result = await _travelerService.DeleteAsync(id);
 
-                if (result.IsSuccess)
-                    return NoContentResponse("Traveler record deleted successfully.");
-                else
-                {
-                    return StatusCodeResponse(StatusCodes.Status500InternalServerError, "FAILD_DELETE_TRAVELER", "Error deleting traveler.", result.Errors.ToArray());
-                }
-
+                return result.IsSuccess
+                ? SuccessResponse("Traveler deleted successfully.")
+                : StatusCodeResponse(StatusCodes.Status500InternalServerError, "FAILD_DELETE_TRAVELER", "Error deleting traveler.", result.Errors.ToArray());
 
             }
             catch (HttpRequestException ex)

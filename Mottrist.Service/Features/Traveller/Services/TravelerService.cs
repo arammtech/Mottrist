@@ -218,21 +218,37 @@ namespace Mottrist.Service.Features.Traveller.Services
 
                 await _unitOfWork.Repository<Traveler>().AddAsync(newTraveler);
 
+                var saveResult = await _unitOfWork.SaveChangesAsync();
+                if (!saveResult.IsSuccess)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return Result.Failure("Failed to Add the traveler.");
+                }
+
+                if (newTraveler.Id <= 0) return Result.Failure("Failed to save the traveler to the database.");
+                travelerDto.Id = newTraveler.Id;
+
+                #region Image handling
+                if (travelerDto.ProfileImage != null)
+                    newTraveler.ProfileImageUrl = await SaveImageAsync(travelerDto.ProfileImage, $"profiles/travelers/{newTraveler.Id}");
+
+                await _unitOfWork.Repository<Traveler>().UpdateAsync(newTraveler);
+
+                saveResult = await _unitOfWork.SaveChangesAsync();
+                if (!saveResult.IsSuccess)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return Result.Failure("Failed to Add the traveler.");
+                }
+                #endregion
+
                 // Commit transaction
                 var commitResult = await _unitOfWork.CommitAsync();
                 if (!commitResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
                     return Result.Failure("Failed to complete the transaction.");
-                    //return Result.Failure($"Failed to complete the transaction,\n Errors: {string.Join("\n", commitResult.Errors?.ToList())}");
                 }
-
-                if (newTraveler.Id <= 0) return Result.Failure("Failed to save the traveler to the database.");
-                travelerDto.Id = newTraveler.Id;
-
-                // Add profile image.
-                if (travelerDto.ProfileImage != null)
-                    travelerDto.ProfileImageUrl = await SaveImageAsync(travelerDto.ProfileImage, $"profiles/travelers/{travelerDto.Id}");
 
 
                 return Result.Success();
@@ -260,7 +276,6 @@ namespace Mottrist.Service.Features.Traveller.Services
 
             try
             {
-              
                 // Fetch the existing Traveler including User and Country
                 var existingTraveler = await _unitOfWork.Repository<Traveler>()
                     .Include(t => t.User)
@@ -273,10 +288,11 @@ namespace Mottrist.Service.Features.Traveller.Services
                     return Result.Failure("Traveler not found.");
                 }
 
-                // Update profile image.
-                string? existingTravelerImageUrl = existingTraveler.ProfileImageUrl;
-
-               
+                #region Update profile image.
+                string? oldImageUrl = existingTraveler.ProfileImageUrl;
+                if (travelerDto.ProfileImage != null)
+                    travelerDto.ProfileImageUrl = await ReplaceImageAsync(travelerDto.ProfileImage, $"profiles/travelers/{existingTraveler.Id}", oldImageUrl);
+                #endregion
 
                 //// Update Traveler details
                 TravelerMapper.Map(travelerDto, existingTraveler);
@@ -309,10 +325,6 @@ namespace Mottrist.Service.Features.Traveller.Services
                     return Result.Failure("Failed to complete the transaction");
                 }
 
-                if (travelerDto.ProfileImage != null)
-                    travelerDto.ProfileImageUrl = await ReplaceImageAsync(travelerDto.ProfileImage, $"profiles/travelers/{existingTraveler.Id}", existingTravelerImageUrl);
-
-
                 return Result.Success();
             }
             catch (Exception ex)
@@ -343,7 +355,10 @@ namespace Mottrist.Service.Features.Traveller.Services
 
                 if (existingTraveler == null) return Result.Failure("Traveler not found.");
 
-                string existingTravelerImageUrl = existingTraveler.ProfileImageUrl!;
+                #region Deleting the profile image
+                if (existingTraveler.ProfileImageUrl != null)
+                    await DeleteImageAsync(existingTraveler.ProfileImageUrl);
+                #endregion
 
                 var user = existingTraveler.User;
 
@@ -356,6 +371,7 @@ namespace Mottrist.Service.Features.Traveller.Services
                 if (!result.Succeeded)
                 {
                     await _unitOfWork.RollbackAsync();
+
                     return Result.Failure("Failed to delete the traveler.");
                 }
 
@@ -366,7 +382,6 @@ namespace Mottrist.Service.Features.Traveller.Services
                     return Result.Failure("Failed to delete the traveler.");
                 }
 
-                 await DeleteImageAsync(existingTravelerImageUrl);
 
                 return Result.Success();
             }
