@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Mottrist.Domain.Common.IUnitOfWork;
 using Mottrist.Domain.Entities;
 using Mottrist.Domain.Global;
 using Mottrist.Domain.Identity;
+using Mottrist.Service.Features.Drivers.DTOs;
 using Mottrist.Service.Features.General;
 using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Traveller.DTOs;
@@ -12,6 +14,7 @@ using Mottrist.Service.Features.Traveller.Interfaces;
 using Mottrist.Service.Features.Traveller.Mappers;
 using Mottrist.Utilities.Identity;
 using System.Linq.Expressions;
+using static Mottrist.Utilities.Global.GlobalFunctions;
 
 namespace Mottrist.Service.Features.Traveller.Services
 {
@@ -55,7 +58,7 @@ namespace Mottrist.Service.Features.Traveller.Services
         /// <returns>
         /// A <see cref="DataResult{GetTravelerDto}"/> containing a collection of travelers if successful; otherwise, null.
         /// </returns>
-        public async Task<DataResult<GetTravelerDto>>? GetAllAsync(Expression<Func<Traveler, bool>>? filter = null)
+        public async Task<DataResult<TravelerDto>>? GetAllAsync(Expression<Func<Traveler, bool>>? filter = null)
         {
             try
             {
@@ -69,13 +72,13 @@ namespace Mottrist.Service.Features.Traveller.Services
 
                 var travelers = await travelerQuery.ToListAsync();
 
-                DataResult<GetTravelerDto> travelersResult = new()
+                DataResult<TravelerDto> travelersResult = new()
                 {
-                    Data = _mapper.Map<IEnumerable<GetTravelerDto>>(travelers)
+                    Data = _mapper.Map<IEnumerable<TravelerDto>>(travelers)
                 };
 
                 if (!travelers.Any())
-                    travelersResult.Data = Enumerable.Empty<GetTravelerDto>();
+                    travelersResult.Data = Enumerable.Empty<TravelerDto>();
 
                 return travelersResult;
             }
@@ -94,7 +97,7 @@ namespace Mottrist.Service.Features.Traveller.Services
         /// <returns>
         /// A <see cref="PaginatedResult{GetTravelerDto}"/> containing the paginated travelers if successful; otherwise, null.
         /// </returns>
-        public async Task<PaginatedResult<GetTravelerDto>?> GetAllWithPaginationAsync(int page, int pageSize = 10, Expression<Func<Traveler, bool>>? filter = null)
+        public async Task<PaginatedResult<TravelerDto>?> GetAllWithPaginationAsync(int page, int pageSize = 10, Expression<Func<Traveler, bool>>? filter = null)
         {
             if (page < 1 || pageSize < 1)
                 return null;
@@ -120,9 +123,9 @@ namespace Mottrist.Service.Features.Traveller.Services
                     .Take(pageSize)
                     .ToListAsync();
 
-                var travelersDto = _mapper.Map<IEnumerable<GetTravelerDto>>(paginatedCars);
+                var travelersDto = _mapper.Map<IEnumerable<TravelerDto>>(paginatedCars);
 
-                PaginatedResult<GetTravelerDto> paginationTravelerDto = new()
+                PaginatedResult<TravelerDto> paginationTravelerDto = new()
                 {
                     Data = travelersDto,
                     PageNumber= page,
@@ -144,9 +147,9 @@ namespace Mottrist.Service.Features.Traveller.Services
         /// </summary>
         /// <param name="travelerId">The unique identifier of the traveler.</param>
         /// <returns>
-        /// A <see cref="GetTravelerDto"/> containing the traveler data if found; otherwise, null.
+        /// A <see cref="TravelerDto"/> containing the traveler data if found; otherwise, null.
         /// </returns>
-        public async Task<GetTravelerDto>? GetByIdAsync(int travelerId)
+        public async Task<TravelerDto>? GetByIdAsync(int travelerId)
         {
             try
             {
@@ -155,7 +158,7 @@ namespace Mottrist.Service.Features.Traveller.Services
 
                 if (traveler == null) return null;
 
-                var travelerDto = _mapper.Map<GetTravelerDto>(traveler);
+                var travelerDto = _mapper.Map<TravelerDto>(traveler);
 
                 //var existingUser = traveler.User;
                 //_mapper.Map(travelerDto, existingUser);
@@ -227,6 +230,11 @@ namespace Mottrist.Service.Features.Traveller.Services
                 if (newTraveler.Id <= 0) return Result.Failure("Failed to save the traveler to the database.");
                 travelerDto.Id = newTraveler.Id;
 
+                // Add profile image.
+                if (travelerDto.ProfileImage != null)
+                    travelerDto.ProfileImageUrl = await SaveImageAsync(travelerDto.ProfileImage, $"profiles/travelers/{travelerDto.Id}");
+
+
                 return Result.Success();
 
             }
@@ -252,6 +260,7 @@ namespace Mottrist.Service.Features.Traveller.Services
 
             try
             {
+              
                 // Fetch the existing Traveler including User and Country
                 var existingTraveler = await _unitOfWork.Repository<Traveler>()
                     .Include(t => t.User)
@@ -263,6 +272,11 @@ namespace Mottrist.Service.Features.Traveller.Services
                     await _unitOfWork.RollbackAsync();
                     return Result.Failure("Traveler not found.");
                 }
+
+                // Update profile image.
+                string? existingTravelerImageUrl = existingTraveler.ProfileImageUrl;
+
+               
 
                 //// Update Traveler details
                 TravelerMapper.Map(travelerDto, existingTraveler);
@@ -295,6 +309,10 @@ namespace Mottrist.Service.Features.Traveller.Services
                     return Result.Failure("Failed to complete the transaction");
                 }
 
+                if (travelerDto.ProfileImage != null)
+                    travelerDto.ProfileImageUrl = await ReplaceImageAsync(travelerDto.ProfileImage, $"profiles/travelers/{existingTraveler.Id}", existingTravelerImageUrl);
+
+
                 return Result.Success();
             }
             catch (Exception ex)
@@ -325,6 +343,8 @@ namespace Mottrist.Service.Features.Traveller.Services
 
                 if (existingTraveler == null) return Result.Failure("Traveler not found.");
 
+                string existingTravelerImageUrl = existingTraveler.ProfileImageUrl!;
+
                 var user = existingTraveler.User;
 
                 // Delete traveler
@@ -346,6 +366,8 @@ namespace Mottrist.Service.Features.Traveller.Services
                     return Result.Failure("Failed to delete the traveler.");
                 }
 
+                 await DeleteImageAsync(existingTravelerImageUrl);
+
                 return Result.Success();
             }
             catch (Exception ex)
@@ -358,8 +380,8 @@ namespace Mottrist.Service.Features.Traveller.Services
         /// Not implemented: Retrieves a traveler based on a given filter.
         /// </summary>
         /// <param name="filter">The filter expression.</param>
-        /// <returns>A <see cref="GetTravelerDto"/> matching the filter.</returns>
-        GetTravelerDto? ITravelerService.Get(Expression<Func<Traveler, bool>> filter)
+        /// <returns>A <see cref="TravelerDto"/> matching the filter.</returns>
+        TravelerDto? ITravelerService.Get(Expression<Func<Traveler, bool>> filter)
         {
             throw new NotImplementedException();
         }
@@ -368,8 +390,8 @@ namespace Mottrist.Service.Features.Traveller.Services
         /// Not implemented: Retrieves all travelers based on a given filter.
         /// </summary>
         /// <param name="filter">An optional filter expression.</param>
-        /// <returns>A collection of <see cref="GetTravelerDto"/>.</returns>
-        IEnumerable<GetTravelerDto>? ITravelerService.GetAll(Expression<Func<Traveler, bool>>? filter)
+        /// <returns>A collection of <see cref="TravelerDto"/>.</returns>
+        IEnumerable<TravelerDto>? ITravelerService.GetAll(Expression<Func<Traveler, bool>>? filter)
         {
             throw new NotImplementedException();
         }

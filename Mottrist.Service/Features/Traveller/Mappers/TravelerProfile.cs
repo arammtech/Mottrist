@@ -9,7 +9,7 @@ namespace Mottrist.Service.Features.Traveller.Mappers
     {
         public TravelerProfile()
         {
-            CreateMap<GetTravelerDto, Traveler>()
+            CreateMap<TravelerDto, Traveler>()
                 .ForPath(dest => dest.User.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForPath(dest => dest.User.LastName, opt => opt.MapFrom(src => src.LastName))
                 .ForPath(dest => dest.User.Email, opt => opt.MapFrom(src => src.Email))
@@ -23,7 +23,7 @@ namespace Mottrist.Service.Features.Traveller.Mappers
 
             CreateMap<AddTravelerDto, ApplicationUser>().ReverseMap();
             CreateMap<UpdateTravelerDto, ApplicationUser>().ReverseMap();
-            CreateMap<GetTravelerDto, ApplicationUser>().ReverseMap();
+            CreateMap<TravelerDto, ApplicationUser>().ReverseMap();
 
         }
     }
