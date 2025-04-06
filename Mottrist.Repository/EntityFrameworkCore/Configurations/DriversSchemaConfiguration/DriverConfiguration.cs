@@ -28,7 +28,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
                 (
                     builder => (byte)builder,
                     builder => (DriverStatus)builder)
-                .HasDefaultValue(DriverStatus.Binding);
+                .HasDefaultValue(DriverStatus.Pending);
 
             builder.HasOne(d => d.Car)
                 .WithOne()
