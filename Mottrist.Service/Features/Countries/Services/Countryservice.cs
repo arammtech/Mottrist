@@ -39,8 +39,8 @@ namespace Mottrist.Service.Features.Countries.Services
         /// Retrieves a country by its ID.
         /// </summary>
         /// <param name="id">The unique identifier of the country.</param>
-        /// <returns>A <see cref="GetCountryDto"/> representing the country, or null if not found.</returns>
-        public GetCountryDto? GetById(int id)
+        /// <returns>A <see cref="CountryDto"/> representing the country, or null if not found.</returns>
+        public CountryDto? GetById(int id)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace Mottrist.Service.Features.Countries.Services
                 if (country == null)
                     return null;
 
-                return _mapper.Map<GetCountryDto>(country);
+                return _mapper.Map<CountryDto>(country);
             }
             catch (Exception)
             {
@@ -64,8 +64,8 @@ namespace Mottrist.Service.Features.Countries.Services
         /// Asynchronously retrieves a country by its ID.
         /// </summary>
         /// <param name="id">The unique identifier of the country.</param>
-        /// <returns>A task that resolves to a <see cref="GetCountryDto"/> or null if not found.</returns>
-        public async Task<GetCountryDto?> GetByIdAsync(int id)
+        /// <returns>A task that resolves to a <see cref="CountryDto"/> or null if not found.</returns>
+        public async Task<CountryDto?> GetByIdAsync(int id)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace Mottrist.Service.Features.Countries.Services
                 if (country == null)
                     return null;
 
-                return _mapper.Map<GetCountryDto>(country);
+                return _mapper.Map<CountryDto>(country);
             }
             catch (Exception)
             {
@@ -90,7 +90,7 @@ namespace Mottrist.Service.Features.Countries.Services
         /// </summary>
         /// <param name="filter">Optional filter expression.</param>
         /// <returns>A <see cref="DataResult{T}"/> containing a list of countries.</returns>
-        public DataResult<GetCountryDto>? GetAll(Expression<Func<Country, bool>>? filter = null)
+        public DataResult<CountryDto>? GetAll(Expression<Func<Country, bool>>? filter = null)
         {
             try
             {
@@ -102,10 +102,10 @@ namespace Mottrist.Service.Features.Countries.Services
                     countryQuery = countryQuery.Where(filter);
 
                 var countries = countryQuery
-                    .ProjectTo<GetCountryDto>(_mapper.ConfigurationProvider)
+                    .ProjectTo<CountryDto>(_mapper.ConfigurationProvider)
                     .ToList();
 
-                return new DataResult<GetCountryDto>
+                return new DataResult<CountryDto>
                 {
                     Data = countries
                 };
@@ -121,7 +121,7 @@ namespace Mottrist.Service.Features.Countries.Services
         /// </summary>
         /// <param name="filter">Optional filter expression.</param>
         /// <returns>A task that resolves to a <see cref="DataResult{T}"/> containing a list of countries.</returns>
-        public async Task<DataResult<GetCountryDto>?> GetAllAsync(Expression<Func<Country, bool>>? filter = null)
+        public async Task<DataResult<CountryDto>?> GetAllAsync(Expression<Func<Country, bool>>? filter = null)
         {
             try
             {
@@ -133,12 +133,12 @@ namespace Mottrist.Service.Features.Countries.Services
                     countryQuery = countryQuery.Where(filter);
 
                 var countries = await countryQuery
-                  .ProjectTo<GetCountryDto>(_mapper.ConfigurationProvider)
+                  .ProjectTo<CountryDto>(_mapper.ConfigurationProvider)
                   .ToListAsync();
 
-                return new DataResult<GetCountryDto>
+                return new DataResult<CountryDto>
                 {
-                    Data = countries.Any() ? countries : Enumerable.Empty<GetCountryDto>()
+                    Data = countries.Any() ? countries : Enumerable.Empty<CountryDto>()
                 };
             }
             catch (Exception)

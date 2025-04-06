@@ -3,7 +3,7 @@
     public enum DriverStatus : byte
     {
         Approved = 1,
-        Binding = 2,
+        Pending = 2,
         Rejected = 3
     }
 }

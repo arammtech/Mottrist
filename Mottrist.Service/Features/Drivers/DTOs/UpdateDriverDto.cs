@@ -19,8 +19,8 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public string? Bio { get; set; }
         
         // Images
-        public string? LicenseImageUrl { get; set; } = null!;
-        public string? PassportImageUrl { get; set; } = null!;
+        public string? LicenseImageUrl { get; set; } = string.Empty;
+        public string? PassportImageUrl { get; set; } = string.Empty;
         public string? ProfileImageUrl { get; set; } = string.Empty;
 
         // Professional Information

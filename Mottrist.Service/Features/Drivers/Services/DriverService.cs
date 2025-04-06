@@ -18,6 +18,10 @@ using Feature.Car.DTOs;
 using Microsoft.AspNetCore.Http;
 using static Mottrist.Utilities.Global.GlobalFunctions;
 using Mottrist.Domain.Enums;
+using Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs;
+using Mottrist.Service.Features.Languages.Interfaces;
+using Mottrist.Service.Features.Countries.Interfaces;
+using Mottrist.Service.Features.Cities.Interfaces;
 
 namespace Mottrist.Service.Features.Drivers.Services
 {
@@ -49,6 +53,21 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// </summary>
         private readonly UserManager<ApplicationUser> _userManager;
 
+        /// <summary>
+        /// Service for managing language-related operations.
+        /// </summary>
+        private readonly ILanguageService _languageService;
+
+        /// <summary>
+        /// Service for managing country-related operations.
+        /// </summary>
+        private readonly ICountryService _countryService;
+
+        /// <summary>
+        /// Service for managing city-related operations.
+        /// </summary>
+        private readonly ICityService _cityService;
+
         #endregion
 
         /// <summary>
@@ -58,19 +77,33 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <param name="mapper">The mapper instance for object mapping.</param>
         /// <param name="carService">The service for managing car operations.</param>
         /// <param name="userManager">The user manager for handling user-related operations.</param>
+        /// <param name="languageService">The service for managing language-related operations.</param>
+        /// <param name="countryService">The service for managing country-related operations.</param>
+        /// <param name="cityService">The service for managing city-related operations.</param>
         /// <exception cref="ArgumentNullException">
         /// Thrown if any of the injected dependencies are null.
         /// </exception>
-        public DriverService(IUnitOfWork unitOfWork, IMapper mapper, ICarService carService, UserManager<ApplicationUser> userManager)
+        public DriverService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ICarService carService,
+            UserManager<ApplicationUser> userManager,
+            ILanguageService languageService,
+            ICountryService countryService,
+            ICityService cityService)
             : base(unitOfWork)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _languageService = languageService ?? throw new ArgumentNullException(nameof(languageService));
+            _countryService = countryService ?? throw new ArgumentNullException(nameof(countryService));
+            _cityService = cityService ?? throw new ArgumentNullException(nameof(cityService));
             _carService = carService ?? throw new ArgumentNullException(nameof(carService));
         }
 
         #region Driver Get Operations
+
 
         /// <summary>
         /// Retrieves a set of drivers with their detailed information, including car and image details, optionally filtered by the specified criteria.
@@ -390,6 +423,35 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
 
         }
+
+        /// <summary>
+        /// Retrieves all necessary form fields for driver registration, including car-related fields, languages, countries, and cities.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="DriverFormFieldsDto"/> object containing car fields, languages, countries, and cities.
+        /// Returns null if an exception occurs.
+        /// </returns>
+        public async Task<DriverFormFieldsDto?> GetAllDriverFormFields()
+        {
+            try
+            {
+                DriverFormFieldsDto driverFormFieldsDto = new DriverFormFieldsDto
+                {
+                    CarFieldsDto = await _carService.GetAllCarFieldsAsync(),
+                    Languages = await _languageService.GetAllAsync(),
+                    Countries = await _countryService.GetAllAsync(),
+                    Cities = await _cityService.GetAllAsync()
+                 
+                };
+
+                return driverFormFieldsDto;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
 
         #endregion
 
@@ -1025,7 +1087,18 @@ namespace Mottrist.Service.Features.Drivers.Services
             {
                 if (existingDriver.CarId.HasValue)
                 {
-                    // Update existing car.
+                    if(!driverDto.HasCar)
+                    {
+                        // If the driver no longer has a car, delete the car and its images.
+                        var deleteCarResult = await _carService.DeleteAsync(existingDriver.CarId.Value);
+                        if (!deleteCarResult.IsSuccess)
+                        {
+                            return Result.Failure("Failed to delete car details.");
+                        }
+                        existingDriver.CarId = null; // Clear the CarId from the driver entity.
+                        return Result.Success();
+                    }
+
                     var updateCarDto = _mapper.Map<UpdateCarDto>(driverDto);
                     updateCarDto.Id = existingDriver.CarId.Value;
                     var carUpdateResult = await _carService.UpdateAsync(updateCarDto);
@@ -1153,15 +1226,25 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
 
                 // Delete associated car and its images.
-                var carDeletionResult = await DeleteCarAndImagesAsync(driver);
+                var carDeletionResult = await _DeleteCarAndImagesAsync(driver);
                 if (!carDeletionResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
                     return carDeletionResult;
                 }
 
+
                 // Delete the driver record.
-                var driverDeletionResult = await DeleteDriverRecordAsync(driver);
+                var associatetionDeletionResult = await _DeleteDriverAssociationsAsync(driverId);
+                if (!associatetionDeletionResult.IsSuccess)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return associatetionDeletionResult;
+                }
+
+
+                // Delete the driver record.
+                var driverDeletionResult = await _DeleteDriverRecordAsync(driver);
                 if (!driverDeletionResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
@@ -1169,7 +1252,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
 
                 // Delete the associated user.
-                var userDeletionResult = await DeleteAssociatedUserAsync(driver);
+                var userDeletionResult = await _DeleteAssociatedUserAsync(driver);
                 if (!userDeletionResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
@@ -1197,9 +1280,121 @@ namespace Mottrist.Service.Features.Drivers.Services
         #region Deletion Helper Functions
 
         /// <summary>
+        /// Deletes all associations for a specified driver, including languages, cities (worked on and currently covered), 
+        /// and countries (worked on and currently covered).
+        /// </summary>
+        /// <param name="driverId">The unique identifier of the driver whose associations need to be deleted.</param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating success or failure:
+        /// - Success: All associations for the specified driver have been deleted.
+        /// - Failure: An error occurred while attempting to delete the associations, with an error message.
+        /// </returns>
+        /// <remarks>
+        /// This method processes multiple types of driver associations:
+        /// 1. Languages associated with the driver.
+        /// 2. Cities that the driver has worked in or currently covers.
+        /// 3. Countries that the driver has worked in or currently covers.
+        /// 
+        /// Each category is deleted individually, and database changes are committed after each deletion.
+        /// If any deletion fails, the method returns a failure result with a descriptive error message.
+        /// </remarks>
+        /// <example>
+        /// Example usage:
+        /// <code>
+        /// var result = await _DeleteDriverAssociationsAsync(1234);
+        /// if (result.IsSuccess)
+        /// {
+        ///     Console.WriteLine("Associations deleted successfully.");
+        /// }
+        /// else
+        /// {
+        ///     Console.WriteLine($"Failed to delete associations: {result.ErrorMessage}");
+        /// }
+        /// </code>
+        /// </example>
+
+        private async Task<Result> _DeleteDriverAssociationsAsync(
+    int driverId)
+        {
+            try
+            {
+                // --- Languages ---
+                var existingLanguages = await _unitOfWork.Repository<DriverLanguage>().GetAllAsync(dl => dl.DriverId == driverId);
+                if (existingLanguages != null && existingLanguages.Any())
+                {
+                    await _unitOfWork.Repository<DriverLanguage>().DeleteRangeAsync(existingLanguages);
+                    var deleteLangResult = await _unitOfWork.SaveChangesAsync();
+                    if (!deleteLangResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to delete driver languages.");
+                    }
+                }
+
+                // --- Cities Worked On ---
+                var existingWorkedOnCities = await _unitOfWork.Repository<DriverCity>()
+                    .GetAllAsync(dc => dc.DriverId == driverId && dc.WorkStatus == WorkStatus.WorkedOn);
+                if (existingWorkedOnCities != null && existingWorkedOnCities.Any())
+                {
+                    await _unitOfWork.Repository<DriverCity>().DeleteRangeAsync(existingWorkedOnCities);
+                    var deleteWorkedOnCitiesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!deleteWorkedOnCitiesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to delete worked-on cities for the driver.");
+                    }
+                }
+
+                // --- Cities Cover Now ---
+                var existingCoverNowCities = await _unitOfWork.Repository<DriverCity>()
+                    .GetAllAsync(dc => dc.DriverId == driverId && dc.WorkStatus == WorkStatus.CoverNow);
+                if (existingCoverNowCities != null && existingCoverNowCities.Any())
+                {
+                    await _unitOfWork.Repository<DriverCity>().DeleteRangeAsync(existingCoverNowCities);
+                    var deleteCoverNowCitiesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!deleteCoverNowCitiesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to delete currently covered cities for the driver.");
+                    }
+                }
+
+                // --- Countries Worked On ---
+                var existingWorkedOnCountries = await _unitOfWork.Repository<DriverCountry>()
+                    .GetAllAsync(dc => dc.DriverId == driverId && dc.WorkStatus == WorkStatus.WorkedOn);
+                if (existingWorkedOnCountries != null && existingWorkedOnCountries.Any())
+                {
+                    await _unitOfWork.Repository<DriverCountry>().DeleteRangeAsync(existingWorkedOnCountries);
+                    var deleteWorkedOnCountriesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!deleteWorkedOnCountriesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to delete worked-on countries for the driver.");
+                    }
+                }
+
+                // --- Countries Cover Now ---
+                var existingCoverNowCountries = await _unitOfWork.Repository<DriverCountry>()
+                    .GetAllAsync(dc => dc.DriverId == driverId && dc.WorkStatus == WorkStatus.CoverNow);
+                if (existingCoverNowCountries != null && existingCoverNowCountries.Any())
+                {
+                    await _unitOfWork.Repository<DriverCountry>().DeleteRangeAsync(existingCoverNowCountries);
+                    var deleteCoverNowCountriesResult = await _unitOfWork.SaveChangesAsync();
+                    if (!deleteCoverNowCountriesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to delete currently covered countries for the driver.");
+                    }
+                }
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed to delete driver associations: {ex.Message}");
+            }
+        }
+
+
+        /// <summary>
         /// Deletes the car and its associated images, if they exist, for the specified driver.
         /// </summary>
-        private async Task<Result> DeleteCarAndImagesAsync(Driver driver)
+        private async Task<Result> _DeleteCarAndImagesAsync(Driver driver)
         {
             if (!driver.CarId.HasValue)
                 return Result.Success();
@@ -1230,7 +1425,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <summary>
         /// Deletes the driver record from the repository.
         /// </summary>
-        private async Task<Result> DeleteDriverRecordAsync(Driver driver)
+        private async Task<Result> _DeleteDriverRecordAsync(Driver driver)
         {
             await _unitOfWork.Repository<Driver>().DeleteAsync(driver);
             var driverSaveResult = await _unitOfWork.SaveChangesAsync();
@@ -1243,7 +1438,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <summary>
         /// Deletes the associated user from the identity system.
         /// </summary>
-        private async Task<Result> DeleteAssociatedUserAsync(Driver driver)
+        private async Task<Result> _DeleteAssociatedUserAsync(Driver driver)
         {
             var user = await _userManager.FindByIdAsync(driver.UserId.ToString());
             var userDeletionResult = await _userManager.DeleteAsync(user);
@@ -1609,6 +1804,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 return Result.Failure($"An error occurred: {ex.Message}");
             }
         }
+
 
         #endregion
 

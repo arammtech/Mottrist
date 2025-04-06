@@ -30,7 +30,7 @@ namespace Mottrist.Domain.Entities
 
         // Status
         [Required]
-        public DriverStatus Status { get; set; } = DriverStatus.Binding;
+        public DriverStatus Status { get; set; } = DriverStatus.Pending;
 
         #region Navigation Properties
 

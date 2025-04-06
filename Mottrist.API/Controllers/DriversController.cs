@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Mottrist.Domain.Global;
 using Mottrist.Domain.Entities;
 using Mottrist.Domain.Enums;
+using Mottrist.Service.Features.Cities.Dtos;
 
 namespace Mottrist.API.Controllers
 {
@@ -228,7 +229,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 204 No Content if no drivers are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
-        [HttpGet("ByStatus/{status}", Name = "GetDriversByStatusAsync")]
+        [HttpGet("All/{status}", Name = "GetDriversByStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -272,12 +273,12 @@ namespace Mottrist.API.Controllers
         /// - HTTP 404 Not Found if the driver does not exist.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
-        [HttpPut("{driverId}/Status", Name = "UpdateDriverStatusAsync")]
+        [HttpPut("{driverId}/{newStatus}", Name = "UpdateDriverStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateDriverStatusAsync(int driverId, [FromBody] string newStatus)
+        public async Task<IActionResult> UpdateDriverStatusAsync(int driverId, string newStatus)
         {
             try
             {
@@ -458,6 +459,39 @@ namespace Mottrist.API.Controllers
                 return result.IsSuccess
                     ? SuccessResponse("Driver deleted successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "DeletionError", "Failed to delete the driver.");
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all necessary form fields for driver registration, including car-related fields, languages, countries, and cities.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="IActionResult"/> containing:
+        /// - **200 OK**: If the data is retrieved successfully.
+        /// - **204 No Content**: If no data is available.
+        /// - **500 Internal Server Error**: If an exception occurs.
+        /// </returns>
+        [HttpGet("AllDriverFormFields", Name = "GetAllDriverFormFields")]
+        [ProducesResponseType(typeof(ApiResponse<DriverFormFieldsDto>), StatusCodes.Status200OK)] // Success response
+        [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status204NoContent)] // No content
+        [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status500InternalServerError)] // Server error
+        public async Task<IActionResult> GetAllDriverFormFields()
+        {
+            try
+            {
+                var dataResult = await _driverService.GetAllDriverFormFields();
+                if (dataResult == null)
+                    return StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
+               
+                return SuccessResponse(dataResult, "All Driver's Form Fields retrieved successfully.");
             }
             catch (HttpRequestException ex)
             {

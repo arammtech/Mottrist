@@ -169,7 +169,140 @@ namespace Mottrist.Repository.EntityFrameworkCore.Context
                 new City { Id = 87, Name = "Xi'an", CountryId = 9 },
                 new City { Id = 88, Name = "Wuhan", CountryId = 9 },
                 new City { Id = 89, Name = "Chongqing", CountryId = 9 },
-                new City { Id = 90, Name = "Tianjin", CountryId = 9 }
+                new City { Id = 90, Name = "Tianjin", CountryId = 9 },
+
+                // Cities for Japan (CountryId = 10)
+                new City { Id = 91, Name = "Tokyo", CountryId = 10 },
+                new City { Id = 92, Name = "Osaka", CountryId = 10 },
+                new City { Id = 93, Name = "Kyoto", CountryId = 10 },
+                new City { Id = 94, Name = "Yokohama", CountryId = 10 },
+                new City { Id = 95, Name = "Fukuoka", CountryId = 10 },
+                new City { Id = 96, Name = "Sapporo", CountryId = 10 },
+                new City { Id = 97, Name = "Nagoya", CountryId = 10 },
+                new City { Id = 98, Name = "Kobe", CountryId = 10 },
+                new City { Id = 99, Name = "Hiroshima", CountryId = 10 },
+                new City { Id = 100, Name = "Sendai", CountryId = 10 },
+
+                // Cities for India (CountryId = 11)
+                new City { Id = 101, Name = "Mumbai", CountryId = 11 },
+                new City { Id = 102, Name = "Delhi", CountryId = 11 },
+                new City { Id = 103, Name = "Bangalore", CountryId = 11 },
+                new City { Id = 104, Name = "Hyderabad", CountryId = 11 },
+                new City { Id = 105, Name = "Chennai", CountryId = 11 },
+                new City { Id = 106, Name = "Kolkata", CountryId = 11 },
+                new City { Id = 107, Name = "Ahmedabad", CountryId = 11 },
+                new City { Id = 108, Name = "Pune", CountryId = 11 },
+                new City { Id = 109, Name = "Jaipur", CountryId = 11 },
+                new City { Id = 110, Name = "Lucknow", CountryId = 11 },
+
+                // Cities for South Korea (CountryId = 12)
+                new City { Id = 111, Name = "Seoul", CountryId = 12 },
+                new City { Id = 112, Name = "Busan", CountryId = 12 },
+                new City { Id = 113, Name = "Incheon", CountryId = 12 },
+                new City { Id = 114, Name = "Daegu", CountryId = 12 },
+                new City { Id = 115, Name = "Daejeon", CountryId = 12 },
+                new City { Id = 116, Name = "Gwangju", CountryId = 12 },
+                new City { Id = 117, Name = "Suwon", CountryId = 12 },
+                new City { Id = 118, Name = "Ulsan", CountryId = 12 },
+                new City { Id = 119, Name = "Jeonju", CountryId = 12 },
+                new City { Id = 120, Name = "Goyang", CountryId = 12 },
+
+                // Cities for South Africa (CountryId = 13)
+                new City { Id = 121, Name = "Johannesburg", CountryId = 13 },
+                new City { Id = 122, Name = "Cape Town", CountryId = 13 },
+                new City { Id = 123, Name = "Durban", CountryId = 13 },
+                new City { Id = 124, Name = "Pretoria", CountryId = 13 },
+                new City { Id = 125, Name = "Port Elizabeth", CountryId = 13 },
+                new City { Id = 126, Name = "Bloemfontein", CountryId = 13 },
+                new City { Id = 127, Name = "East London", CountryId = 13 },
+                new City { Id = 128, Name = "Polokwane", CountryId = 13 },
+                new City { Id = 129, Name = "Nelspruit", CountryId = 13 },
+                new City { Id = 130, Name = "Kimberley", CountryId = 13 },
+
+                // Cities for Nigeria (CountryId = 14)
+                new City { Id = 131, Name = "Lagos", CountryId = 14 },
+                new City { Id = 132, Name = "Abuja", CountryId = 14 },
+                new City { Id = 133, Name = "Kano", CountryId = 14 },
+                new City { Id = 134, Name = "Ibadan", CountryId = 14 },
+                new City { Id = 135, Name = "Port Harcourt", CountryId = 14 },
+                new City { Id = 136, Name = "Benin City", CountryId = 14 },
+                new City { Id = 137, Name = "Kaduna", CountryId = 14 },
+                new City { Id = 138, Name = "Maiduguri", CountryId = 14 },
+                new City { Id = 139, Name = "Enugu", CountryId = 14 },
+                new City { Id = 140, Name = "Jos", CountryId = 14 },
+
+                // Cities for Egypt (CountryId = 15)
+                new City { Id = 141, Name = "Cairo", CountryId = 15 },
+                new City { Id = 142, Name = "Alexandria", CountryId = 15 },
+                new City { Id = 143, Name = "Giza", CountryId = 15 },
+                new City { Id = 144, Name = "Shubra El Kheima", CountryId = 15 },
+                new City { Id = 145, Name = "Port Said", CountryId = 15 },
+                new City { Id = 146, Name = "Suez", CountryId = 15 },
+                new City { Id = 147, Name = "Luxor", CountryId = 15 },
+                new City { Id = 148, Name = "Aswan", CountryId = 15 },
+                new City { Id = 149, Name = "Ismailia", CountryId = 15 },
+                new City { Id = 150, Name = "Mansoura", CountryId = 15 },
+
+                // Cities for Mexico (CountryId = 16)
+                new City { Id = 151, Name = "Mexico City", CountryId = 16 },
+                new City { Id = 152, Name = "Guadalajara", CountryId = 16 },
+                new City { Id = 153, Name = "Monterrey", CountryId = 16 },
+                new City { Id = 154, Name = "Puebla", CountryId = 16 },
+                new City { Id = 155, Name = "Tijuana", CountryId = 16 },
+                new City { Id = 156, Name = "León", CountryId = 16 },
+                new City { Id = 157, Name = "Cancún", CountryId = 16 },
+                new City { Id = 158, Name = "Mérida", CountryId = 16 },
+                new City { Id = 159, Name = "Toluca", CountryId = 16 },
+                new City { Id = 160, Name = "Chihuahua", CountryId = 16 },
+
+                // Cities for Italy (CountryId = 17)
+                new City { Id = 161, Name = "Rome", CountryId = 17 },
+                new City { Id = 162, Name = "Milan", CountryId = 17 },
+                new City { Id = 163, Name = "Naples", CountryId = 17 },
+                new City { Id = 164, Name = "Turin", CountryId = 17 },
+                new City { Id = 165, Name = "Palermo", CountryId = 17 },
+                new City { Id = 166, Name = "Genoa", CountryId = 17 },
+                new City { Id = 167, Name = "Bologna", CountryId = 17 },
+                new City { Id = 168, Name = "Florence", CountryId = 17 },
+                new City { Id = 169, Name = "Venice", CountryId = 17 },
+                new City { Id = 170, Name = "Verona", CountryId = 17 },
+
+                // Cities for Spain (CountryId = 18)
+                new City { Id = 171, Name = "Madrid", CountryId = 18 },
+                new City { Id = 172, Name = "Barcelona", CountryId = 18 },
+                new City { Id = 173, Name = "Valencia", CountryId = 18 },
+                new City { Id = 174, Name = "Seville", CountryId = 18 },
+                new City { Id = 175, Name = "Zaragoza", CountryId = 18 },
+                new City { Id = 176, Name = "Málaga", CountryId = 18 },
+                new City { Id = 177, Name = "Murcia", CountryId = 18 },
+                new City { Id = 178, Name = "Bilbao", CountryId = 18 },
+                new City { Id = 179, Name = "Alicante", CountryId = 18 },
+                new City { Id = 180, Name = "Granada", CountryId = 18 },
+
+                // Cities for Russia (CountryId = 19)
+                new City { Id = 181, Name = "Moscow", CountryId = 19 },
+                new City { Id = 182, Name = "Saint Petersburg", CountryId = 19 },
+                new City { Id = 183, Name = "Novosibirsk", CountryId = 19 },
+                new City { Id = 184, Name = "Yekaterinburg", CountryId = 19 },
+                new City { Id = 185, Name = "Kazan", CountryId = 19 },
+                new City { Id = 186, Name = "Nizhny Novgorod", CountryId = 19 },
+                new City { Id = 187, Name = "Chelyabinsk", CountryId = 19 },
+                new City { Id = 188, Name = "Samara", CountryId = 19 },
+                new City { Id = 189, Name = "Omsk", CountryId = 19 },
+                new City { Id = 190, Name = "Rostov-on-Don", CountryId = 19 },
+
+                // Cities for Turkey (CountryId = 20)
+                new City { Id = 191, Name = "Istanbul", CountryId = 20 },
+                new City { Id = 192, Name = "Ankara", CountryId = 20 },
+                new City { Id = 193, Name = "Izmir", CountryId = 20 },
+                new City { Id = 194, Name = "Bursa", CountryId = 20 },
+                new City { Id = 195, Name = "Adana", CountryId = 20 },
+                new City { Id = 196, Name = "Gaziantep", CountryId = 20 },
+                new City { Id = 197, Name = "Konya", CountryId = 20 },
+                new City { Id = 198, Name = "Antalya", CountryId = 20 },
+                new City { Id = 199, Name = "Kayseri", CountryId = 20 },
+                new City { Id = 200, Name = "Mersin", CountryId = 20 }
+
             );
 
             modelBuilder.Entity<ApplicationRole>().HasData(
