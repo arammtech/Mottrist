@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Mottrist.Service.Features.Traveller.DTOs
 {
@@ -49,7 +50,11 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         /// <summary>
         /// Profile image URL (optional).
         /// </summary>
-        [Url(ErrorMessage = "Invalid URL format.")]
         public string? ProfileImageUrl { get; set; }
+
+        /// <summary>
+        /// Profile image as file
+        /// </summary>
+        public IFormFile? ProfileImage { get; set; }
     }
 }
