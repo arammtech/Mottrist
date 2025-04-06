@@ -229,7 +229,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 204 No Content if no drivers are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
-        [HttpGet("ByStatus/{status}", Name = "GetDriversByStatusAsync")]
+        [HttpGet("All/{status}", Name = "GetDriversByStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -273,12 +273,12 @@ namespace Mottrist.API.Controllers
         /// - HTTP 404 Not Found if the driver does not exist.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
-        [HttpPut("{driverId}/Status", Name = "UpdateDriverStatusAsync")]
+        [HttpPut("{driverId}/{newStatus}", Name = "UpdateDriverStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateDriverStatusAsync(int driverId, [FromBody] string newStatus)
+        public async Task<IActionResult> UpdateDriverStatusAsync(int driverId, string newStatus)
         {
             try
             {
