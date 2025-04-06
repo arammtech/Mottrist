@@ -1087,7 +1087,18 @@ namespace Mottrist.Service.Features.Drivers.Services
             {
                 if (existingDriver.CarId.HasValue)
                 {
-                    // Update existing car.
+                    if(!driverDto.HasCar)
+                    {
+                        // If the driver no longer has a car, delete the car and its images.
+                        var deleteCarResult = await _carService.DeleteAsync(existingDriver.CarId.Value);
+                        if (!deleteCarResult.IsSuccess)
+                        {
+                            return Result.Failure("Failed to delete car details.");
+                        }
+                        existingDriver.CarId = null; // Clear the CarId from the driver entity.
+                        return Result.Success();
+                    }
+
                     var updateCarDto = _mapper.Map<UpdateCarDto>(driverDto);
                     updateCarDto.Id = existingDriver.CarId.Value;
                     var carUpdateResult = await _carService.UpdateAsync(updateCarDto);

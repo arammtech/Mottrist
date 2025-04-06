@@ -303,7 +303,18 @@ namespace Mottrist.Service.Features.Cars.Services
                 var car = await _unitOfWork.Repository<Car>().GetAsync(c => c.Id == carId);
                 if (car == null) return Result.Failure("Car not found.");
 
-                _unitOfWork.Repository<Car>().Delete(car);
+
+                if (car.CarImages != null && car.CarImages.Any())
+                {
+                     await _unitOfWork.Repository<CarImage>().DeleteAsync(ci => ci.CarId == carId);
+                    var deleteImagesResult = await _unitOfWork.SaveChangesAsync();
+
+                    if (!deleteImagesResult.IsSuccess)
+                    {
+                        return Result.Failure("Failed to delete car images.");
+                    }
+                }
+                await _unitOfWork.Repository<Car>().DeleteAsync(car);
 
                 var saveResult = await _unitOfWork.SaveChangesAsync();
                 return saveResult.IsSuccess
