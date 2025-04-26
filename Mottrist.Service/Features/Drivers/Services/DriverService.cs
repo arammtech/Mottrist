@@ -146,6 +146,8 @@ namespace Mottrist.Service.Features.Drivers.Services
                     Email = driver.User.Email ?? string.Empty,
                     PhoneNumber = driver.User.PhoneNumber,
                     ProfileImageUrl = driver.ProfileImageUrl,
+                    LikesCount = driver.DriverInteractions.Where(x => x.DriverId == driver.Id && x.IsLiked == true).Count(),
+                    DislikesCount = driver.DriverInteractions.Where(x => x.DriverId == driver.Id && x.IsLiked == false).Count(),
                     HasCar = driver.CarId != null,
                     CarBrand = driver.Car.Brand.Name ?? "N/A", // Handle nullable Car
                     CarYear = driver.Car.Year,
@@ -225,6 +227,12 @@ namespace Mottrist.Service.Features.Drivers.Services
                         Email = user.Email ?? string.Empty,
                         PhoneNumber = user.PhoneNumber,
                         ProfileImageUrl = driver.ProfileImageUrl,
+                        LikesCount = driver.DriverInteractions
+                            .Where(x => x.DriverId == driver.Id && x.IsLiked == true)
+                            .Count(),
+                        DislikesCount = driver.DriverInteractions
+                            .Where(x => x.DriverId == driver.Id && x.IsLiked == false)
+                            .Count(),
                         HasCar = driver.CarId.HasValue,
                         CarBrand = carDetails.Brand.Name,
                         CarYear = carDetails.Year,
@@ -243,12 +251,25 @@ namespace Mottrist.Service.Features.Drivers.Services
                         AvailableFrom = driver.AvailableFrom,
                         AvailableTo = driver.AvailableTo,
                         PricePerHour = driver.PricePerHour,
-                        CitiesCoverNow = driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.City.Name).ToList(),
-                        CitiesWorkedOn =driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name).ToList(),
-                        CountriesCoverNow = driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name).ToList(),
-                        CountriesWorkedOn = driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name).ToList(),
-                        LanguagesSpoken = driver.DriverLanguages.Select(x => x.Language.Name).ToList()
-
+                        CitiesCoverNow = driver.DriverCities
+                            .Where(x => x.WorkStatus == WorkStatus.CoverNow)
+                            .Select(x => x.City.Name)
+                            .ToList(),
+                        CitiesWorkedOn =driver.DriverCities
+                            .Where(x => x.WorkStatus == WorkStatus.WorkedOn)
+                            .Select(x => x.City.Name)
+                            .ToList(),
+                        CountriesCoverNow = driver.DriverCountries
+                            .Where(x => x.WorkStatus == WorkStatus.CoverNow)
+                            .Select(x => x.Country.Name)
+                            .ToList(),
+                        CountriesWorkedOn = driver.DriverCountries
+                            .Where(x => x.WorkStatus == WorkStatus.WorkedOn)
+                            .Select(x => x.Country.Name)
+                            .ToList(),
+                        LanguagesSpoken = driver.DriverLanguages
+                            .Select(x => x.Language.Name)
+                            .ToList()
                     }
                 ).FirstOrDefaultAsync();
 
@@ -400,6 +421,8 @@ namespace Mottrist.Service.Features.Drivers.Services
                         Email = x.User.Email ?? string.Empty,
                         PhoneNumber = x.User.PhoneNumber,
                         ProfileImageUrl = x.ProfileImageUrl,
+                        LikesCount = x.DriverInteractions.Where(x => x.DriverId == x.Id && x.IsLiked == true).Count(),
+                        DislikesCount = x.DriverInteractions.Where(x => x.DriverId == x.Id && x.IsLiked == false).Count(),
                         HasCar = x.CarId != null,
                         CarBrand = x.Car.Brand.Name ?? string.Empty,
                         CarYear = x.Car.Year,
@@ -545,6 +568,8 @@ namespace Mottrist.Service.Features.Drivers.Services
                     Email = driver.User.Email ?? string.Empty,
                     PhoneNumber = driver.User.PhoneNumber,
                     ProfileImageUrl = driver.ProfileImageUrl,
+                    LikesCount = driver.DriverInteractions.Where(x => x.DriverId == driver.Id && x.IsLiked == true).Count(),
+                    DislikesCount = driver.DriverInteractions.Where(x => x.DriverId == driver.Id && x.IsLiked == false).Count(),
                     HasCar = driver.CarId.HasValue,
                     CarBrand = driver.Car.Brand.Name ?? "N/A",
                     CarYear = driver.Car.Year,
@@ -700,6 +725,8 @@ namespace Mottrist.Service.Features.Drivers.Services
                         Email = driver.User.Email ?? string.Empty,
                         PhoneNumber = driver.User.PhoneNumber,
                         ProfileImageUrl = driver.ProfileImageUrl,
+                        LikesCount = driver.DriverInteractions.Where(x => x.DriverId == driver.Id && x.IsLiked == true).Count(),
+                        DislikesCount = driver.DriverInteractions.Where(x => x.DriverId == driver.Id && x.IsLiked == false).Count(),
                         HasCar = driver.CarId.HasValue,
                         CarBrand = driver.Car.Brand.Name ?? "N/A",
                         CarYear = driver.Car.Year,
@@ -2224,5 +2251,129 @@ namespace Mottrist.Service.Features.Drivers.Services
 
         #endregion
 
+        #region Driver Interaction Operations
+        /// <summary>
+        /// Updates the like/dislike status for a driver by a logged-in user.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver.
+        /// This parameter is required and must be greater than 0.
+        /// </param>
+        /// <param name="userId">
+        /// The unique identifier of the user making the reaction.
+        /// This parameter is required and must be greater than 0.
+        /// </param>
+        /// <param name="isLiked">
+        /// The reaction type: 
+        /// - `true` for Like.
+        /// - `false` for Dislike.
+        /// - `null` to remove the reaction.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the update was successful.
+        /// - HTTP 200 OK if the reaction is updated successfully.
+        /// - HTTP 400 Bad Request if the parameters are invalid.
+        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// </returns>
+        public async Task<Result> LikeOrDislikeDriverAsync(int driverId, int userId, bool? isLiked)
+        {
+            // Validate input parameters
+            if (driverId < 1 || userId < 1)
+                return Result.Failure("Invalid driver or user ID.");
+
+            try
+            {
+                // Fetch existing interaction
+                var interaction = await _unitOfWork.Repository<DriverInteraction>()
+                    .GetAsync(x => x.DriverId == driverId && x.UserId == userId);
+
+                if (interaction != null)
+                {
+                    // If the reaction remains unchanged, avoid redundant updates
+                    if (interaction.IsLiked == isLiked)
+                        return Result.Success();
+
+                    // Update the existing reaction
+                    interaction.IsLiked = isLiked;
+                   await _unitOfWork.Repository<DriverInteraction>().UpdateAsync(interaction);
+                }
+                else
+                {
+                    // Create new interaction entry
+                    interaction = new DriverInteraction
+                    {
+                        DriverId = driverId,
+                        UserId = userId,
+                        IsLiked = isLiked,
+                        ViewsCount = 1
+
+                    };
+                    await _unitOfWork.Repository<DriverInteraction>().AddAsync(interaction);
+                }
+
+
+                var result = await _unitOfWork.SaveChangesAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Unexpected error while updating reaction: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Records a user's first view of a driver, ensuring each user views a driver only once.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver being viewed.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="userId">
+        /// The unique identifier of the user viewing the driver.
+        /// Must be greater than 0.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating whether the view was successfully recorded or if the user has already viewed the driver.
+        /// - HTTP 200 OK if the view is recorded successfully.
+        /// - HTTP 400 Bad Request if input parameters are invalid.
+        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// </returns>
+        public async Task<Result> IncrementViewCountAsync(int driverId, int userId)
+        {
+            // Validate input parameters
+            if (driverId < 1 || userId < 1)
+                return Result.Failure("Invalid driver or user ID.");
+
+            try
+            {
+                // Check if the user has already viewed this driver
+                var interactionExists = await _unitOfWork.Repository<DriverInteraction>()
+                    .Table.AnyAsync(x => x.DriverId == driverId && x.UserId == userId);
+
+                if (interactionExists)
+                    return Result.Success();
+
+                // Create new interaction entry for the first view
+                var interaction = new DriverInteraction
+                {
+                    DriverId = driverId,
+                    UserId = userId,
+                    ViewsCount = 1
+                };
+
+                await _unitOfWork.Repository<DriverInteraction>().AddAsync(interaction);
+                var result =  await _unitOfWork.SaveChangesAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Error updating views: {ex.Message}");
+            }
+        }
+
+
+        #endregion
     }
 }
