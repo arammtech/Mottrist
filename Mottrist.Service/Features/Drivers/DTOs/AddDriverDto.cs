@@ -37,6 +37,14 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         // Professional Information
         public byte YearsOfExperience { get; set; }
 
+        // Pricing
+        public decimal? PricePerHour { get; set; } // Driver's hourly rate
+
+        // Availability (Storing Only Date)
+        public DateTime? AvailableFrom { get; set; } // When the driver starts being available
+        public DateTime? AvailableTo { get; set; }   // When the driver's availability ends
+        public bool IsAvailableAllTime { get; set; } = false; // If true, driver ignores date restrictions
+
         // Car Details
         public bool HasCar { get; set; } = false;
         public int? BrandId { get; set; }
