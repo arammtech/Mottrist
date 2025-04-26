@@ -38,13 +38,19 @@
         public string? MainCarImageUrl { get; set; }
         public List<string>? AddtionalCarImageUrls { get; set; }
 
+        // Pricing
+        public decimal? PricePerHour { get; set; } // Driver's hourly rate
 
+        // Availability (Storing Only Date)
+        public DateTime? AvailableFrom { get; set; } // When the driver starts being available
+        public DateTime? AvailableTo { get; set; }   // When the driver's availability ends
+        public bool IsAvailableAllTime { get; set; } = false; // If true, driver ignores date restrictions
 
         // Cities and Countries worked on and covered
-        public string? CitiesWorkedOn { get; set; } = string.Empty;
-        public string? CitiesCoverNow { get; set; } = string.Empty;
-        public string? CountriesWorkedOn { get; set; } = string.Empty;
-        public string? CountriesCoverNow { get; set; } = string.Empty;
-        public string? LanguagesSpoken { get; set; } = string.Empty;
+        public List<string>? CitiesWorkedOn { get; set; } = new List<string>();
+        public List<string>? CitiesCoverNow { get; set; } = new List<string>();
+        public List<string>? CountriesWorkedOn { get; set; } = new List<string>();
+        public List<string>? CountriesCoverNow { get; set; } = new List<string>();
+        public List<string>? LanguagesSpoken { get; set; } = new List<string>();
     }
 }

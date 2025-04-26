@@ -160,11 +160,15 @@ namespace Mottrist.Service.Features.Drivers.Services
                         .Select(ci => ci.ImageUrl)
                         .ToList() ?? new List<string>(), // Additional images
                     Status = driver.Status.ToString(),
-                    CitiesCoverNow = string.Join(", ", driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x=> x.City.Name)),
-                    CitiesWorkedOn = string.Join(", ", driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name)),
-                    CountriesCoverNow = string.Join(", ", driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name)),
-                    CountriesWorkedOn = string.Join(", ", driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name)),
-                    LanguagesSpoken = string.Join(", ", driver.DriverLanguages.Select(x => x.Language.Name))
+                    IsAvailableAllTime = driver.IsAvailableAllTime,
+                    AvailableFrom = driver.AvailableFrom,
+                    AvailableTo = driver.AvailableTo,
+                    PricePerHour = driver.PricePerHour,
+                    CitiesCoverNow = driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.City.Name).ToList(),
+                    CitiesWorkedOn = driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name).ToList(),
+                    CountriesCoverNow = driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name).ToList(),
+                    CountriesWorkedOn = driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name).ToList(),
+                    LanguagesSpoken = driver.DriverLanguages.Select(x => x.Language.Name).ToList()
                 }).ToListAsync();
 
                 // Return the result
@@ -235,11 +239,15 @@ namespace Mottrist.Service.Features.Drivers.Services
                             .Select(ci => ci.ImageUrl)
                             .ToList() ?? new List<string>(),
                         Status = driver.Status.ToString(),
-                        CitiesCoverNow = string.Join(", ", driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.City.Name)),
-                        CitiesWorkedOn = string.Join(", ", driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name)),
-                        CountriesCoverNow = string.Join(", ", driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name)),
-                        CountriesWorkedOn = string.Join(", ", driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name)),
-                        LanguagesSpoken = string.Join(", ", driver.DriverLanguages.Select(x => x.Language.Name))
+                        IsAvailableAllTime = driver.IsAvailableAllTime,
+                        AvailableFrom = driver.AvailableFrom,
+                        AvailableTo = driver.AvailableTo,
+                        PricePerHour = driver.PricePerHour,
+                        CitiesCoverNow = driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.City.Name).ToList(),
+                        CitiesWorkedOn =driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name).ToList(),
+                        CountriesCoverNow = driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name).ToList(),
+                        CountriesWorkedOn = driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name).ToList(),
+                        LanguagesSpoken = driver.DriverLanguages.Select(x => x.Language.Name).ToList()
 
                     }
                 ).FirstOrDefaultAsync();
@@ -292,11 +300,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
 
 
-                // Apply filter if provided
-                if (filter != null)
-                {
-                    driverQuery = driverQuery.Where(filter);
-                }
+
 
                 // Calculate total count for pagination metadata
                 var totalRecordsCount = await driverQuery.CountAsync();
@@ -333,16 +337,20 @@ namespace Mottrist.Service.Features.Drivers.Services
                             .Select(ci => ci.ImageUrl)
                             .ToList() ?? new List<string>(),
                         Status = x.Status.ToString(),
-                        CitiesCoverNow = string.Join(", ", x.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.City.Name)),
-                        CitiesWorkedOn = string.Join(", ", x.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name)),
-                        CountriesCoverNow = string.Join(", ", x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name)),
-                        CountriesWorkedOn = string.Join(", ", x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name)),
-                        LanguagesSpoken = string.Join(", ", x.DriverLanguages.Select(x => x.Language.Name))
+                        IsAvailableAllTime = x.IsAvailableAllTime,
+                        AvailableFrom = x.AvailableFrom,
+                        AvailableTo = x.AvailableTo,
+                        PricePerHour = x.PricePerHour,
+                        CitiesCoverNow = x.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.City.Name).ToList(),
+                        CitiesWorkedOn = x.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name).ToList(),
+                        CountriesCoverNow = x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name).ToList(),
+                        CountriesWorkedOn = x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name).ToList(),
+                        LanguagesSpoken = x.DriverLanguages.Select(x => x.Language.Name).ToList()
                     })
                     .ToListAsync();
 
                 // Create paginated result object
-                PaginatedResult<DriverDto> paginatedDriverDto = new()
+                PaginatedResult<DriverDto> paginatedDriverDto = new PaginatedResult<DriverDto>()
                 {
                     Data = paginatedDrivers,
                     PageNumber = page,
@@ -406,11 +414,15 @@ namespace Mottrist.Service.Features.Drivers.Services
                             .Select(ci => ci.ImageUrl)
                             .ToList() ?? new List<string>(),
                         Status = x.Status.ToString(),
-                        CitiesCoverNow = string.Join(", ", x.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.City.Name)),
-                        CitiesWorkedOn = string.Join(", ", x.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name)),
-                        CountriesCoverNow = string.Join(", ", x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name)),
-                        CountriesWorkedOn = string.Join(", ", x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name)),
-                        LanguagesSpoken = string.Join(", ", x.DriverLanguages.Select(x => x.Language.Name))
+                        IsAvailableAllTime = x.IsAvailableAllTime,
+                        AvailableFrom = x.AvailableFrom,
+                        AvailableTo = x.AvailableTo,
+                        PricePerHour = x.PricePerHour,
+                        CitiesCoverNow = x.DriverCities.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.City.Name).ToList(),
+                        CitiesWorkedOn =  x.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name).ToList(),
+                        CountriesCoverNow =  x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name).ToList(),
+                        CountriesWorkedOn = x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name).ToList(),
+                        LanguagesSpoken = x.DriverLanguages.Select(x => x.Language.Name).ToList()
                     })
                     .FirstOrDefaultAsync();
 
@@ -441,12 +453,303 @@ namespace Mottrist.Service.Features.Drivers.Services
                     Languages = await _languageService.GetAllAsync(),
                     Countries = await _countryService.GetAllAsync(),
                     Cities = await _cityService.GetAllAsync()
-                 
+
                 };
 
                 return driverFormFieldsDto;
             }
             catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a list of drivers available in the specified country and, optionally, in the specified city and/or on the specified date.
+        /// </summary>
+        /// <param name="countryId">
+        /// The ID of the country where the driver operates. Only drivers whose associated country matches this ID (with a "CoverNow" work status) are included.
+        /// </param>
+        /// <param name="cityId">
+        /// (Optional) The ID of the city where the driver operates. Only drivers whose associated city matches this ID (with a "CoverNow" work status) are included.
+        /// </param>
+        /// <param name="date">
+        /// (Optional) The specific date on which the driver should be available. 
+        /// Drivers are included if they are marked as available all the time or if the provided date falls between their AvailableFrom and AvailableTo dates.
+        /// </param>
+        /// <returns>
+        /// A <see cref="DataResult{DriverDto}"/> containing the list of matching drivers, or null if the provided parameters are invalid or an error occurs.
+        /// </returns>
+        public async Task<DataResult<DriverDto>?> GetDriversByLocationAndDateAsync(
+            int countryId,
+            int? cityId = null,
+            DateTime? date = null)
+        {
+            // Validate parameters: countryId is required and must be > 0;
+            // if cityId is provided, it must also be > 0.
+            if (countryId < 1 || (cityId.HasValue && cityId < 1))
+            {
+                return null;
+            }
+
+            try
+            {
+                // Build the base query with required includes and no-tracking for performance.
+                var query = _unitOfWork.Repository<Driver>().Query()
+                    .Include(d => d.User)
+                    .Include(d => d.Country)
+                    .Include(d => d.Car)
+                        .ThenInclude(c => c.CarImages)
+                    .Include(d => d.DriverCities)
+                        .ThenInclude(dc => dc.City)
+                    .Include(d => d.DriverCountries)
+                        .ThenInclude(dc => dc.Country)
+                    .Include(d => d.DriverLanguages)
+                        .ThenInclude(dl => dl.Language)
+                    .AsNoTracking();
+
+                // Filter by country using the driver's associated countries and "CoverNow" status.
+                query = query.Where(d => d.DriverCountries
+                                         .Any(dc => dc.Country.Id == countryId && dc.WorkStatus == WorkStatus.CoverNow));
+
+                // If a city ID is provided, filter by driver's associated cities with "CoverNow" status.
+                if (cityId.HasValue)
+                {
+                    query = query.Where(d => d.DriverCities.Any(dc => dc.City.Id == cityId && dc.WorkStatus == WorkStatus.CoverNow));
+                }
+
+                // If a date is provided, include drivers available during that date or marked as available all time.
+                if (date.HasValue)
+                {
+                    query = query.Where(d =>
+                        (d.AvailableFrom.HasValue && d.AvailableFrom.Value <= date.Value &&
+                         d.AvailableTo.HasValue && d.AvailableTo.Value >= date.Value)
+                         || d.IsAvailableAllTime);
+                }
+                else
+                {
+                    query = query.Where(d => d.IsAvailableAllTime);
+                }
+                // Project the data into a DriverDto.
+                var drivers = await query.Select(driver => new DriverDto
+                {
+                    Id = driver.Id,
+                    WhatsAppNumber = driver.WhatsAppNumber,
+                    Nationality = driver.Country.Name ?? "Unknown",
+                    LicenseImageUrl = driver.LicenseImageUrl,
+                    YearsOfExperience = driver.YearsOfExperience,
+                    Bio = driver.Bio,
+                    PassportImageUrl = driver.PassportImageUrl,
+                    FirstName = driver.User.FirstName,
+                    LastName = driver.User.LastName,
+                    Email = driver.User.Email ?? string.Empty,
+                    PhoneNumber = driver.User.PhoneNumber,
+                    ProfileImageUrl = driver.ProfileImageUrl,
+                    HasCar = driver.CarId.HasValue,
+                    CarBrand = driver.Car.Brand.Name ?? "N/A",
+                    CarYear = driver.Car.Year,
+                    CarNumberOfSeats = driver.Car.NumberOfSeats,
+                    CarModel = driver.Car.Model.Name,
+                    CarColor = driver.Car.Color.Name,
+                    CarBodyType = driver.Car.BodyType.Type,
+                    CarFuelType = driver.Car.FuelType.Type,
+                    MainCarImageUrl = driver.Car.CarImages
+                                         .FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty,
+                    AddtionalCarImageUrls = driver.Car != null ?
+                        driver.Car.CarImages.Where(ci => !ci.IsMain).Select(ci => ci.ImageUrl).ToList() : new List<string>(),
+                    Status = driver.Status.ToString(),
+                    IsAvailableAllTime = driver.IsAvailableAllTime,
+                    AvailableFrom = driver.AvailableFrom,
+                    AvailableTo = driver.AvailableTo,
+                    PricePerHour = driver.PricePerHour,
+                    CitiesCoverNow = driver.DriverCities
+                                        .Where(x => x.WorkStatus == WorkStatus.CoverNow)
+                                        .Select(x => x.City.Name)
+                                        .ToList(),
+                    CitiesWorkedOn = driver.DriverCities
+                                        .Where(x => x.WorkStatus == WorkStatus.WorkedOn)
+                                        .Select(x => x.City.Name)
+                                        .ToList(),
+                    CountriesCoverNow = driver.DriverCountries
+                                        .Where(x => x.WorkStatus == WorkStatus.CoverNow)
+                                        .Select(x => x.Country.Name)
+                                        .ToList(),
+                    CountriesWorkedOn = driver.DriverCountries
+                                        .Where(x => x.WorkStatus == WorkStatus.WorkedOn)
+                                        .Select(x => x.Country.Name)
+                                        .ToList(),
+                    LanguagesSpoken = driver.DriverLanguages
+                                        .Select(x => x.Language.Name)
+                                        .ToList()
+                })
+                    .OrderBy(x=> x.AvailableFrom)
+                    .ToListAsync();
+
+                // Return the result with a fallback to an empty list if no drivers are found.
+                return new DataResult<DriverDto>
+                {
+                    Data = drivers.Any() ? drivers : new List<DriverDto>()
+                };
+            }
+            catch (Exception ex)
+            {
+                // Optionally log the exception (ex)
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a paginated list of drivers filtered by country, city, and optional availability date.
+        /// </summary>
+        /// <param name="countryId">
+        /// The unique identifier of the country to filter drivers.
+        /// This parameter is required and must be greater than 0.
+        /// </param>
+        /// <param name="cityId">
+        /// (Optional) The unique identifier of the city to filter drivers.
+        /// If provided, must be greater than 0.
+        /// </param>
+        /// <param name="date">
+        /// (Optional) The specific date when the driver should be available.
+        /// If provided, only drivers available on this date or marked as available all the time will be included.
+        /// </param>
+        /// <param name="page">
+        /// The page number for paginated results.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="pageSize">
+        /// The number of records per page.
+        /// Must be greater than 0.
+        /// </param>
+        /// <returns>
+        /// A <see cref="PaginatedResult{DriverDto}"/> containing paginated drivers that match the filtering criteria.
+        /// Returns an empty paginated list if no drivers match.
+        /// </returns>
+        public async Task<PaginatedResult<DriverDto>?> GetDriversByLocationAndDateWithPaginationAsync(
+            int countryId,
+            int? cityId = null,
+            DateTime? date = null,
+            int page = 1,
+            int pageSize = 10)
+        {
+            // Validate parameters: countryId is required and must be > 0;
+            // cityId, if provided, must also be > 0;
+            // page and pageSize must be greater than 0.
+            if (countryId < 1 || (cityId.HasValue && cityId < 1) || page < 1 || pageSize < 1)
+            {
+                return null;
+            }
+
+            try
+            {
+                // Build the base query with required includes and no-tracking for performance.
+                var query = _unitOfWork.Repository<Driver>().Query()
+                    .Include(d => d.User)
+                    .Include(d => d.Country)
+                    .Include(d => d.Car)
+                        .ThenInclude(c => c.CarImages)
+                    .Include(d => d.DriverCities)
+                        .ThenInclude(dc => dc.City)
+                    .Include(d => d.DriverCountries)
+                        .ThenInclude(dc => dc.Country)
+                    .Include(d => d.DriverLanguages)
+                        .ThenInclude(dl => dl.Language)
+                    .AsNoTracking();
+
+                // Filter by country using the driver's associated countries with "CoverNow" status.
+                query = query.Where(d => d.DriverCountries.Any(dc => dc.Country.Id == countryId && dc.WorkStatus == WorkStatus.CoverNow));
+
+                // If a city ID is provided, filter by driver's associated cities with "CoverNow" status.
+                if (cityId.HasValue)
+                {
+                    query = query.Where(d => d.DriverCities.Any(dc => dc.City.Id == cityId && dc.WorkStatus == WorkStatus.CoverNow));
+                }
+
+                // If a date is provided, include drivers available during that date or marked as available all time.
+                if (date.HasValue)
+                {
+                    query = query.Where(d =>
+                        (d.AvailableFrom.HasValue && d.AvailableFrom.Value <= date.Value &&
+                         d.AvailableTo.HasValue && d.AvailableTo.Value >= date.Value)
+                         || d.IsAvailableAllTime);
+                }
+                else
+                {
+                    query = query.Where(d => d.IsAvailableAllTime);
+                }
+
+                // Get total records count for pagination metadata
+                var totalRecords = await query.CountAsync();
+
+                // Apply pagination
+                var paginatedDrivers = await query
+                    .OrderBy(x => x.AvailableFrom)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(driver => new DriverDto
+                    {
+                        Id = driver.Id,
+                        WhatsAppNumber = driver.WhatsAppNumber,
+                        Nationality = driver.Country.Name ?? "Unknown",
+                        LicenseImageUrl = driver.LicenseImageUrl,
+                        YearsOfExperience = driver.YearsOfExperience,
+                        Bio = driver.Bio,
+                        PassportImageUrl = driver.PassportImageUrl,
+                        FirstName = driver.User.FirstName,
+                        LastName = driver.User.LastName,
+                        Email = driver.User.Email ?? string.Empty,
+                        PhoneNumber = driver.User.PhoneNumber,
+                        ProfileImageUrl = driver.ProfileImageUrl,
+                        HasCar = driver.CarId.HasValue,
+                        CarBrand = driver.Car.Brand.Name ?? "N/A",
+                        CarYear = driver.Car.Year,
+                        CarNumberOfSeats = driver.Car.NumberOfSeats,
+                        CarModel = driver.Car.Model.Name,
+                        CarColor = driver.Car.Color.Name,
+                        CarBodyType = driver.Car.BodyType.Type,
+                        CarFuelType = driver.Car.FuelType.Type,
+                        MainCarImageUrl = driver.Car.CarImages.FirstOrDefault(ci => ci.IsMain).ImageUrl ?? string.Empty,
+                        AddtionalCarImageUrls = driver.Car != null ?
+                            driver.Car.CarImages
+                                            .Where(ci => !ci.IsMain)
+                                            .Select(ci => ci.ImageUrl)
+                                            .ToList() : new List<string>(),
+                        Status = driver.Status.ToString(),
+                        IsAvailableAllTime = driver.IsAvailableAllTime,
+                        AvailableFrom = driver.AvailableFrom,
+                        AvailableTo = driver.AvailableTo,
+                        PricePerHour = driver.PricePerHour,
+                        CitiesCoverNow = driver.DriverCities
+                                            .Where(x => x.WorkStatus == WorkStatus.CoverNow)
+                                            .Select(x => x.City.Name)
+                                            .ToList(),
+                        CitiesWorkedOn = driver.DriverCities
+                                            .Where(x => x.WorkStatus == WorkStatus.WorkedOn)
+                                            .Select(x => x.City.Name)
+                                            .ToList(),
+                        CountriesCoverNow = driver.DriverCountries
+                                            .Where(x => x.WorkStatus == WorkStatus.CoverNow)
+                                            .Select(x => x.Country.Name)
+                                            .ToList(),
+                        CountriesWorkedOn = driver.DriverCountries
+                                            .Where(x => x.WorkStatus == WorkStatus.WorkedOn)
+                                            .Select(x => x.Country.Name)
+                                            .ToList(),
+                        LanguagesSpoken = driver.DriverLanguages
+                                            .Select(x => x.Language.Name)
+                                            .ToList()
+                    }).ToListAsync();
+
+                // Return paginated result with metadata
+                return new PaginatedResult<DriverDto>
+                {
+                    Data = paginatedDrivers.Any() ? paginatedDrivers : new List<DriverDto>(),
+                    PageNumber = page,
+                    PageSize = pageSize,
+                    TotalRecordsCount = totalRecords
+                };
+            }
+            catch (Exception ex)
             {
                 return null;
             }
@@ -504,7 +807,11 @@ namespace Mottrist.Service.Features.Drivers.Services
                         return carResult;
                     }
                 }
-
+                if (driverEntity.IsAvailableAllTime)
+                {
+                    driverEntity.AvailableFrom = null;
+                    driverEntity.AvailableTo = null;
+                }
                 // Add driver entity to the repository
                 await _unitOfWork.Repository<Driver>().AddAsync(driverEntity);
                 var saveDriverResult = await _unitOfWork.SaveChangesAsync();
@@ -680,7 +987,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// On success, returns <see cref="Result.Success()"/>.
         /// On failure, returns <see cref="Result.Failure(string)"/> containing error details.
         /// </returns>
-        private  async Task<Result> _AssignUserRoleAsync(ApplicationUser user, string role)
+        private async Task<Result> _AssignUserRoleAsync(ApplicationUser user, string role)
         {
             var roleResult = await _userManager.AddToRoleAsync(user, role);
             if (!roleResult.Succeeded)
@@ -852,6 +1159,17 @@ namespace Mottrist.Service.Features.Drivers.Services
                     return associationsResult;
                 }
 
+                if (existingDriver.IsAvailableAllTime)
+                {
+                    existingDriver.AvailableFrom = null;
+                    existingDriver.AvailableTo = null;
+                }
+
+                if (existingDriver.PricePerHour <= 0)
+                {
+                    existingDriver.PricePerHour = null;
+                }
+
                 // Step 5: Save updated driver details.
                 await _unitOfWork.Repository<Driver>().UpdateAsync(existingDriver);
                 var saveResult = await _unitOfWork.SaveChangesAsync();
@@ -875,6 +1193,104 @@ namespace Mottrist.Service.Features.Drivers.Services
                 // Roll back the transaction on any exception.
                 await _unitOfWork.RollbackAsync();
                 return Result.Failure($"Unexpected error occurred during driver update: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Updates the availability details of a specified driver.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver whose availability is being updated.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="availableFrom">
+        /// The date when the driver becomes available.
+        /// If null, the availability start date remains unchanged.
+        /// </param>
+        /// <param name="availableTo">
+        /// The date when the driver is no longer available.
+        /// If null, the availability end date remains unchanged.
+        /// </param>
+        /// <param name="availableAllTime">
+        /// Indicates whether the driver is available all the time.
+        /// If true, the availability dates may be ignored.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating whether the update was successful or if an error occurred.
+        /// </returns>
+        public async Task<Result> UpdateDriverAvailabilityAsync(
+            int driverId,
+            DateTime? availableFrom,
+            DateTime? availableTo,
+            bool availableAllTime)
+        {
+            // Validate driver ID
+            if (driverId < 1)
+                return Result.Failure("Invalid driver ID.");
+
+            try
+            {
+                // Retrieve the driver entity from the database
+                var driver = await _unitOfWork.Repository<Driver>().GetAsync(x => x.Id == driverId);
+                if (driver == null)
+                    return Result.Failure("Driver not found.");
+
+                // Update availability fields (ensuring only the date portion is stored)
+                driver.AvailableFrom = availableFrom?.Date;
+                driver.AvailableTo = availableTo?.Date;
+                driver.IsAvailableAllTime = availableAllTime;
+
+                // Save changes
+                await _unitOfWork.Repository<Driver>().UpdateAsync(driver);
+                var saveResult = await _unitOfWork.SaveChangesAsync();
+
+                return saveResult ?? Result.Failure("Failed to save changes.");
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Unexpected error occurred: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Updates the price per hour for a specified driver.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver whose pricing is being updated.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="newPricePerHour">
+        /// The new price per hour to set for the driver.
+        /// Must be greater than 0.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the update was successful or if an error occurred.
+        /// </returns>
+        public async Task<Result> UpdateDriverPriceAsync(int driverId, decimal newPricePerHour)
+        {
+            // Validate parameters
+            if (driverId < 1 || newPricePerHour <= 0)
+                return Result.Failure("Invalid driver ID or price.");
+
+            try
+            {
+                // Retrieve the driver from the database
+                var driver = await _unitOfWork.Repository<Driver>().GetAsync(x => x.Id == driverId);
+                if (driver == null)
+                    return Result.Failure("Driver not found.");
+
+                // Update the price per hour
+                driver.PricePerHour = newPricePerHour;
+
+                // Save changes
+                await _unitOfWork.Repository<Driver>().UpdateAsync(driver);
+                var saveResult = await _unitOfWork.SaveChangesAsync();
+
+                return saveResult ?? Result.Failure("Failed to save price update.");
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Unexpected error updating price: {ex.Message}");
             }
         }
 
@@ -1087,7 +1503,7 @@ namespace Mottrist.Service.Features.Drivers.Services
             {
                 if (existingDriver.CarId.HasValue)
                 {
-                    if(!driverDto.HasCar)
+                    if (!driverDto.HasCar)
                     {
                         // If the driver no longer has a car, delete the car and its images.
                         var deleteCarResult = await _carService.DeleteAsync(existingDriver.CarId.Value);

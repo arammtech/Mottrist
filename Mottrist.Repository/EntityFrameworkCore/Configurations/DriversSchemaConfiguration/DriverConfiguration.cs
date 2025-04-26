@@ -36,6 +36,23 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            //  Properties: Price 
+            builder.Property(d => d.PricePerHour)
+                .IsRequired(false);
+
+            //  Properties: Availability
+            builder.Property(d => d.AvailableFrom)
+                .IsRequired(false)
+                .HasColumnType("datetime"); 
+
+            builder.Property(d => d.AvailableTo)
+                .IsRequired(false)
+                .HasColumnType("datetime"); 
+
+            builder.Property(d => d.IsAvailableAllTime)
+                .IsRequired()
+                .HasDefaultValue(true); // Defaults to true
+
             // Relation with User
             builder.HasOne(d => d.User)
                 .WithMany()

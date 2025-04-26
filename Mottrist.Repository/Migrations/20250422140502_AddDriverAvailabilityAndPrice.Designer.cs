@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 
@@ -11,9 +12,11 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250422140502_AddDriverAvailabilityAndPrice")]
+    partial class AddDriverAvailabilityAndPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,22 +33,22 @@ namespace Mottrist.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("AvailableFrom")
-                        .HasColumnType("datetime");
+                    b.Property<bool>("AvailableAllTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
-                    b.Property<DateTime?>("AvailableTo")
-                        .HasColumnType("datetime");
+                    b.Property<DateOnly?>("AvailableFrom")
+                        .HasColumnType("DATE");
+
+                    b.Property<DateOnly?>("AvailableTo")
+                        .HasColumnType("DATE");
 
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CarId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsAvailableAllTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
 
                     b.Property<string>("LicenseImageUrl")
                         .IsRequired()
@@ -59,7 +62,7 @@ namespace Mottrist.Repository.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("PricePerHour")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("ProfileImageUrl")
                         .HasColumnType("nvarchar(max)");
