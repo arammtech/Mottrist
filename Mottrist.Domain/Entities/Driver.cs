@@ -1,4 +1,5 @@
 ﻿using Mottrist.Domain.Common;
+using Mottrist.Domain.Entities;
 using Mottrist.Domain.Entities.CarDetails;
 using Mottrist.Domain.Enums;
 using Mottrist.Domain.Identity;
@@ -46,6 +47,8 @@ public class Driver : BaseEntity
     public virtual ICollection<DriverCity> DriverCities { get; set; } = new List<DriverCity>();
     public virtual ICollection<DriverCountry> DriverCountries { get; set; } = new List<DriverCountry>();
     public virtual ICollection<DriverLanguage> DriverLanguages { get; set; } = new List<DriverLanguage>();
+    public virtual ICollection<DriverInteraction> DriverInteractions { get; set; } = new List<DriverInteraction>();
+
 
     #endregion
 }

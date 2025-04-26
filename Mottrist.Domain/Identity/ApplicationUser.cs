@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Mottrist.Domain.Entities;
 
 namespace Mottrist.Domain.Identity
 {
@@ -6,5 +7,7 @@ namespace Mottrist.Domain.Identity
 	{
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
+
+        public virtual ICollection<DriverInteraction> DriverInteractions { get; set; } = new List<DriverInteraction>();
     }
 }
