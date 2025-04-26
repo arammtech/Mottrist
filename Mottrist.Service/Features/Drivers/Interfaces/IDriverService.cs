@@ -291,6 +291,47 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         Task<DriverStatus?> GetDriverStatusAsync(int driverId);
 
         #endregion
+        #region Driver Interaction Operations
 
+        /// <summary>
+        /// Updates the like/dislike status for a driver by a logged-in user.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="userId">
+        /// The unique identifier of the user making the reaction.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="isLiked">
+        /// The reaction type: 
+        /// - `true` for Like.
+        /// - `false` for Dislike.
+        /// - `null` to remove the reaction.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the update was successful.
+        /// </returns>
+        Task<Result> LikeOrDislikeDriverAsync(int driverId, int userId, bool? isLiked);
+
+        /// <summary>
+        /// Records a user's first view of a driver, ensuring each user views a driver only once.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver being viewed.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="userId">
+        /// The unique identifier of the user viewing the driver.
+        /// Must be greater than 0.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating whether the view was successfully recorded 
+        /// or if the user has already viewed the driver.
+        /// </returns>
+        Task<Result> IncrementViewCountAsync(int driverId, int userId);
+
+        #endregion
     }
 }

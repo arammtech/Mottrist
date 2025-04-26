@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using static Mottrist.API.Response.ApiResponseHelper;
 using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Domain.Enums;
+using Mottrist.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Mottrist.Domain.Identity;
 
 namespace Mottrist.API.Controllers
 {
@@ -19,7 +22,7 @@ namespace Mottrist.API.Controllers
         /// Driver service instance for handling driver-related operations.
         /// </summary>
         private readonly IDriverService _driverService;
-
+        private readonly UserManager<ApplicationUser> _userManager;
         /// <summary>
         /// Initializes a new instance of the <see cref="DriversController"/> class.
         /// </summary>
@@ -27,8 +30,9 @@ namespace Mottrist.API.Controllers
         /// <remarks>
         /// The driver service is injected using dependency injection.
         /// </remarks>
-        public DriversController(IDriverService driverService)
+        public DriversController(IDriverService driverService, UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _driverService = driverService ?? throw new ArgumentNullException(nameof(driverService));
         }
 
@@ -49,20 +53,21 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            if (id <= 0)
+            if (id < 1)
             {
                 return BadRequestResponse("InvalidId", "The provided driver ID is invalid.");
             }
 
             try
             {
-                // Attempt to retrieve the driver details by the specified ID.
-                var driver = await _driverService.GetByIdAsync(id);
+                bool driverExits = await _driverService.DoesDriverExistByIdAsync(id);
 
-                if (driver == null)
+                if(!driverExits)
                 {
                     return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
                 }
+
+                var driver = await _driverService.GetByIdAsync(id);
 
                 return SuccessResponse(driver, "Driver retrieved successfully.");
             }
@@ -613,6 +618,7 @@ namespace Mottrist.API.Controllers
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
             }
         }
+
         /// <summary>
         /// Updates the status of a specified driver.
         /// </summary>
@@ -752,6 +758,7 @@ namespace Mottrist.API.Controllers
             try
             {
                 var isFound = await _driverService.DoesDriverExistByIdAsync(driverId);
+
                 if (!isFound)
                 {
                     return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
@@ -759,17 +766,130 @@ namespace Mottrist.API.Controllers
 
                 var result = await _driverService.UpdateDriverPriceAsync(driverId, newPricePerHour);
 
-
                 return result.IsSuccess
                     ? SuccessResponse("Driver price updated successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UpdateError", "An error occurred during update.");
-
-
             }
             catch (Exception ex)
             {
                 return ApiResponseHelper.StatusCodeResponse(StatusCodes.Status500InternalServerError, "ServerError", $"Unexpected error: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Updates the like/dislike status for a driver by a logged-in user.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="userId">
+        /// The unique identifier of the user making the reaction.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="isLiked">
+        /// The reaction type: 
+        /// - `true` for Like.
+        /// - `false` for Dislike.
+        /// - `null` to remove the reaction.
+        /// </param>
+        /// <returns>
+        /// - HTTP 200 OK if the reaction is updated successfully.
+        /// - HTTP 400 Bad Request if input parameters are invalid.
+        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// </returns>
+        [HttpPost("like-dislike/{driverId:int}")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> LikeOrDislikeDriverAsync(
+            [FromRoute] int driverId,
+            [FromQuery] int userId,
+            [FromQuery] bool? isLiked)
+        {
+            if (driverId < 1 || userId < 1)
+                return BadRequestResponse("InvalidRequest", "Driver ID and User ID must be greater than 0.");
+
+            try
+            {
+                // Ensure the driver exists
+                bool driverExists = await _driverService.DoesDriverExistByIdAsync(driverId);
+                if (!driverExists)
+                    return NotFoundResponse("DriverNotFound", "The specified driver does not exist.");
+
+                // Ensure the user exists
+                var userExists = await _userManager.FindByIdAsync(userId.ToString());
+
+                if (userExists is null)
+                    return NotFoundResponse("UserNotFound", "The specified user does not exist.");
+
+                var result = await _driverService.LikeOrDislikeDriverAsync(driverId, userId, isLiked);
+
+                return result.IsSuccess
+                    ? SuccessResponse("Reaction updated successfully.")
+                    : BadRequestResponse("UpdateFailed", result.Errors.FirstOrDefault() ?? string.Empty);
+            }
+            catch (Exception ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ServerError", $"Unexpected error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Records a user's first view of a driver, ensuring each user views a driver only once.
+        /// Validates that both driver and user exist before registering the view.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver being viewed.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="userId">
+        /// The unique identifier of the user viewing the driver.
+        /// Must be greater than 0.
+        /// </param>
+        /// <returns>
+        /// - HTTP 200 OK if the view is recorded successfully.
+        /// - HTTP 400 Bad Request if input parameters are invalid.
+        /// - HTTP 404 Not Found if the driver or user does not exist.
+        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// </returns>
+        [HttpPost("increment-view/{driverId:int}")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> IncrementViewCountAsync(
+            [FromRoute] int driverId,
+            [FromQuery] int userId)
+        {
+            // Validate input parameters
+            if (driverId < 1 || userId < 1)
+                return BadRequestResponse("InvalidRequest", "Driver ID and User ID must be greater than 0.");
+
+            try
+            {
+                // Ensure the driver exists
+                bool driverExists = await _driverService.DoesDriverExistByIdAsync(driverId);
+                if (!driverExists)
+                    return NotFoundResponse("DriverNotFound", "The specified driver does not exist.");
+
+                // Ensure the user exists
+                var userExists = await _userManager.FindByIdAsync(userId.ToString());
+
+                if (userExists is null)
+                    return NotFoundResponse("UserNotFound", "The specified user does not exist.");
+
+                var result = await _driverService.IncrementViewCountAsync(driverId, userId);
+
+                return result.IsSuccess 
+                    ? SuccessResponse("View count recorded successfully.") 
+                    : BadRequestResponse("UpdateFailed", result?.Errors?.FirstOrDefault() ?? string.Empty);
+            }
+            catch (Exception ex) 
+            { 
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ServerError", $"Unexpected error: {ex.Message}"); 
+            }
+          
         }
 
         /// <summary>
@@ -836,6 +956,7 @@ namespace Mottrist.API.Controllers
             try
             {
                 var dataResult = await _driverService.GetAllDriverFormFields();
+
                 if (dataResult == null)
                     return StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
 

@@ -31,6 +31,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Context
         public virtual DbSet<DriverCity> DriverCities { get; set; } = null!;
         public virtual DbSet<DriverCountry> DriverCountries { get; set; } = null!;
         public virtual DbSet<DriverLanguage> DriverLanguages { get; set; } = null!;
+        public virtual DbSet<DriverInteraction> DriverInteractions { get; set; }
         public virtual DbSet<Language> Languages { get; set; } = null!;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

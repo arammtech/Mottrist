@@ -35,4 +35,5 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
             builder.ToTable("DriverCities", schema: "Drivers");
         }
     }
+
 }
