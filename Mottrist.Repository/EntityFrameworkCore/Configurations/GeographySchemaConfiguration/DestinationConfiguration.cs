@@ -21,7 +21,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.GeographySchema
             builder.Property(c => c.Description)
                    .IsRequired(false);
 
-            builder.Property(c => c.Image)
+            builder.Property(c => c.ImageUrl)
                    .IsRequired(false);
 
 
