@@ -5,7 +5,7 @@ namespace Mottrist.Service.Features.Destinations.DTOs
     /// <summary>
     /// Data Transfer Object for Destination operations, encapsulating essential information.
     /// </summary>
-    public class DestinationDTO
+    public class AddDestinationDTO
     {
         /// <summary>
         /// The unique identifier of the destination.
@@ -18,9 +18,9 @@ namespace Mottrist.Service.Features.Destinations.DTOs
         public string Name { get; set; } = null!;
 
         /// <summary>
-        /// The Name of the city where the destination is located.
+        /// The ID of the city where the destination is located.
         /// </summary>
-        public string? CityName { get; set; }
+        public int CityId { get; set; }
 
         /// <summary>
         /// The type/category of the destination (e.g., Tourist Spot, Historical Site).

@@ -188,7 +188,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddAsync([FromForm] DestinationDTO destinationDto)
+        public async Task<IActionResult> AddAsync([FromForm] AddDestinationDTO destinationDto)
         {
             if (!ModelState.IsValid)
             {
@@ -234,7 +234,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] DestinationDTO destinationDto)
+        public async Task<IActionResult> UpdateAsync(int id, [FromForm] AddDestinationDTO destinationDto)
         {
             // Validate the input model
             if (!ModelState.IsValid)
