@@ -50,7 +50,7 @@ namespace Mottrist.Service.Interfaces
         /// <returns>
         /// A task representing the asynchronous operation, indicating success or failure.
         /// </returns>
-        Task<Result> AddAsync(DestinationDTO destinationDto);
+        Task<Result> AddAsync(AddDestinationDTO destinationDto);
 
         /// <summary>
         /// Updates an existing destination.
@@ -59,7 +59,7 @@ namespace Mottrist.Service.Interfaces
         /// <returns>
         /// A task representing the asynchronous operation, indicating success or failure.
         /// </returns>
-        Task<Result> UpdateAsync(DestinationDTO destinationDto);
+        Task<Result> UpdateAsync(AddDestinationDTO destinationDto);
 
         /// <summary>
         /// Deletes a destination by its unique identifier.

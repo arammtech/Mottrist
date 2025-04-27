@@ -56,7 +56,7 @@ namespace Mottrist.Service.Features.DestinationServices
                     {
                         Id = dest.Id,
                         Name = dest.Name,
-                        CityId = dest.CityId,
+                        CityName = dest.City.Name,
                         Type = dest.Type,
                         ImageUrl = dest.ImageUrl,
                         Description = dest.Description
@@ -70,10 +70,7 @@ namespace Mottrist.Service.Features.DestinationServices
             }
             catch (Exception)
             {
-                return new DataResult<DestinationDTO>
-                {
-                    Data = Enumerable.Empty<DestinationDTO>()
-                };
+                return null;
             }
         }
 
@@ -120,7 +117,7 @@ namespace Mottrist.Service.Features.DestinationServices
                     {
                         Id = dest.Id,
                         Name = dest.Name,
-                        CityId = dest.CityId,
+                        CityName = dest.City.Name,
                         Type = dest.Type,
                         ImageUrl = dest.ImageUrl,
                         Description = dest.Description
@@ -162,7 +159,7 @@ namespace Mottrist.Service.Features.DestinationServices
                 {
                     Id = dest.Id,
                     Name = dest.Name,
-                    CityId = dest.CityId,
+                    CityName = dest.City.Name,
                     Type = dest.Type,
                     ImageUrl = dest.ImageUrl,
                     Description = dest.Description
@@ -181,7 +178,7 @@ namespace Mottrist.Service.Features.DestinationServices
         /// <returns>
         /// A <see cref="Result"/> indicating success or failure.
         /// </returns>
-        public async Task<Result> AddAsync(DestinationDTO destinationDto)
+        public async Task<Result> AddAsync(AddDestinationDTO destinationDto)
         {
             if (destinationDto == null)
                 return Result.Failure("Invalid destination object.");
@@ -226,7 +223,7 @@ namespace Mottrist.Service.Features.DestinationServices
         /// <returns>
         /// A <see cref="Result"/> indicating success or failure.
         /// </returns>
-        public async Task<Result> UpdateAsync(DestinationDTO destinationDto)
+        public async Task<Result> UpdateAsync(AddDestinationDTO destinationDto)
         {
             if (destinationDto == null)
                 return Result.Failure("Invalid destination object.");
