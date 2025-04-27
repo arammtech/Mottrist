@@ -17,7 +17,7 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public string? PhoneNumber { get; set; }
         public int NationalityId { get; set; }
         public string? Bio { get; set; }
-        
+
         // Images
         public string? LicenseImageUrl { get; set; } = string.Empty;
         public string? PassportImageUrl { get; set; } = string.Empty;
@@ -25,6 +25,14 @@ namespace Mottrist.Service.Features.Drivers.DTOs
 
         // Professional Information
         public byte YearsOfExperience { get; set; }
+
+        // Pricing
+        public decimal? PricePerHour { get; set; } // Driver's hourly rate
+
+        // Availability (Storing Only Date)
+        public DateTime? AvailableFrom { get; set; } // When the driver starts being available
+        public DateTime? AvailableTo { get; set; }   // When the driver's availability ends
+        public bool IsAvailableAllTime { get; set; } // If true, driver ignores date restrictions
 
         // Car Details
         public bool HasCar { get; set; } = false;
@@ -44,6 +52,5 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public List<int> CountriesWorkedOn { get; set; } = new List<int>();
         public List<int> CountriesCoverNow { get; set; } = new List<int>();
         public List<int> LanguagesSpoken { get; set; } = new List<int>();
-
     }
 }

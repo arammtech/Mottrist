@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 
@@ -11,9 +12,11 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250426175653_add-DriverIneractions")]
+    partial class addDriverIneractions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -916,39 +919,6 @@ namespace Mottrist.Repository.Migrations
                             Id = 20,
                             Name = "X6"
                         });
-                });
-
-            modelBuilder.Entity("Mottrist.Domain.Entities.Destination", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Type")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CityId");
-
-                    b.ToTable("Destinations", "Geography");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.Entities.DriverInteraction", b =>
@@ -2751,17 +2721,6 @@ namespace Mottrist.Repository.Migrations
                     b.Navigation("Car");
                 });
 
-            modelBuilder.Entity("Mottrist.Domain.Entities.Destination", b =>
-                {
-                    b.HasOne("Mottrist.Domain.LookupEntities.City", "City")
-                        .WithMany("Destinations")
-                        .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("City");
-                });
-
             modelBuilder.Entity("Mottrist.Domain.Entities.DriverInteraction", b =>
                 {
                     b.HasOne("Driver", "Driver")
@@ -2891,8 +2850,6 @@ namespace Mottrist.Repository.Migrations
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.City", b =>
                 {
-                    b.Navigation("Destinations");
-
                     b.Navigation("DriverCities");
                 });
 
