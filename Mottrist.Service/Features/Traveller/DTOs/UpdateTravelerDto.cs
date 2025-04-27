@@ -28,6 +28,11 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         public int NationalityId { get; set; }
 
         /// <summary>
+        /// Traveler origin city
+        /// </summary>
+        public int CityId { get; set; }
+
+        /// <summary>
         /// First name of the traveler (required, min 2 chars, max 50 chars).
         /// </summary>
         [Required(ErrorMessage = "First name is required.")]
@@ -56,5 +61,11 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         /// Profile image as file
         /// </summary>
         public IFormFile? ProfileImage { get; set; }
+
+
+        /// <summary>
+        /// Preferred LanguageId to speck with
+        /// </summary>
+        public int PreferredLanguageId { get; set; }
     }
 }
