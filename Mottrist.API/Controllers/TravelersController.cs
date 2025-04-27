@@ -78,10 +78,6 @@ namespace Mottrist.API.Controllers
             {
                 var travelerDtos = await _travelerService.GetAllAsync();
 
-                if (travelerDtos?.DataRecordsCount == 0 && travelerDtos?.Data != null)
-                    return NoContentResponse("There is no travelers");
-
-
                 return travelerDtos != null ? SuccessResponse<DataResult<TravelerDto>>(travelerDtos, "Travelers retrieved successfully.")
                        : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NO_DATA_FOUND", "No data found.", "There is no data found for travelers.");
             }
@@ -161,9 +157,6 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                if (travelerDto == null)
-                    return BadRequestResponse("DATA_INVALID", "Traveler data is invalid.", "AddTravelerDto is null.");
-
                 var result = await _travelerService.AddAsync(travelerDto);
 
                 if (result.IsSuccess)
@@ -215,9 +208,6 @@ namespace Mottrist.API.Controllers
             {
                 if (travelerDto.Id != id)
                     return BadRequestResponse("ACCESS_DEINED", "Invalid Id to change data.", $"Not allowed to change Traveler's Id value which is {id}");
-
-                if (travelerDto == null)
-                    return BadRequestResponse("DATA_INVALID", "Traveler data is invalid.", "UpdateTravelerDto is null.");
 
                 var result = await _travelerService.UpdateAsync(travelerDto);
 

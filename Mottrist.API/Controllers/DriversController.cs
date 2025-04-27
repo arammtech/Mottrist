@@ -59,14 +59,10 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                bool driverExits = await _driverService.DoesDriverExistByIdAsync(id);
-
-                if(!driverExits)
-                {
-                    return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
-                }
-
                 var driver = await _driverService.GetByIdAsync(id);
+
+                if(driver is null)
+                    return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
 
                 return SuccessResponse(driver, "Driver retrieved successfully.");
             }
@@ -100,12 +96,6 @@ namespace Mottrist.API.Controllers
             try
             {
                 var dataResult = await _driverService.GetAllAsync();
-
-                // If no data is found, return a NoContent response.
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No data content available.");
-                }
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
@@ -157,12 +147,6 @@ namespace Mottrist.API.Controllers
 
                 var result = await _driverService.GetAllWithPaginationAsync(page, pageSize);
 
-                // If no drivers are found, return a NoContent response.
-                if (result?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No drivers found for the specified parameters.");
-                }
-
                 return result != null
                      ? SuccessResponse(result, "Paginated drivers retrieved successfully.")
                      : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error:");
@@ -205,11 +189,6 @@ namespace Mottrist.API.Controllers
             {
                 // Retrieve drivers filtering by country only.
                 var dataResult = await _driverService.GetDriversByLocationAndDateAsync(countryId);
-
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No drivers found for the specified country.");
-                }
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
@@ -254,11 +233,6 @@ namespace Mottrist.API.Controllers
             {
                 // Retrieve drivers filtering by country and city.
                 var dataResult = await _driverService.GetDriversByLocationAndDateAsync(countryId, cityId);
-
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No drivers found for the specified country and city.");
-                }
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")

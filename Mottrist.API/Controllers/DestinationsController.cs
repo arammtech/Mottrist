@@ -31,7 +31,7 @@ namespace Mottrist.API.Controllers
         /// </remarks>
         public DestinationController(IDestinationService destinationService)
         {
-            _destinationService = destinationService ?? throw new ArgumentNullException(nameof(destinationService));
+            _destinationService = destinationService;
         }
 
         /// <summary>
@@ -59,14 +59,10 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                bool destinationExists = await _destinationService.DoesDestinationExistByIdAsync(id);
-
-                if (!destinationExists)
-                {
-                    return NotFoundResponse("DestinationNotFound", "No destination found with the provided ID.");
-                }
-
                 var destination = await _destinationService.GetByIdAsync(id);
+
+                if (destination is null)
+                    return NotFoundResponse("DestinationNotFound", "No destination found with the provided ID.");
 
                 return SuccessResponse(destination, "Destination retrieved successfully.");
             }
@@ -97,11 +93,6 @@ namespace Mottrist.API.Controllers
             try
             {
                 var dataResult = await _destinationService.GetAllAsync();
-
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No data content available.");
-                }
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Destinations retrieved successfully.")
@@ -152,12 +143,6 @@ namespace Mottrist.API.Controllers
                 }
 
                 var result = await _destinationService.GetAllWithPaginationAsync(page, pageSize);
-
-                // If no destinations are found, return a NoContent response.
-                if (result?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No destinations found for the specified parameters.");
-                }
 
                 return result != null
                     ? SuccessResponse(result, "Paginated destinations retrieved successfully.")
@@ -255,13 +240,6 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                bool isFound = await _destinationService.DoesDestinationExistByIdAsync(id);
-
-                if (!isFound)
-                {
-                    return NotFoundResponse("DestinationNotFound", "No destination found with the provided ID.");
-                }
-
                 // Set the destination id based on the route parameter.
                 destinationDto.Id = id;
                 var result = await _destinationService.UpdateAsync(destinationDto);
@@ -304,13 +282,6 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                bool isFound = await _destinationService.DoesDestinationExistByIdAsync(id);
-
-                if (!isFound)
-                {
-                    return NotFoundResponse("DestinationNotFound", "No destination found with the provided ID.");
-                }
-
                 var result = await _destinationService.DeleteAsync(id);
 
                 return result.IsSuccess

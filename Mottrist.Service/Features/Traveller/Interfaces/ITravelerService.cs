@@ -17,7 +17,7 @@ namespace Mottrist.Service.Features.Traveller.Interfaces
         /// </summary>
         /// <param name="travelerId">The ID of the traveler.</param>
         /// <returns>The traveler details if found.</returns>
-        Task<TravelerDto>? GetByIdAsync(int travelerId);
+        Task<TravelerDto?> GetByIdAsync(int travelerId);
 
         /// <summary>
         /// Retrieves a traveler based on a specified filter.
@@ -31,14 +31,14 @@ namespace Mottrist.Service.Features.Traveller.Interfaces
         /// </summary>
         /// <param name="filter">Optional filter for retrieving travelers.</param>
         /// <returns>List of travelers.</returns>
-        IEnumerable<TravelerDto>? GetAll(Expression<Func<Traveler, bool>>? filter = null);
+        IEnumerable<TravelerDto?> GetAll(Expression<Func<Traveler, bool>>? filter = null);
 
         /// <summary>
         /// Retrieves all travelers asynchronously based on an optional filter.
         /// </summary>
         /// <param name="filter">Optional filter for retrieving travelers.</param>
         /// <returns>Data result containing travelers.</returns>
-        Task<DataResult<TravelerDto>>? GetAllAsync(Expression<Func<Traveler, bool>>? filter = null);
+        Task<DataResult<TravelerDto>?> GetAllAsync(Expression<Func<Traveler, bool>>? filter = null);
 
         /// <summary>
         /// Retrieves all travelers with pagination support.
@@ -47,7 +47,7 @@ namespace Mottrist.Service.Features.Traveller.Interfaces
         /// <param name="pageSize">Number of records per page.</param>
         /// <param name="filter">Optional filter for retrieving travelers.</param>
         /// <returns>Paginated result of travelers.</returns>
-        Task<PaginatedResult<TravelerDto>>? GetAllWithPaginationAsync(
+        Task<PaginatedResult<TravelerDto>?> GetAllWithPaginationAsync(
          int page,
          int pageSize = 10,
          Expression<Func<Traveler, bool>>? filter = null);

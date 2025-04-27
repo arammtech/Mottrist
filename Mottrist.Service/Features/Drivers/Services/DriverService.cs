@@ -518,7 +518,7 @@ namespace Mottrist.Service.Features.Drivers.Services
             try
             {
                 // Build the base query with required includes and no-tracking for performance.
-                var query = _unitOfWork.Repository<Driver>().Query()
+                var query = _unitOfWork.Repository<Driver>().Table
                     .Include(d => d.User)
                     .Include(d => d.Country)
                     .Include(d => d.Car)

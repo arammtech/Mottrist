@@ -74,7 +74,6 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             applicationUser.Email = addTravelerDto.Email;
             applicationUser.UserName = addTravelerDto.Email;
             applicationUser.PhoneNumber = addTravelerDto.PhoneNumber;
-            applicationUser.PasswordHash = addTravelerDto.Password;
         }
 
         /// <summary>

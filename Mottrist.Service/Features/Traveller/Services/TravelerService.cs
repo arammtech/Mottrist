@@ -58,7 +58,7 @@ namespace Mottrist.Service.Features.Traveller.Services
         /// <returns>
         /// A <see cref="DataResult{GetTravelerDto}"/> containing a collection of travelers if successful; otherwise, null.
         /// </returns>
-        public async Task<DataResult<TravelerDto>>? GetAllAsync(Expression<Func<Traveler, bool>>? filter = null)
+        public async Task<DataResult<TravelerDto>?> GetAllAsync(Expression<Func<Traveler, bool>>? filter = null)
         {
             try
             {
@@ -149,7 +149,7 @@ namespace Mottrist.Service.Features.Traveller.Services
         /// <returns>
         /// A <see cref="TravelerDto"/> containing the traveler data if found; otherwise, null.
         /// </returns>
-        public async Task<TravelerDto>? GetByIdAsync(int travelerId)
+        public async Task<TravelerDto?> GetByIdAsync(int travelerId)
         {
             try
             {
@@ -194,12 +194,12 @@ namespace Mottrist.Service.Features.Traveller.Services
 
                 TravelerMapper.Map(travelerDto, user);
 
-                var addUserResult = await _userManager.CreateAsync(user, user.PasswordHash);
+                var addUserResult = await _userManager.CreateAsync(user, travelerDto.Password);
 
                 if (!addUserResult.Succeeded)
                 {
                     await _unitOfWork.RollbackAsync();
-                    Result.Failure("Failed to save the traveler to the database.");
+                    return Result.Failure("Failed to save the traveler to the database.");
                 }
 
                 // Assign role to user
