@@ -95,7 +95,7 @@ namespace Mottrist.API.Controllers
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
-                    : NoContentResponse("No drivers found ");
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
             }
             catch (Exception ex)
             {
@@ -141,7 +141,7 @@ namespace Mottrist.API.Controllers
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
-                    : NoContentResponse("No drivers found ");
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
             }
             catch (Exception ex)
             {
@@ -180,7 +180,7 @@ namespace Mottrist.API.Controllers
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
-                    : NoContentResponse("No drivers found ");
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
             }
             catch (Exception ex)
             {
@@ -224,7 +224,7 @@ namespace Mottrist.API.Controllers
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
-                    : NoContentResponse("No drivers found ");
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
             }
             catch (Exception ex)
             {
@@ -275,7 +275,7 @@ namespace Mottrist.API.Controllers
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
-                    : NoContentResponse("No drivers found");
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
             }
             catch (Exception ex)
             {
@@ -335,7 +335,7 @@ namespace Mottrist.API.Controllers
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
-                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
+                    : NoContentResponse("No drivers found ");
             }
             catch (Exception ex)
             {
@@ -462,7 +462,9 @@ namespace Mottrist.API.Controllers
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
+
             }
+
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
@@ -555,7 +557,9 @@ namespace Mottrist.API.Controllers
             }
 
             try
-            {                  
+            {
+    
+                
                 // Set the driver id based on the route parameter.
                 driverDto.Id = id;
                 var result = await _driverService.UpdateAsync(driverDto);
