@@ -8,6 +8,7 @@ using Mottrist.Service.Features.General;
 using Mottrist.Service.Features.Destinations.DTOs;
 using Microsoft.EntityFrameworkCore;
 using static Mottrist.Utilities.Global.GlobalFunctions;
+using Mottrist.Service.Features.Traveller.DTOs;
 
 namespace Mottrist.Service.Features.DestinationServices
 {
@@ -174,7 +175,6 @@ namespace Mottrist.Service.Features.DestinationServices
                 return null;
             }
         }
-
         /// <summary>
         /// Adds a new destination to the database.
         /// </summary>
@@ -184,17 +184,13 @@ namespace Mottrist.Service.Features.DestinationServices
         /// </returns>
         public async Task<Result> AddAsync(AddDestinationDTO destinationDto)
         {
+            // Validate input DTO
             if (destinationDto == null)
                 return Result.Failure("Invalid destination object.");
 
             try
             {
-                if(destinationDto.Image != null)
-                {
-                    var savedImageUrl = await SaveImageAsync(destinationDto.Image, "destinations");
-                    destinationDto.ImageUrl = savedImageUrl;
-                }
-
+                // Create destination entity
                 var destination = new Destination
                 {
                     Name = destinationDto.Name,
@@ -203,20 +199,46 @@ namespace Mottrist.Service.Features.DestinationServices
                     ImageUrl = destinationDto.ImageUrl,
                     Description = destinationDto.Description
                 };
-                destination.Id = 0;
-                await _unitOfWork.Repository<Destination>().AddAsync(destination);
 
+                // Add destination to repository
+                await _unitOfWork.Repository<Destination>().AddAsync(destination);
                 var saveResult = await _unitOfWork.SaveChangesAsync();
 
                 if (destination.Id <= 0 || !saveResult.IsSuccess)
                     return Result.Failure("Failed to save destination.");
 
+                #region Image Handling
+
+                if (destinationDto.Image != null)
+                {
+                    var savedImageUrl = await SaveImageAsync(destinationDto.Image, $"destinations/{destination.Id}");
+
+                    // Ensure the image was saved successfully before updating
+                    if (!string.IsNullOrEmpty(savedImageUrl))
+                    {
+                        destination.ImageUrl = savedImageUrl;
+                        _unitOfWork.Repository<Destination>().Update(destination);
+
+                        saveResult = await _unitOfWork.SaveChangesAsync();
+                        if (!saveResult.IsSuccess)
+                        {
+                            await _unitOfWork.RollbackAsync();
+                            return Result.Failure("Failed to add the destination due to image update failure.");
+                        }
+                    }
+                }
+
+                #endregion
+
+                // Assign the generated ID and updated image URL back to DTO
                 destinationDto.Id = destination.Id;
+                destinationDto.ImageUrl = destination.ImageUrl;
+
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                return Result.Failure($"Error creating destination: {ex.Message}");
+                return Result.Failure($"Unexpected error while creating destination: {ex.Message}");
             }
         }
 
@@ -229,28 +251,46 @@ namespace Mottrist.Service.Features.DestinationServices
         /// </returns>
         public async Task<Result> UpdateAsync(AddDestinationDTO destinationDto)
         {
+            // Validate input DTO
             if (destinationDto == null)
                 return Result.Failure("Invalid destination object.");
 
             try
             {
                 var destination = await _unitOfWork.Repository<Destination>().GetAsync(d => d.Id == destinationDto.Id);
-                if (destination == null) return Result.Failure("Destination not found.");
+                if (destination == null)
+                    return Result.Failure("Destination not found.");
 
+                // Update basic destination fields
                 destination.Name = destinationDto.Name;
                 destination.CityId = destinationDto.CityId;
                 destination.Type = destinationDto.Type;
-                destination.ImageUrl = destinationDto.ImageUrl;
                 destination.Description = destinationDto.Description;
 
-                await _unitOfWork.Repository<Destination>().UpdateAsync(destination);
-               var result = await _unitOfWork.SaveChangesAsync();
+                #region Handle Image Update
+
+                if (!string.IsNullOrEmpty(destinationDto.ImageUrl) && destinationDto.Image != null)
+                {
+        
+                        string? oldImageUrl = destination.ImageUrl;
+                        destinationDto.ImageUrl = await ReplaceImageAsync(destinationDto.Image, $"destinations/{destinationDto.Id}", oldImageUrl);
+                    
+                }
+
+                destination.ImageUrl = destinationDto.ImageUrl;
+
+                #endregion
+
+                // Perform update in repository
+                _unitOfWork.Repository<Destination>().Update(destination);
+                var result = await _unitOfWork.SaveChangesAsync();
 
                 return result;
+                   
             }
             catch (Exception ex)
             {
-                return Result.Failure($"Error updating destination: {ex.Message}");
+                return Result.Failure($"Unexpected error while updating destination: {ex.Message}");
             }
         }
 
