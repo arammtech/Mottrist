@@ -32,7 +32,7 @@ namespace Mottrist.API.Controllers
         public DriversController(IDriverService driverService, UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
-            _driverService = driverService ?? throw new ArgumentNullException(nameof(driverService));
+            _driverService = driverService;
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if pagination parameters are invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
-        [HttpGet("all/page/{page:int}/size/{pageSize:int}", Name = "GetAllDriversWithPaginationAsync")]
+        [HttpGet("all/paged", Name = "GetAllDriversWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -178,7 +178,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetDriversByCountryAsync(int countryId)
+        public async Task<IActionResult> GetByCountryAsync(int countryId)
         {
             if (countryId < 1)
             {
@@ -188,7 +188,7 @@ namespace Mottrist.API.Controllers
             try
             {
                 // Retrieve drivers filtering by country only.
-                var dataResult = await _driverService.GetDriversByLocationAndDateAsync(countryId);
+                var dataResult = await _driverService.GetByCountryAsync(countryId);
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
@@ -217,12 +217,12 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the country or city ID is invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
-        [HttpGet("by-country/{countryId:int}/city/", Name = "GetDriversByCountryAndCityAsync")]
+        [HttpGet("by-country/{countryId:int}/city/{cityId:int}", Name = "GetDriversByCountryAndCityAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetDriversByCountryAndCityAsync( int countryId, int cityId)
+        public async Task<IActionResult> GetByCountryAndCityAsync( int countryId, int cityId)
         {
             if (countryId < 1 || cityId < 1)
             {
@@ -232,7 +232,7 @@ namespace Mottrist.API.Controllers
             try
             {
                 // Retrieve drivers filtering by country and city.
-                var dataResult = await _driverService.GetDriversByLocationAndDateAsync(countryId, cityId);
+                var dataResult = await _driverService.GetByCountryAndCityAsync(countryId, cityId);
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
@@ -265,15 +265,15 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the country or city ID is invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
-        [HttpGet("by-country/{countryId:int}/city/{cityId:int}/date/{date:datetime}", Name = "GetDriversByCountryCityAndDateAsync")]
+        [HttpGet("by-country/{countryId:int}/city/{cityId:int}/date", Name = "GetDriversByCountryCityAndDateAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetDriversByCountryCityAndDateAsync(
-            [FromRoute] int countryId,
-            [FromRoute] int cityId,
-            [FromRoute] DateTime date)
+        public async Task<IActionResult> GetByCountryCityAndDateAsync(
+            int countryId,
+             int cityId,
+             DateTime date)
         {
             if (countryId < 1 || cityId < 1)
             {
@@ -283,12 +283,7 @@ namespace Mottrist.API.Controllers
             try
             {
                 // Retrieve drivers filtering by country, city, and date.
-                var dataResult = await _driverService.GetDriversByLocationAndDateAsync(countryId, cityId, date);
-
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No drivers found for the specified country, city, and date.");
-                }
+                var dataResult = await _driverService.GetByCountryCityAndDateAsync(countryId, cityId, date);
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
@@ -300,60 +295,26 @@ namespace Mottrist.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Retrieves a paginated list of drivers filtered by country, city, and availability date.
-        /// </summary>
-        /// <param name="countryId">
-        /// The unique identifier of the country to filter drivers.
-        /// This parameter is required and must be greater than 0.
-        /// </param>
-        /// <param name="cityId">
-        /// The unique identifier of the city to filter drivers.
-        /// This parameter is required and must be greater than 0.
-        /// </param>
-        /// <param name="date">
-        /// The specific date when the driver should be available.
-        /// Only drivers available on this date or marked as available all the time will be included.
-        /// </param>
-        /// <param name="page">
-        /// The page number for paginated results.
-        /// Must be greater than 0. Defaults to 1.
-        /// </param>
-        /// <param name="pageSize">
-        /// The number of records per page.
-        /// Must be greater than 0. Defaults to 10.
-        /// </param>
-        /// <returns>
-        /// - HTTP 200 OK with a paginated list of matching drivers.
-        /// - HTTP 204 No Content if no drivers are found.
-        /// - HTTP 400 Bad Request if input parameters are invalid.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
-        /// </returns>
-        [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}/date/{date:datetime}", Name = "GetDriversByCountryCityAndDateWithPaginationAsync")]
+
+        [HttpGet("paged/by-country/{countryId:int}", Name = "GetDriversByCountryWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetDriversByCountryCityAndDateWithPaginationAsync(
-            [FromRoute] int countryId,
-            [FromRoute] int cityId,
-            [FromRoute] DateTime date,
-            [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetByCountryWithPaginationAsync(
+            int countryId,
+            int page = 1,
+            int pageSize = 10)
         {
-            if (countryId < 1 || cityId < 1 || page < 1 || pageSize < 1)
+            if (countryId  < 1 || page < 1 || pageSize < 1)
             {
                 return BadRequestResponse("InvalidRequest", "Country ID, city ID, page, and page size must be greater than 0.");
             }
 
             try
             {
-                var dataResult = await _driverService.GetDriversByLocationAndDateWithPaginationAsync(countryId, cityId, date, page, pageSize);
+                var dataResult = await _driverService.GetByCountryWithPaginationAsync(countryId, page, pageSize);
 
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No drivers found for the specified country, city, and date.");
-                }
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
@@ -365,6 +326,68 @@ namespace Mottrist.API.Controllers
             }
         }
 
+        [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}", Name = "GetDriversByCountryAndCityWithPaginationAsync")]
+        [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByCountryAndCityWithPaginationAsync(
+         int countryId,
+         int cityId,
+         int page = 1,
+         int pageSize = 10)
+        {
+            if (countryId < 1 || page < 1 || pageSize < 1)
+            {
+                return BadRequestResponse("InvalidRequest", "Country ID, city ID, page, and page size must be greater than 0.");
+            }
+
+            try
+            {
+                var dataResult = await _driverService.GetByCountryAndCityWithPaginationAsync(countryId, cityId,page, pageSize);
+
+
+                return dataResult != null
+                    ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ServerError", $"Unexpected error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}/date", Name = "GetDriversByCountryAndCityAndDateWithPaginationAsync")]
+        [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetByCountryCityAndDateWithPaginationAsync(
+         int countryId,
+         int cityId,
+         DateTime date,
+         int page = 1,
+         int pageSize = 10)
+        {
+            if (countryId < 1 || page < 1 || pageSize < 1)
+            {
+                return BadRequestResponse("InvalidRequest", "Country ID, city ID, page, and page size must be greater than 0.");
+            }
+
+            try
+            {
+                var dataResult = await _driverService.GetByCountryCityAndDateWithPaginationAsync(countryId,cityId,date, page, pageSize);
+
+
+                return dataResult != null
+                    ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ServerError", $"Unexpected error: {ex.Message}");
+            }
+        }
         /// <summary>
         /// Retrieves a paginated list of drivers based on a specified status.
         /// </summary>
@@ -386,13 +409,13 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the pagination parameters or status are invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
-        [HttpGet("paged/by-status/{status}", Name = "GetDriversByStatusWithPaginationAsync")]
+        [HttpGet("paged/by-status", Name = "GetDriversByStatusWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetDriversByStatusWithPaginationAsync(
-            [FromRoute] string status,
+        public async Task<IActionResult> GetByStatusWithPaginationAsync(
+            string status,
             int page = 1,
             int pageSize = 10)
         {
@@ -442,7 +465,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the status parameter is invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
-        [HttpGet("by-status/{status}", Name = "GetDriversByStatusAsync")]
+        [HttpGet("by-status", Name = "GetDriversByStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -505,7 +528,7 @@ namespace Mottrist.API.Controllers
             try
             {
                 // Validate uniqueness of the email
-                var existingUser = await _driverService.DoesDriverExistByEmailAsync(driverDto.Email);
+                var existingUser = await _driverService.DoesExistByEmailAsync(driverDto.Email);
                 if (existingUser)
                 {
                     return StatusCodeResponse(StatusCodes.Status409Conflict, "DuplicateUser", "Driver already exists.");
@@ -566,13 +589,8 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                bool isFound = await _driverService.DoesDriverExistByIdAsync(id);
-
-                if (!isFound)
-                {
-                    return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
-                }
-
+    
+                
                 // Set the driver id based on the route parameter.
                 driverDto.Id = id;
                 var result = await _driverService.UpdateAsync(driverDto);
@@ -608,12 +626,12 @@ namespace Mottrist.API.Controllers
         /// - HTTP 404 Not Found if no driver matches the provided ID.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
-        [HttpPut("update-status/{driverId:int}/{newStatus}", Name = "UpdateDriverStatusAsync")]
+        [HttpPut("update-status/{driverId:int}", Name = "UpdateDriverStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateDriverStatusAsync([FromRoute] int driverId, string newStatus)
+        public async Task<IActionResult> UpdateStatusAsync(int driverId, string newStatus)
         {
             try
             {
@@ -623,13 +641,13 @@ namespace Mottrist.API.Controllers
                     return BadRequestResponse("InvalidStatus", $"The status '{newStatus}' is invalid.");
                 }
 
-                var isFound = await _driverService.DoesDriverExistByIdAsync(driverId);
+                var isFound = await _driverService.DoesExistByIdAsync(driverId);
                 if (!isFound)
                 {
                     return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
                 }
 
-                var result = await _driverService.UpdateDriverStatusAsync(driverId, (DriverStatus)parsedStatus);
+                var result = await _driverService.UpdateStatusAsync(driverId, (DriverStatus)parsedStatus);
 
                 return result.IsSuccess
                     ? SuccessResponse("Driver details updated successfully.")
@@ -669,11 +687,11 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateDriverAvailabilityAsync(
-            [FromRoute] int driverId,
-            [FromQuery] DateTime? availableFrom,
-            [FromQuery] DateTime? availableTo,
-            [FromQuery] bool availableAllTime)
+        public async Task<IActionResult> UpdateAvailabilityAsync(
+            int driverId,
+            DateTime? availableFrom,
+            DateTime? availableTo,
+            bool availableAllTime)
         {
             if (driverId < 1)
             {
@@ -682,13 +700,7 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                var isFound = await _driverService.DoesDriverExistByIdAsync(driverId);
-                if (!isFound)
-                {
-                    return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
-                }
-
-                var result = await _driverService.UpdateDriverAvailabilityAsync(driverId, availableFrom, availableTo, availableAllTime);
+                var result = await _driverService.UpdateAvailabilityAsync(driverId, availableFrom, availableTo, availableAllTime);
 
                 return result.IsSuccess
                 ? SuccessResponse("Driver availability updated successfully.")
@@ -718,9 +730,9 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateDriverPriceAsync(
-            [FromRoute] int driverId,
-            [FromQuery] decimal newPricePerHour)
+        public async Task<IActionResult> UpdatePriceAsync(
+            int driverId,
+            decimal newPricePerHour)
         {
             if (driverId < 1 || newPricePerHour <= 0)
             {
@@ -729,14 +741,7 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                var isFound = await _driverService.DoesDriverExistByIdAsync(driverId);
-
-                if (!isFound)
-                {
-                    return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
-                }
-
-                var result = await _driverService.UpdateDriverPriceAsync(driverId, newPricePerHour);
+                var result = await _driverService.UpdatePriceAsync(driverId, newPricePerHour);
 
                 return result.IsSuccess
                     ? SuccessResponse("Driver price updated successfully.")
@@ -774,10 +779,10 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> LikeOrDislikeDriverAsync(
-            [FromRoute] int driverId,
-            [FromQuery] int userId,
-            [FromQuery] bool? isLiked)
+        public async Task<IActionResult> LikeOrDislikeAsync(
+            int driverId,
+            int userId,
+            bool? isLiked)
         {
             if (driverId < 1 || userId < 1)
                 return BadRequestResponse("InvalidRequest", "Driver ID and User ID must be greater than 0.");
@@ -785,7 +790,7 @@ namespace Mottrist.API.Controllers
             try
             {
                 // Ensure the driver exists
-                bool driverExists = await _driverService.DoesDriverExistByIdAsync(driverId);
+                bool driverExists = await _driverService.DoesExistByIdAsync(driverId);
                 if (!driverExists)
                     return NotFoundResponse("DriverNotFound", "The specified driver does not exist.");
 
@@ -795,7 +800,7 @@ namespace Mottrist.API.Controllers
                 if (userExists is null)
                     return NotFoundResponse("UserNotFound", "The specified user does not exist.");
 
-                var result = await _driverService.LikeOrDislikeDriverAsync(driverId, userId, isLiked);
+                var result = await _driverService.LikeOrDislikeAsync(driverId, userId, isLiked);
 
                 return result.IsSuccess
                     ? SuccessResponse("Reaction updated successfully.")
@@ -840,16 +845,7 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                // Ensure the driver exists
-                bool driverExists = await _driverService.DoesDriverExistByIdAsync(driverId);
-                if (!driverExists)
-                    return NotFoundResponse("DriverNotFound", "The specified driver does not exist.");
-
-                // Ensure the user exists
-                var userExists = await _userManager.FindByIdAsync(userId.ToString());
-
-                if (userExists is null)
-                    return NotFoundResponse("UserNotFound", "The specified user does not exist.");
+             
 
                 var result = await _driverService.IncrementViewCountAsync(driverId, userId);
 
@@ -887,13 +883,7 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                bool isFound = await _driverService.DoesDriverExistByIdAsync(id);
-
-                if (!isFound)
-                {
-                    return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
-                }
-
+               
                 var result = await _driverService.DeleteAsync(id);
 
                 return result.IsSuccess
@@ -923,7 +913,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<DriverFormFieldsDto>), StatusCodes.Status200OK)] // Success response
         [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status204NoContent)] // No content
         [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status500InternalServerError)] // Server error
-        public async Task<IActionResult> GetAllDriverFormFields()
+        public async Task<IActionResult> GetAllFormFields()
         {
             try
             {
