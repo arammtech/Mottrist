@@ -31,6 +31,13 @@ namespace Mottrist.Service.Features.Drivers.Services
     /// </summary>
     public class DriverService : BaseService, IDriverService
     {
+        #region Folder Paths
+        private string _GetProfilesFolder(int driverId) => $"drivers/{driverId}/profiles";
+        private string _GetPassportsFolder(int driverId) => $"drivers/{driverId}/passports";
+        private string _GetLicensesFolder(int driverId) => $"drivers/{driverId}/licenses";
+
+        private string _GetCarsFolder(int driverId) => $"drivers/{driverId}/cars";
+        #endregion
         #region Dependencies
 
         /// <summary>
@@ -843,8 +850,6 @@ namespace Mottrist.Service.Features.Drivers.Services
 
             try
             {
-                // Process all driver-related images
-                await _ProcessDriverImagesAsync(driverDto);
 
                 // Create user and assign driver role
                 var user = _mapper.Map<ApplicationUser>(driverDto);
@@ -866,21 +871,13 @@ namespace Mottrist.Service.Features.Drivers.Services
                 var driverEntity = _mapper.Map<Driver>(driverDto);
                 driverEntity.UserId = user.Id;
 
-                // Add car details if HasCar is true
-                if (driverDto.HasCar)
-                {
-                    var carResult = await _AddCarWithCarServiceAsync(driverDto, driverEntity);
-                    if (!carResult.IsSuccess)
-                    {
-                        await _unitOfWork.RollbackAsync();
-                        return carResult;
-                    }
-                }
+
                 if (driverEntity.IsAvailableAllTime)
                 {
                     driverEntity.AvailableFrom = null;
                     driverEntity.AvailableTo = null;
                 }
+
                 // Add driver entity to the repository
                 await _unitOfWork.Repository<Driver>().AddAsync(driverEntity);
                 var saveDriverResult = await _unitOfWork.SaveChangesAsync();
@@ -906,6 +903,47 @@ namespace Mottrist.Service.Features.Drivers.Services
                     return associationsResult;
                 }
 
+                if(driverEntity.Id < 1)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return Result.Failure("Failed to save the driver details.");
+                }
+
+                driverDto.Id = driverEntity.Id;
+
+                // Process all driver-related images
+                await _ProcessDriverImagesAsync(driverDto);
+
+                if(string.IsNullOrEmpty(driverDto.LicenseImageUrl) || string.IsNullOrEmpty(driverDto.PassportImageUrl))
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return Result.Failure("Failed to save images.");
+
+                }
+
+                driverEntity.LicenseImageUrl = driverDto.LicenseImageUrl;
+                driverEntity.PassportImageUrl = driverDto.PassportImageUrl;
+                driverEntity.ProfileImageUrl = driverDto.ProfileImageUrl;
+
+               await _unitOfWork.Repository<Driver>().UpdateAsync(driverEntity);
+                var saveUpdateDriverResult = await _unitOfWork.SaveChangesAsync();
+                if (!saveUpdateDriverResult.IsSuccess)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return Result.Failure("Failed to save the driver details.");
+                }
+
+                // Add car details if HasCar is true
+                if (driverDto.HasCar)
+                {
+                    var carResult = await _AddCarWithCarServiceAsync(driverDto, driverEntity);
+                    if (!carResult.IsSuccess)
+                    {
+                        await _unitOfWork.RollbackAsync();
+                        return carResult;
+                    }
+                }
+
                 // Commit transaction
                 var commitResult = await _unitOfWork.CommitAsync();
                 if (!commitResult.IsSuccess)
@@ -913,9 +951,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                     await _unitOfWork.RollbackAsync();
                     return Result.Failure("Failed to commit the transaction.");
                 }
-
                 // Assign generated driver ID back to DTO
-                driverDto.Id = driverEntity.Id;
                 return Result.Success();
             }
             catch (Exception ex)
@@ -1019,6 +1055,8 @@ namespace Mottrist.Service.Features.Drivers.Services
                 return Result.Failure($"An unexpected error occurred while adding associations: {ex.Message}");
             }
         }
+
+
         #endregion
 
         #region User Addition Operations
@@ -1102,7 +1140,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                     {
                         CarId = carDto.Id,
                         ImageUrl = driverDto.CarImagesUrl[i],
-                        IsMain = (i == driverDto.MainCarImageIndex)
+                        IsMain = (i == 0)
                     };
 
                     var carImageResult = await _carService.AddCarImageAsync(carImageDto);
@@ -1131,19 +1169,19 @@ namespace Mottrist.Service.Features.Drivers.Services
             // Process profile image.
             if (driverDto.ProfileImage != null)
             {
-                driverDto.ProfileImageUrl = await SaveImageAsync(driverDto.ProfileImage, "profiles");
+                driverDto.ProfileImageUrl = await SaveImageAsync(driverDto.ProfileImage, _GetProfilesFolder(driverDto.Id));
             }
 
             // Process license image.
             if (driverDto.LicenseImage != null)
             {
-                driverDto.LicenseImageUrl = await SaveImageAsync(driverDto.LicenseImage, "licenses");
+                driverDto.LicenseImageUrl = await SaveImageAsync(driverDto.LicenseImage,_GetLicensesFolder(driverDto.Id));
             }
 
             // Process passport image.
             if (driverDto.PassportImage != null)
             {
-                driverDto.PassportImageUrl = await SaveImageAsync(driverDto.PassportImage, "passports");
+                driverDto.PassportImageUrl = await SaveImageAsync(driverDto.PassportImage, _GetPassportsFolder(driverDto.Id));
             }
 
             // Process car images.
@@ -1153,7 +1191,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 for (int i = 0; i < driverDto.CarImages.Count; i++)
                 {
                     var carImage = driverDto.CarImages[i];
-                    var savedImageUrl = await SaveImageAsync(carImage, "cars");
+                    var savedImageUrl = await SaveImageAsync(carImage, _GetCarsFolder(driverDto.Id));
                     processedCarImages.Add(savedImageUrl);
                 }
 
@@ -1201,16 +1239,6 @@ namespace Mottrist.Service.Features.Drivers.Services
                     return Result.Failure($"Failed to update user details: {userUpdateResult.Errors.FirstOrDefault()}");
                 }
 
-                // Step 3: Update or add car details (if applicable).
-                if (driverDto.HasCar)
-                {
-                    var carUpdateResult = await _UpdateOrAddCarDetailsAsync(driverDto, existingDriver);
-                    if (!carUpdateResult.IsSuccess)
-                    {
-                        await _unitOfWork.RollbackAsync();
-                        return Result.Failure($"Failed to update car details: {carUpdateResult.Errors.FirstOrDefault()}");
-                    }
-                }
 
                 // Step 4: Update languages, cities, and countries.
                 var associationsResult = await _UpdateDriverAssociationsAsync(
@@ -1221,6 +1249,13 @@ namespace Mottrist.Service.Features.Drivers.Services
                     driverDto.CountriesWorkedOn,
                     driverDto.CountriesCoverNow
                 );
+
+                var imageUpdateResult = await _UpdateImagesAsync(driverDto, existingDriver);
+                if (!imageUpdateResult.IsSuccess)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return imageUpdateResult;
+                }
 
                 if (!associationsResult.IsSuccess)
                 {
@@ -1248,6 +1283,16 @@ namespace Mottrist.Service.Features.Drivers.Services
                     return Result.Failure("Failed to save driver updates.");
                 }
 
+                if (driverDto.HasCar)
+                {
+                    var carUpdateResult = await _UpdateOrAddCarDetailsAsync(driverDto, existingDriver);
+                    if (!carUpdateResult.IsSuccess)
+                    {
+                        await _unitOfWork.RollbackAsync();
+                        return Result.Failure($"Failed to update car details: {carUpdateResult.Errors.FirstOrDefault()}");
+                    }
+                }
+
                 // Commit the transaction.
                 var commitResult = await _unitOfWork.CommitAsync();
                 if (!commitResult.IsSuccess)
@@ -1262,6 +1307,51 @@ namespace Mottrist.Service.Features.Drivers.Services
                 // Roll back the transaction on any exception.
                 await _unitOfWork.RollbackAsync();
                 return Result.Failure($"Unexpected error occurred during driver update: {ex.Message}");
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the updating of a driver's images, including profile, license, and passport.
+        /// </summary>
+        /// <param name="driverDto">The DTO containing updated image data.</param>
+        /// <param name="existingDriver">The existing driver entity.</param>
+        /// <returns>A <see cref="Result"/> indicating success or failure.</returns>
+        private async Task<Result> _UpdateImagesAsync(UpdateDriverDto driverDto, Driver existingDriver)
+        {
+            try
+            {
+                // Update profile image
+                var profileUpdateResult = await UpdateImageAsync(driverDto.ProfileImage,
+                                                                   _GetProfilesFolder(driverDto.Id),
+                                                                   existingDriver.ProfileImageUrl);
+                existingDriver.ProfileImageUrl = profileUpdateResult.NewImageUrl;
+
+                // Update license image
+                var licenseUpdateResult = await UpdateImageAsync(driverDto.LicenseImage,
+                                                                   _GetLicensesFolder(driverDto.Id),
+                                                                   existingDriver.LicenseImageUrl);
+
+                if (string.IsNullOrEmpty(licenseUpdateResult.NewImageUrl))
+                    return Result.Failure($"Error updating driver image");
+
+
+                existingDriver.LicenseImageUrl = licenseUpdateResult.NewImageUrl;
+
+                // Update passport image
+                var passportUpdateResult = await UpdateImageAsync(driverDto.PassportImage,
+                                                                    _GetPassportsFolder(driverDto.Id),
+                                                                    existingDriver.PassportImageUrl);
+                if (string.IsNullOrEmpty(passportUpdateResult.NewImageUrl))
+                    return Result.Failure($"Error updating driver image");
+
+                existingDriver.PassportImageUrl = passportUpdateResult.NewImageUrl;
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Error updating driver images: {ex.Message}");
             }
         }
 
@@ -1629,7 +1719,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// </returns>
         private async Task<Result> _ProcessAndUpdateCarImagesAsync(UpdateDriverDto driverDto, int carId)
         {
-            if (driverDto.HasCar && string.IsNullOrEmpty(driverDto.MainCarImageUrl) && (driverDto.CarImageUrl == null || !driverDto.CarImageUrl.Any()))
+            if (driverDto.HasCar && (driverDto.CarImageUrls == null || !driverDto.CarImageUrls.Any()))
             {
                 return Result.Success(); // No images to process
             }
@@ -1647,9 +1737,9 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
 
                 // Add or update additional images
-                if (driverDto.CarImageUrl != null && driverDto.CarImageUrl.Any())
+                if (driverDto.CarImageUrls != null && driverDto.CarImageUrls.Any())
                 {
-                    foreach (var imageUrl in driverDto.CarImageUrl)
+                    foreach (var imageUrl in driverDto.CarImageUrls)
                     {
                         // Check if the image already exists
                         var existingImage = await _carService.GetCarImagesAsync(carId);

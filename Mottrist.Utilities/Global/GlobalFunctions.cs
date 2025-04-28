@@ -68,6 +68,36 @@ namespace Mottrist.Utilities.Global
         }
 
         /// <summary>
+        /// Replaces or deletes an image depending on the input parameters.
+        /// </summary>
+        /// <param name="newImage">The new image file, if provided.</param>
+        /// <param name="folderPath">The folder path where the image should be stored.</param>
+        /// <param name="existingImageUrl">The existing image URL, if applicable.</param>
+        /// <returns>A structured result containing success state and the updated image URL.</returns>
+        public static async Task<(bool IsSuccess, string? NewImageUrl)> UpdateImageAsync(IFormFile? newImage, string folderPath, string? existingImageUrl)
+        {
+            try
+            {
+                if (newImage != null)
+                {
+                    return (true, await ReplaceImageAsync(newImage, folderPath, existingImageUrl));
+                }
+
+                if (existingImageUrl != null)
+                {
+                    await DeleteImageAsync(existingImageUrl);
+                    return (true, null);
+                }
+
+                return (true, existingImageUrl);
+            }
+            catch (Exception ex)
+            {
+                return (false, existingImageUrl);
+            }
+        }
+
+        /// <summary>
         /// Deletes an image file from the specified folder.
         /// </summary>
         /// <param name="imageUrl">The relative URL of the image to delete.</param>

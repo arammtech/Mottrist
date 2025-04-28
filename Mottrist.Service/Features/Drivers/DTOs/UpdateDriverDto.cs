@@ -19,9 +19,14 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public string? Bio { get; set; }
 
         // Images
-        public string? LicenseImageUrl { get; set; } = string.Empty;
-        public string? PassportImageUrl { get; set; } = string.Empty;
+        public string LicenseImageUrl { get; set; } = null!;
+        public string PassportImageUrl { get; set; } = null!;
         public string? ProfileImageUrl { get; set; } = string.Empty;
+
+        public IFormFile? ProfileImage { get; set; }
+        public IFormFile? LicenseImage { get; set; } 
+        public IFormFile? PassportImage { get; set; }
+
 
         // Professional Information
         public byte YearsOfExperience { get; set; }
@@ -44,7 +49,8 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public int? BodyTypeId { get; set; }
         public int? FuelTypeId { get; set; }
         public string? MainCarImageUrl { get; set; } // Main car image URL
-        public List<string>? CarImageUrl { get; set; } // Additional car image URLs
+        public List<string>? CarImageUrls { get; set; } // Additional car image URLs
+        public List<IFormFile>? CarImages { get; set; }
 
         // Cities and Countries worked on and covered
         public List<int> CitiesWorkedOn { get; set; } = new List<int>();
