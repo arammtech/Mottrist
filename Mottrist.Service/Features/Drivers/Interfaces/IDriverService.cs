@@ -67,61 +67,27 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// Returns null if an error occurs.
         /// </returns>
         Task<DriverFormFieldsDto?> GetAllDriverFormFields();
-        /// <summary>
-        /// Retrieves a list of drivers available in the specified country and, optionally, in the specified city and/or on the specified date.
-        /// </summary>
-        /// <param name="countryId">
-        /// The ID of the country where the driver operates. Only drivers whose associated country matches this ID (with a "CoverNow" work status) are included.
-        /// </param>
-        /// <param name="cityId">
-        /// (Optional) The ID of the city where the driver operates. Only drivers whose associated city matches this ID (with a "CoverNow" work status) are included.
-        /// </param>
-        /// <param name="date">
-        /// (Optional) The specific date on which the driver should be available. 
-        /// Drivers are included if they are marked as available all the time or if the provided date falls between their AvailableFrom and AvailableTo dates.
-        /// </param>
-        /// <returns>
-        /// A <see cref="DataResult{DriverDto}"/> containing the list of matching drivers, or null if the provided parameters are invalid or an error occurs.
-        /// </returns>
-         Task<DataResult<DriverDto>?> GetDriversByLocationAndDateAsync(
-            int countryId,
-            int? cityId = null,
-            DateTime? date = null);
+        Task<DataResult<DriverDto>?> GetByCountryAsync(int countryId);
+     
+        Task<DataResult<DriverDto>?> GetByCountryAndCityAsync(int countryId, int cityId);
 
-        /// <summary>
-        /// Retrieves a paginated list of drivers filtered by country, city, and optional availability date.
-        /// </summary>
-        /// <param name="countryId">
-        /// The unique identifier of the country to filter drivers.
-        /// This parameter is required and must be greater than 0.
-        /// </param>
-        /// <param name="cityId">
-        /// (Optional) The unique identifier of the city to filter drivers.
-        /// If provided, must be greater than 0.
-        /// </param>
-        /// <param name="date">
-        /// (Optional) The specific date when the driver should be available.
-        /// If provided, only drivers available on this date or marked as available all the time will be included.
-        /// </param>
-        /// <param name="page">
-        /// The page number for paginated results.
-        /// Must be greater than 0.
-        /// </param>
-        /// <param name="pageSize">
-        /// The number of records per page.
-        /// Must be greater than 0.
-        /// </param>
-        /// <returns>
-        /// A <see cref="PaginatedResult{DriverDto}"/> containing paginated drivers that match the filtering criteria.
-        /// Returns an empty paginated list if no drivers match.
-        /// </returns>
-        Task<PaginatedResult<DriverDto>?> GetDriversByLocationAndDateWithPaginationAsync(
-           int countryId,
-           int? cityId = null,
-           DateTime? date = null,
-           int page = 1,
-           int pageSize = 10);
+        Task<DataResult<DriverDto>?> GetByCountryCityAndDateAsync(int countryId, int cityId, DateTime date);
 
+        Task<PaginatedResult<DriverDto>?> GetByCountryWithPaginationAsync(
+                    int countryId,
+                    int page = 1,
+                    int pageSize = 10);
+        Task<PaginatedResult<DriverDto>?> GetByCountryAndCityWithPaginationAsync(
+                    int countryId,
+                    int cityId,
+                    int page = 1,
+                    int pageSize = 10);
+        Task<PaginatedResult<DriverDto>?> GetByCountryCityAndDateWithPaginationAsync(
+                    int countryId,
+                    int cityId,
+                    DateTime date,
+                    int page = 1,
+                    int pageSize = 10);
         #endregion
 
         #region Create Operation
@@ -170,7 +136,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A <see cref="Result"/> object indicating whether the update was successful or if an error occurred.
         /// </returns>
-        Task<Result> UpdateDriverAvailabilityAsync(
+        Task<Result> UpdateAvailabilityAsync(
             int driverId,
             DateTime? availableFrom,
             DateTime? availableTo,
@@ -190,7 +156,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A <see cref="Result"/> indicating whether the update was successful or if an error occurred.
         /// </returns>
-        Task<Result> UpdateDriverPriceAsync(int driverId, decimal newPricePerHour);
+        Task<Result> UpdatePriceAsync(int driverId, decimal newPricePerHour);
         #endregion
 
         #region Delete Operation
@@ -216,7 +182,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A boolean value indicating whether the driver exists.
         /// </returns>
-        Task<bool> DoesDriverExistByIdAsync(int driverId, CancellationToken cancellationToken = default);
+        Task<bool> DoesExistByIdAsync(int driverId, CancellationToken cancellationToken = default);
 
 
         /// <summary>
@@ -229,7 +195,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// A task representing the asynchronous operation. The task result is <c>true</c> if a user
         /// with the specified email exists; otherwise, <c>false</c>.
         /// </returns>
-        Task<bool> DoesDriverExistByEmailAsync(string email, CancellationToken cancellationToken = default);
+        Task<bool> DoesExistByEmailAsync(string email, CancellationToken cancellationToken = default);
 
 
         #endregion
@@ -279,7 +245,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A <see cref="Result"/> object indicating the success or failure of the operation.
         /// </returns>
-        Task<Result> UpdateDriverStatusAsync(int driverId, DriverStatus newStatus);
+        Task<Result> UpdateStatusAsync(int driverId, DriverStatus newStatus);
 
         /// <summary>
         /// Retrieves the current status of a driver.
@@ -288,7 +254,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// The current <see cref="DriverStatus"/> of the driver, or null if the driver does not exist.
         /// </returns>
-        Task<DriverStatus?> GetDriverStatusAsync(int driverId);
+        Task<DriverStatus?> GetStatusAsync(int driverId);
 
         #endregion
         #region Driver Interaction Operations
@@ -313,7 +279,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A <see cref="Result"/> indicating whether the update was successful.
         /// </returns>
-        Task<Result> LikeOrDislikeDriverAsync(int driverId, int userId, bool? isLiked);
+        Task<Result> LikeOrDislikeAsync(int driverId, int userId, bool? isLiked);
 
         /// <summary>
         /// Records a user's first view of a driver, ensuring each user views a driver only once.

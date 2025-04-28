@@ -487,6 +487,48 @@ namespace Mottrist.Service.Features.Drivers.Services
             }
         }
 
+        public async Task<DataResult<DriverDto>?> GetByCountryAsync(int countryId)
+        {
+            return await _GetByLocationAndDateAsync(countryId);
+        }
+
+        public async Task<DataResult<DriverDto>?> GetByCountryAndCityAsync(int countryId, int cityId)
+        {
+            return await _GetByLocationAndDateAsync(countryId, cityId);
+        }
+        public async Task<DataResult<DriverDto>?> GetByCountryCityAndDateAsync(int countryId,int cityId, DateTime date)
+        {
+            return await _GetByLocationAndDateAsync(countryId, cityId,date);
+        }
+
+        public async Task<PaginatedResult<DriverDto>?> GetByCountryWithPaginationAsync(
+            int countryId,
+            int page = 1,
+            int pageSize = 10)
+        {
+            return await _GetByLocationAndDateWithPaginationAsync(countryId,page:page,pageSize:pageSize);
+        }
+
+        public async Task<PaginatedResult<DriverDto>?> GetByCountryAndCityWithPaginationAsync(
+            int countryId,
+            int cityId,
+            int page = 1,
+            int pageSize = 10)
+        {
+            
+            return await _GetByLocationAndDateWithPaginationAsync(countryId,cityId, page: page, pageSize: pageSize);
+        }
+        public async Task<PaginatedResult<DriverDto>?> GetByCountryCityAndDateWithPaginationAsync(
+            int countryId,
+            int cityId,
+            DateTime date,
+            int page = 1,
+            int pageSize = 10)
+        {
+            return await _GetByLocationAndDateWithPaginationAsync(countryId,cityId,date, page: page, pageSize: pageSize);
+        }
+     
+
         /// <summary>
         /// Retrieves a list of drivers available in the specified country and, optionally, in the specified city and/or on the specified date.
         /// </summary>
@@ -503,7 +545,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <returns>
         /// A <see cref="DataResult{DriverDto}"/> containing the list of matching drivers, or null if the provided parameters are invalid or an error occurs.
         /// </returns>
-        public async Task<DataResult<DriverDto>?> GetDriversByLocationAndDateAsync(
+        private async Task<DataResult<DriverDto>?> _GetByLocationAndDateAsync(
             int countryId,
             int? cityId = null,
             DateTime? date = null)
@@ -650,7 +692,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// A <see cref="PaginatedResult{DriverDto}"/> containing paginated drivers that match the filtering criteria.
         /// Returns an empty paginated list if no drivers match.
         /// </returns>
-        public async Task<PaginatedResult<DriverDto>?> GetDriversByLocationAndDateWithPaginationAsync(
+        private async Task<PaginatedResult<DriverDto>?> _GetByLocationAndDateWithPaginationAsync(
             int countryId,
             int? cityId = null,
             DateTime? date = null,
@@ -1245,7 +1287,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <returns>
         /// A <see cref="Result"/> object indicating whether the update was successful or if an error occurred.
         /// </returns>
-        public async Task<Result> UpdateDriverAvailabilityAsync(
+        public async Task<Result> UpdateAvailabilityAsync(
             int driverId,
             DateTime? availableFrom,
             DateTime? availableTo,
@@ -1293,7 +1335,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <returns>
         /// A <see cref="Result"/> indicating whether the update was successful or if an error occurred.
         /// </returns>
-        public async Task<Result> UpdateDriverPriceAsync(int driverId, decimal newPricePerHour)
+        public async Task<Result> UpdatePriceAsync(int driverId, decimal newPricePerHour)
         {
             // Validate parameters
             if (driverId < 1 || newPricePerHour <= 0)
@@ -1905,7 +1947,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <returns>
         /// A <see cref="Result"/> object indicating the success or failure of the operation.
         /// </returns>
-        public async Task<Result> UpdateDriverStatusAsync(int driverId, DriverStatus newStatus)
+        public async Task<Result> UpdateStatusAsync(int driverId, DriverStatus newStatus)
         {
             try
             {
@@ -1943,7 +1985,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <returns>
         /// The current <see cref="DriverStatus"/> of the driver, or null if the driver does not exist.
         /// </returns>
-        public async Task<DriverStatus?> GetDriverStatusAsync(int driverId)
+        public async Task<DriverStatus?> GetStatusAsync(int driverId)
         {
             try
             {
@@ -1984,7 +2026,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// <remarks>
         /// This method queries the database asynchronously to determine the existence of the driver.
         /// </remarks>
-        public async Task<bool> DoesDriverExistByIdAsync(int driverId, CancellationToken cancellationToken = default)
+        public async Task<bool> DoesExistByIdAsync(int driverId, CancellationToken cancellationToken = default)
         {
             // Validate input parameter.
             if (driverId <= 0)
@@ -2020,7 +2062,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// A task representing the asynchronous operation. The task result is <c>true</c> if a user
         /// with the specified email exists; otherwise, <c>false</c>.
         /// </returns>
-        public async Task<bool> DoesDriverExistByEmailAsync(string email, CancellationToken cancellationToken = default)
+        public async Task<bool> DoesExistByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
             // Validate input parameter.
             if (string.IsNullOrWhiteSpace(email))
@@ -2275,7 +2317,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         /// - HTTP 400 Bad Request if the parameters are invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
-        public async Task<Result> LikeOrDislikeDriverAsync(int driverId, int userId, bool? isLiked)
+        public async Task<Result> LikeOrDislikeAsync(int driverId, int userId, bool? isLiked)
         {
             // Validate input parameters
             if (driverId < 1 || userId < 1)
