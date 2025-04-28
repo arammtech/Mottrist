@@ -17,6 +17,8 @@ namespace Mottrist.Service.Features.DestinationServices
     /// </summary>
     public class DestinationService : BaseService, IDestinationService
     {
+        private string _GetFolder(int desinationId) => $"destinations/{desinationId}";
+
         private readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
@@ -211,7 +213,7 @@ namespace Mottrist.Service.Features.DestinationServices
 
                 if (destinationDto.Image != null)
                 {
-                    var savedImageUrl = await SaveImageAsync(destinationDto.Image, $"destinations/{destination.Id}");
+                    var savedImageUrl = await SaveImageAsync(destinationDto.Image, _GetFolder(destination.Id));
 
                     // Ensure the image was saved successfully before updating
                     if (!string.IsNullOrEmpty(savedImageUrl))
@@ -269,15 +271,9 @@ namespace Mottrist.Service.Features.DestinationServices
 
                 #region Handle Image Update
 
-                if (!string.IsNullOrEmpty(destinationDto.ImageUrl) && destinationDto.Image != null)
-                {
-        
-                        string? oldImageUrl = destination.ImageUrl;
-                        destinationDto.ImageUrl = await ReplaceImageAsync(destinationDto.Image, $"destinations/{destinationDto.Id}", oldImageUrl);
-                    
-                }
+                var updateImageResult = await UpdateImageAsync(destinationDto.Image, _GetFolder(destinationDto.Id), destination.ImageUrl);
 
-                destination.ImageUrl = destinationDto.ImageUrl;
+                destination.ImageUrl = updateImageResult.NewImageUrl;
 
                 #endregion
 

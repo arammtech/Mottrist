@@ -536,7 +536,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)] // Validation errors
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)] // Driver not found
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)] // Unexpected errors
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateDriverDto driverDto)
+        public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateDriverDto driverDto)
         {
             // Validate the input model
             if (!ModelState.IsValid)
