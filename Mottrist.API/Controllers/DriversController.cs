@@ -423,6 +423,7 @@ namespace Mottrist.API.Controllers
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
+>>>>>>>>> Temporary merge branch 2
             }
             catch (Exception ex)
             {
@@ -462,7 +463,6 @@ namespace Mottrist.API.Controllers
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
-
             }
 
             catch (Exception ex)
