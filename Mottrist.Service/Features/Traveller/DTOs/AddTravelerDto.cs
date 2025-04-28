@@ -25,9 +25,9 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         public int NationalityId { get; set; }
 
         /// <summary>
-        /// Traveler origin city
+        /// City ID of the traveler.
         /// </summary>
-        public int CityId { get; set; }
+        public int? CityId { get; set; }
 
         /// <summary>
         /// First name of the traveler. Required. (2-50 characters)
@@ -75,6 +75,6 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         /// <summary>
         /// Preferred LanguageId to speck with
         /// </summary>
-        public int PreferredLanguageId { get; set; }
+        public int? PreferredLanguageId { get; set; }
     }
 }

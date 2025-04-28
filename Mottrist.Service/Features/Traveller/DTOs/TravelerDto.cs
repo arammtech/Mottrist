@@ -21,9 +21,9 @@
         public string CountryName { get; set; } = null!;
 
         /// <summary>
-        /// Traveler origin city
+        /// Gets or sets the name of the traveler's city.
         /// </summary>
-        public string CityName { get; set; } = null!;
+        public string? CityName { get; set; }
 
         /// <summary>
         /// Gets or sets the first name of the traveler.
@@ -58,6 +58,6 @@
         /// <summary>
         /// Preferred LanguageId to speck with
         /// </summary>
-        public string PreferredLanguageName { get; set; } = null!;
+        public string? PreferredLanguageName { get; set; } = null!;
     }
 }
