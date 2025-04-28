@@ -21,6 +21,11 @@
         public string CountryName { get; set; } = null!;
 
         /// <summary>
+        /// Gets or sets the name of the traveler's city.
+        /// </summary>
+        public string? CityName { get; set; }
+
+        /// <summary>
         /// Gets or sets the first name of the traveler.
         /// </summary>
         public string FirstName { get; set; } = null!;
@@ -49,5 +54,10 @@
         /// Gets or sets the URL of the traveler's profile image (optional).
         /// </summary>
         public string? ProfileImageUrl { get; set; }
+
+        /// <summary>
+        /// Preferred LanguageId to speck with
+        /// </summary>
+        public string? PreferredLanguageName { get; set; } = null!;
     }
 }

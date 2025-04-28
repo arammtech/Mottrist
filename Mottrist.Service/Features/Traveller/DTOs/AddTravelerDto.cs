@@ -19,10 +19,15 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         public string? WhatsAppNumber { get; set; }
 
         /// <summary>
-        /// Nationality ID (Allowed values: 1 to 5).
+        /// Nationality ID.
         /// </summary>
         [Range(1, 5, ErrorMessage = "Nationality ID must be between 1 and 5.")]
         public int NationalityId { get; set; }
+
+        /// <summary>
+        /// City ID of the traveler.
+        /// </summary>
+        public int? CityId { get; set; }
 
         /// <summary>
         /// First name of the traveler. Required. (2-50 characters)
@@ -67,5 +72,9 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         /// </summary>
         public IFormFile? ProfileImage { get; set; }
 
+        /// <summary>
+        /// Preferred LanguageId to speck with
+        /// </summary>
+        public int? PreferredLanguageId { get; set; }
     }
 }

@@ -24,8 +24,12 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         /// Nationality ID of the traveler (required).
         /// </summary>
         [Required(ErrorMessage = "Nationality is required.")]
-        [Range(1, 5, ErrorMessage = "NationalityId must be between 1 and 5.")]
         public int NationalityId { get; set; }
+
+        /// <summary>
+        /// City ID of the traveler.
+        /// </summary>
+        public int? CityId { get; set; }
 
         /// <summary>
         /// First name of the traveler (required, min 2 chars, max 50 chars).
@@ -56,5 +60,11 @@ namespace Mottrist.Service.Features.Traveller.DTOs
         /// Profile image as file
         /// </summary>
         public IFormFile? ProfileImage { get; set; }
+
+
+        /// <summary>
+        /// Preferred LanguageId to speck with
+        /// </summary>
+        public int? PreferredLanguageId { get; set; }
     }
 }
