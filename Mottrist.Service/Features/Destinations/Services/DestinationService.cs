@@ -42,7 +42,7 @@ namespace Mottrist.Service.Features.DestinationServices
             try
             {
                 // Build query from repository
-                var destinationsQuery = _unitOfWork.Repository<Destination>().Query();
+                var destinationsQuery = _unitOfWork.Repository<Destination>().Table;
 
                 // Apply filter if provided
                 if (filter != null)
@@ -97,7 +97,7 @@ namespace Mottrist.Service.Features.DestinationServices
 
             try
             {
-                var destinationsQuery = _unitOfWork.Repository<Destination>().Query();
+                var destinationsQuery = _unitOfWork.Repository<Destination>().Table;
 
                 // Apply filters if provided
                 if (filter != null)
@@ -152,18 +152,22 @@ namespace Mottrist.Service.Features.DestinationServices
         {
             try
             {
-                var dest = await _unitOfWork.Repository<Destination>().GetAsync(d => d.Id == destinationId);
-                if (dest == null) return null;
+                var destinationDto = await _unitOfWork.Repository<Destination>().Table
+                    .Select
+                    (
+                        dest => new DestinationDTO
+                        {
+                            Id = dest.Id,
+                            Name = dest.Name,
+                            CityName = dest.City.Name,
+                            Type = dest.Type,
+                            ImageUrl = dest.ImageUrl,
+                            Description = dest.Description
+                        }
+                    ).FirstOrDefaultAsync(x => x.Id == destinationId);
 
-                return new DestinationDTO
-                {
-                    Id = dest.Id,
-                    Name = dest.Name,
-                    CityName = dest.City.Name,
-                    Type = dest.Type,
-                    ImageUrl = dest.ImageUrl,
-                    Description = dest.Description
-                };
+
+                return destinationDto;
             }
             catch (Exception)
             {
