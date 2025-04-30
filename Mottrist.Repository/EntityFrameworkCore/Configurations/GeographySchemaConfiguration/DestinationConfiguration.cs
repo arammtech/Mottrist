@@ -15,15 +15,17 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.GeographySchema
                    .HasMaxLength(200);
 
             builder.Property(c => c.Type)
-                   .IsRequired(false)
+                   .IsRequired()
                    .HasMaxLength(200);
 
             builder.Property(c => c.Description)
                    .IsRequired(false);
 
             builder.Property(c => c.ImageUrl)
-                   .IsRequired(false);
+                   .IsRequired();
 
+            builder.Property(c => c.CityId)
+                   .IsRequired();
 
             builder.HasOne(c => c.City)
                    .WithMany(city => city.Destinations)
