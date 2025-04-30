@@ -36,6 +36,8 @@ using Mottrist.Service.Features.Languages.Services;
 using Mottrist.Service.Features.Cars.Interfaces.CarFields;
 using Mottrist.Service.Features.Cars.Services.CarFields;
 using Mottrist.Service.SeedData;
+using Mottrist.Service.Interfaces;
+using Mottrist.Service.Features.DestinationServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -159,6 +161,7 @@ builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<ITravelerService, TravelerService>();
 builder.Services.AddScoped<ICityService, CityService>();
 builder.Services.AddScoped<IDriverService, DriverService>();
+builder.Services.AddScoped<IDestinationService, DestinationService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<ICarModelService, CarModelService>();
@@ -195,7 +198,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints => endpoints.MapControllers());
+// app.UseEndpoints(endpoints => endpoints.MapControllers());
 
 app.MapControllers();
 

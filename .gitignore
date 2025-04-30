@@ -363,3 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 /Mottrist.API/appsettings.json
 /MottristTestConsole
+
+# Ignore the images folder
+wwwroot/images/
+/Mottrist.API/wwwroot/images/travelers/4/profiles

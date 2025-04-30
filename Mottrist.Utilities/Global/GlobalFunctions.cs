@@ -34,12 +34,12 @@ namespace Mottrist.Utilities.Global
         /// <param name="imageFile">The uploaded image file to save.</param>
         /// <param name="folderName">The folder where the image will be stored.</param>
         /// <returns>The relative URL of the saved image file.</returns>
-        public static async Task<string> SaveImageAsync(IFormFile imageFile, string folderName)
+        public static async Task<string?> SaveImageAsync(IFormFile imageFile, string folderName)
         {
             // Ensure the image file is not null
             if (imageFile == null || imageFile.Length == 0)
             {
-                throw new ArgumentException("Invalid image file.");
+                return null;
             }
 
             // Generate a unique file name to prevent overwriting
@@ -67,6 +67,90 @@ namespace Mottrist.Utilities.Global
             return $"/images/{folderName}/{uniqueFileName}";
         }
 
+        /// <summary>
+        /// Replaces or deletes an image depending on the input parameters.
+        /// </summary>
+        /// <param name="newImage">The new image file, if provided.</param>
+        /// <param name="folderPath">The folder path where the image should be stored.</param>
+        /// <param name="existingImageUrl">The existing image URL, if applicable.</param>
+        /// <returns>A structured result containing success state and the updated image URL.</returns>
+        public static async Task<(bool IsSuccess, string? NewImageUrl)> UpdateImageAsync(IFormFile? newImage, string folderPath, string? existingImageUrl)
+        {
+            try
+            {
+                if (newImage != null)
+                {
+                    return (true, await ReplaceImageAsync(newImage, folderPath, existingImageUrl));
+                }
+
+                if (!string.IsNullOrWhiteSpace(existingImageUrl))
+                {
+                    await DeleteImageAsync(existingImageUrl);
+                    return (true, null);
+                }
+
+                return (true, existingImageUrl);
+            }
+            catch (Exception ex)
+            {
+                return (false, existingImageUrl);
+            }
+        }
+
+        /// <summary>
+        /// Deletes an image file from the specified folder.
+        /// </summary>
+        /// <param name="imageUrl">The relative URL of the image to delete.</param>
+        /// <returns>True if the image was deleted successfully; otherwise, false.</returns>
+        public static Task<bool> DeleteImageAsync(string imageUrl)
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(imageUrl))
+                        return false;
+
+                    // Convert the relative URL to an absolute file path
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imageUrl.TrimStart('/'));
+
+                    // Check if the file exists before deleting
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                        return true;
+                    }
+
+                    return false;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            });
+        }
+
+
+        /// <summary>
+        /// Replaces an existing image file with a new one in the specified folder.
+        /// </summary>
+        /// <param name="newImageFile">The new image file to save.</param>
+        /// <param name="folderName">The folder where the image will be stored.</param>
+        /// <param name="existingImageUrl">The relative URL of the existing image to be replaced.</param>
+        /// <returns>The relative URL of the newly saved image file.</returns>
+        public static async Task<string> ReplaceImageAsync(IFormFile newImageFile, string folderName, string? existingImageUrl)
+        {
+            // Delete the existing image if it exists
+            if (!string.IsNullOrWhiteSpace(existingImageUrl))
+            {
+                await DeleteImageAsync(existingImageUrl);
+            }
+
+            // Save and return the new image URL
+            return await SaveImageAsync(newImageFile, folderName);
+        }
+
+
         // Generic Filter
         public static List<T> _Filter<T>(List<T> collection, string filterProperty, string filterValue)
         {
@@ -80,45 +164,5 @@ namespace Mottrist.Utilities.Global
             return collection;
         }
 
-
-
-
-
-
-        //public static string SetOrderStatus(byte Status)
-        //{
-        //    switch (Status)
-        //    {
-        //        case 1:
-        //            return GlobalSettings.StatusApproved;
-        //        case 2:
-        //            return GlobalSettings.StatusInProcess;
-        //        case 3:
-        //            return GlobalSettings.StatusShipped;
-        //        case 4:
-        //            return GlobalSettings.StatusCanceled;
-        //        default:
-        //            return "غير معروف";
-        //    }
-
-        //}
-
-        //public static byte SetOrderStatus(string Status)
-        //{
-        //    switch (Status)
-        //    {
-        //        case GlobalSettings.StatusApproved:
-        //            return 1;
-        //        case GlobalSettings.StatusInProcess:
-        //            return 2;
-        //        case GlobalSettings.StatusShipped:
-        //            return 3;
-        //        case GlobalSettings.StatusCanceled:
-        //            return 4;
-        //        default:
-        //            return 0;
-        //    }
-
-        //}
     }
 }

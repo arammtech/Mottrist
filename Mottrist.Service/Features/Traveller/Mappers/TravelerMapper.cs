@@ -16,7 +16,8 @@ namespace Mottrist.Service.Features.Traveller.Mappers
         {
             traveler.WhatsAppNumber = addTravelerDto.WhatsAppNumber;
             traveler.NationalityId = addTravelerDto.NationalityId;
-            traveler.ProfileImageUrl = addTravelerDto.ProfileImageUrl;
+            traveler.PreferredLanguageId = addTravelerDto.PreferredLanguageId;
+            traveler.CityId = addTravelerDto.CityId;
         }
 
         /// <summary>
@@ -24,10 +25,10 @@ namespace Mottrist.Service.Features.Traveller.Mappers
         /// </summary>
         public static void Map(Traveler traveler, AddTravelerDto addTravelerDto)
         {
-            addTravelerDto.Id = traveler.Id;
             addTravelerDto.WhatsAppNumber = traveler.WhatsAppNumber;
             addTravelerDto.NationalityId = traveler.NationalityId;
-            addTravelerDto.ProfileImageUrl = traveler.ProfileImageUrl;
+            addTravelerDto.PreferredLanguageId = traveler.PreferredLanguageId;
+            addTravelerDto.CityId = traveler.CityId;
         }
 
         /// <summary>
@@ -37,7 +38,8 @@ namespace Mottrist.Service.Features.Traveller.Mappers
         {
             traveler.WhatsAppNumber = updateTravelerDto.WhatsAppNumber;
             traveler.NationalityId = updateTravelerDto.NationalityId;
-            traveler.ProfileImageUrl = updateTravelerDto.ProfileImageUrl;
+            traveler.PreferredLanguageId = updateTravelerDto.PreferredLanguageId;
+            traveler.CityId = updateTravelerDto.CityId;
         }
 
         /// <summary>
@@ -48,7 +50,8 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             updateTravelerDto.Id = traveler.Id;
             updateTravelerDto.WhatsAppNumber = traveler.WhatsAppNumber;
             updateTravelerDto.NationalityId = traveler.NationalityId;
-            updateTravelerDto.ProfileImageUrl = traveler.ProfileImageUrl;
+            updateTravelerDto.PreferredLanguageId = traveler.PreferredLanguageId;
+            updateTravelerDto.CityId = traveler.CityId;
         }
 
         /// <summary>
@@ -74,7 +77,6 @@ namespace Mottrist.Service.Features.Traveller.Mappers
             applicationUser.Email = addTravelerDto.Email;
             applicationUser.UserName = addTravelerDto.Email;
             applicationUser.PhoneNumber = addTravelerDto.PhoneNumber;
-            applicationUser.PasswordHash = addTravelerDto.Password;
         }
 
         /// <summary>

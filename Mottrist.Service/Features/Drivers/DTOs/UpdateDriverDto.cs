@@ -17,14 +17,27 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public string? PhoneNumber { get; set; }
         public int NationalityId { get; set; }
         public string? Bio { get; set; }
-        
+
         // Images
-        public string? LicenseImageUrl { get; set; } = string.Empty;
-        public string? PassportImageUrl { get; set; } = string.Empty;
+        public string LicenseImageUrl { get; set; } = null!;
+        public string PassportImageUrl { get; set; } = null!;
         public string? ProfileImageUrl { get; set; } = string.Empty;
+
+        public IFormFile? ProfileImage { get; set; }
+        public IFormFile? LicenseImage { get; set; } 
+        public IFormFile? PassportImage { get; set; }
+
 
         // Professional Information
         public byte YearsOfExperience { get; set; }
+
+        // Pricing
+        public decimal? PricePerHour { get; set; } // Driver's hourly rate
+
+        // Availability (Storing Only Date)
+        public DateTime? AvailableFrom { get; set; } // When the driver starts being available
+        public DateTime? AvailableTo { get; set; }   // When the driver's availability ends
+        public bool IsAvailableAllTime { get; set; } // If true, driver ignores date restrictions
 
         // Car Details
         public bool HasCar { get; set; } = false;
@@ -36,7 +49,8 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public int? BodyTypeId { get; set; }
         public int? FuelTypeId { get; set; }
         public string? MainCarImageUrl { get; set; } // Main car image URL
-        public List<string>? CarImageUrl { get; set; } // Additional car image URLs
+        public List<string>? CarImageUrls { get; set; } // Additional car image URLs
+        public List<IFormFile>? CarImages { get; set; }
 
         // Cities and Countries worked on and covered
         public List<int> CitiesWorkedOn { get; set; } = new List<int>();
@@ -44,6 +58,5 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public List<int> CountriesWorkedOn { get; set; } = new List<int>();
         public List<int> CountriesCoverNow { get; set; } = new List<int>();
         public List<int> LanguagesSpoken { get; set; } = new List<int>();
-
     }
 }

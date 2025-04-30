@@ -22,6 +22,76 @@ namespace Mottrist.Repository.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Driver", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AvailableFrom")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime?>("AvailableTo")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CarId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAvailableAllTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("LicenseImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NationalityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PassportImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("PricePerHour")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValue((byte)2);
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WhatsAppNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<byte>("YearsOfExperience")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarId")
+                        .IsUnique()
+                        .HasFilter("[CarId] IS NOT NULL");
+
+                    b.HasIndex("NationalityId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Drivers", "Drivers");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -848,7 +918,7 @@ namespace Mottrist.Repository.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Mottrist.Domain.Entities.Driver", b =>
+            modelBuilder.Entity("Mottrist.Domain.Entities.Destination", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -856,52 +926,62 @@ namespace Mottrist.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("CarId")
+                    b.Property<int>("CityId")
                         .HasColumnType("int");
 
-                    b.Property<string>("LicenseImageUrl")
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("NationalityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PassportImageUrl")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("ProfileImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<byte>("Status")
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.ToTable("Destinations", "Geography");
+                });
+
+            modelBuilder.Entity("Mottrist.Domain.Entities.DriverInteraction", b =>
+                {
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint")
-                        .HasDefaultValue((byte)2);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DriverId")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsLiked")
+                        .HasColumnType("bit");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("WhatsAppNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<byte>("YearsOfExperience")
-                        .HasColumnType("tinyint");
+                    b.Property<int>("ViewsCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CarId")
-                        .IsUnique()
-                        .HasFilter("[CarId] IS NOT NULL");
-
-                    b.HasIndex("NationalityId");
+                    b.HasIndex("DriverId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Drivers", "Drivers");
+                    b.ToTable("DriverInteractions", "Drivers");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.Entities.Traveler", b =>
@@ -912,7 +992,13 @@ namespace Mottrist.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CityId")
+                        .HasColumnType("int");
+
                     b.Property<int>("NationalityId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PreferredLanguageId")
                         .HasColumnType("int");
 
                     b.Property<string>("ProfileImageUrl")
@@ -927,7 +1013,11 @@ namespace Mottrist.Repository.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CityId");
+
                     b.HasIndex("NationalityId");
+
+                    b.HasIndex("PreferredLanguageId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -2542,6 +2632,32 @@ namespace Mottrist.Repository.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Driver", b =>
+                {
+                    b.HasOne("Mottrist.Domain.Entities.CarDetails.Car", "Car")
+                        .WithOne()
+                        .HasForeignKey("Driver", "CarId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Mottrist.Domain.LookupEntities.Country", "Country")
+                        .WithMany("Drivers")
+                        .HasForeignKey("NationalityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Mottrist.Domain.Identity.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Car");
+
+                    b.Navigation("Country");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Mottrist.Domain.Identity.ApplicationRole", null)
@@ -2647,39 +2763,51 @@ namespace Mottrist.Repository.Migrations
                     b.Navigation("Car");
                 });
 
-            modelBuilder.Entity("Mottrist.Domain.Entities.Driver", b =>
+            modelBuilder.Entity("Mottrist.Domain.Entities.Destination", b =>
                 {
-                    b.HasOne("Mottrist.Domain.Entities.CarDetails.Car", "Car")
-                        .WithOne()
-                        .HasForeignKey("Mottrist.Domain.Entities.Driver", "CarId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                    b.HasOne("Mottrist.Domain.LookupEntities.City", "City")
+                        .WithMany("Destinations")
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("Mottrist.Domain.LookupEntities.Country", "Country")
-                        .WithMany("Drivers")
-                        .HasForeignKey("NationalityId")
+                    b.Navigation("City");
+                });
+
+            modelBuilder.Entity("Mottrist.Domain.Entities.DriverInteraction", b =>
+                {
+                    b.HasOne("Driver", "Driver")
+                        .WithMany("DriverInteractions")
+                        .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Mottrist.Domain.Identity.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("DriverInteractions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Car");
-
-                    b.Navigation("Country");
+                    b.Navigation("Driver");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.Entities.Traveler", b =>
                 {
+                    b.HasOne("Mottrist.Domain.LookupEntities.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId");
+
                     b.HasOne("Mottrist.Domain.LookupEntities.Country", "Country")
                         .WithMany()
                         .HasForeignKey("NationalityId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Mottrist.Domain.LookupEntities.Language", "PreferredLanguage")
+                        .WithMany()
+                        .HasForeignKey("PreferredLanguageId");
 
                     b.HasOne("Mottrist.Domain.Identity.ApplicationUser", "User")
                         .WithOne()
@@ -2687,7 +2815,11 @@ namespace Mottrist.Repository.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("City");
+
                     b.Navigation("Country");
+
+                    b.Navigation("PreferredLanguage");
 
                     b.Navigation("User");
                 });
@@ -2711,7 +2843,7 @@ namespace Mottrist.Repository.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Mottrist.Domain.Entities.Driver", "Driver")
+                    b.HasOne("Driver", "Driver")
                         .WithMany("DriverCities")
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -2730,7 +2862,7 @@ namespace Mottrist.Repository.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Mottrist.Domain.Entities.Driver", "Driver")
+                    b.HasOne("Driver", "Driver")
                         .WithMany("DriverCountries")
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -2743,7 +2875,7 @@ namespace Mottrist.Repository.Migrations
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.DriverLanguage", b =>
                 {
-                    b.HasOne("Mottrist.Domain.Entities.Driver", "Driver")
+                    b.HasOne("Driver", "Driver")
                         .WithMany("DriverLanguages")
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -2760,22 +2892,31 @@ namespace Mottrist.Repository.Migrations
                     b.Navigation("Language");
                 });
 
-            modelBuilder.Entity("Mottrist.Domain.Entities.CarDetails.Car", b =>
-                {
-                    b.Navigation("CarImages");
-                });
-
-            modelBuilder.Entity("Mottrist.Domain.Entities.Driver", b =>
+            modelBuilder.Entity("Driver", b =>
                 {
                     b.Navigation("DriverCities");
 
                     b.Navigation("DriverCountries");
 
+                    b.Navigation("DriverInteractions");
+
                     b.Navigation("DriverLanguages");
+                });
+
+            modelBuilder.Entity("Mottrist.Domain.Entities.CarDetails.Car", b =>
+                {
+                    b.Navigation("CarImages");
+                });
+
+            modelBuilder.Entity("Mottrist.Domain.Identity.ApplicationUser", b =>
+                {
+                    b.Navigation("DriverInteractions");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.City", b =>
                 {
+                    b.Navigation("Destinations");
+
                     b.Navigation("DriverCities");
                 });
 

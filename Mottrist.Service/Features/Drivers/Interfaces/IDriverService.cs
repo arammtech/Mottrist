@@ -67,7 +67,27 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// Returns null if an error occurs.
         /// </returns>
         Task<DriverFormFieldsDto?> GetAllDriverFormFields();
+        Task<DataResult<DriverDto>?> GetByCountryAsync(int countryId);
+     
+        Task<DataResult<DriverDto>?> GetByCountryAndCityAsync(int countryId, int cityId);
 
+        Task<DataResult<DriverDto>?> GetByCountryCityAndDateAsync(int countryId, int cityId, DateTime date);
+
+        Task<PaginatedResult<DriverDto>?> GetByCountryWithPaginationAsync(
+                    int countryId,
+                    int page = 1,
+                    int pageSize = 10);
+        Task<PaginatedResult<DriverDto>?> GetByCountryAndCityWithPaginationAsync(
+                    int countryId,
+                    int cityId,
+                    int page = 1,
+                    int pageSize = 10);
+        Task<PaginatedResult<DriverDto>?> GetByCountryCityAndDateWithPaginationAsync(
+                    int countryId,
+                    int cityId,
+                    DateTime date,
+                    int page = 1,
+                    int pageSize = 10);
         #endregion
 
         #region Create Operation
@@ -94,6 +114,49 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// </returns>
         Task<Result> UpdateAsync(UpdateDriverDto driverDto);
 
+        /// <summary>
+        /// Updates the availability details of a specified driver.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver whose availability is being updated.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="availableFrom">
+        /// The date when the driver becomes available.
+        /// If null, the availability start date remains unchanged.
+        /// </param>
+        /// <param name="availableTo">
+        /// The date when the driver is no longer available.
+        /// If null, the availability end date remains unchanged.
+        /// </param>
+        /// <param name="availableAllTime">
+        /// Indicates whether the driver is available all the time.
+        /// If true, the availability dates may be ignored.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating whether the update was successful or if an error occurred.
+        /// </returns>
+        Task<Result> UpdateAvailabilityAsync(
+            int driverId,
+            DateTime? availableFrom,
+            DateTime? availableTo,
+            bool availableAllTime);
+
+        /// <summary>
+        /// Updates the price per hour for a specified driver.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver whose pricing is being updated.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="newPricePerHour">
+        /// The new price per hour to set for the driver.
+        /// Must be greater than 0.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the update was successful or if an error occurred.
+        /// </returns>
+        Task<Result> UpdatePriceAsync(int driverId, decimal newPricePerHour);
         #endregion
 
         #region Delete Operation
@@ -119,7 +182,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A boolean value indicating whether the driver exists.
         /// </returns>
-        Task<bool> DoesDriverExistByIdAsync(int driverId, CancellationToken cancellationToken = default);
+        Task<bool> DoesExistByIdAsync(int driverId, CancellationToken cancellationToken = default);
 
 
         /// <summary>
@@ -132,7 +195,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// A task representing the asynchronous operation. The task result is <c>true</c> if a user
         /// with the specified email exists; otherwise, <c>false</c>.
         /// </returns>
-        Task<bool> DoesDriverExistByEmailAsync(string email, CancellationToken cancellationToken = default);
+        Task<bool> DoesExistByEmailAsync(string email, CancellationToken cancellationToken = default);
 
 
         #endregion
@@ -182,7 +245,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A <see cref="Result"/> object indicating the success or failure of the operation.
         /// </returns>
-        Task<Result> UpdateDriverStatusAsync(int driverId, DriverStatus newStatus);
+        Task<Result> UpdateStatusAsync(int driverId, DriverStatus newStatus);
 
         /// <summary>
         /// Retrieves the current status of a driver.
@@ -191,9 +254,50 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// The current <see cref="DriverStatus"/> of the driver, or null if the driver does not exist.
         /// </returns>
-        Task<DriverStatus?> GetDriverStatusAsync(int driverId);
+        Task<DriverStatus?> GetStatusAsync(int driverId);
 
         #endregion
+        #region Driver Interaction Operations
 
+        /// <summary>
+        /// Updates the like/dislike status for a driver by a logged-in user.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="userId">
+        /// The unique identifier of the user making the reaction.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="isLiked">
+        /// The reaction type: 
+        /// - `true` for Like.
+        /// - `false` for Dislike.
+        /// - `null` to remove the reaction.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Result"/> indicating whether the update was successful.
+        /// </returns>
+        Task<Result> LikeOrDislikeAsync(int driverId, int userId, bool? isLiked);
+
+        /// <summary>
+        /// Records a user's first view of a driver, ensuring each user views a driver only once.
+        /// </summary>
+        /// <param name="driverId">
+        /// The unique identifier of the driver being viewed.
+        /// Must be greater than 0.
+        /// </param>
+        /// <param name="userId">
+        /// The unique identifier of the user viewing the driver.
+        /// Must be greater than 0.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Result"/> object indicating whether the view was successfully recorded 
+        /// or if the user has already viewed the driver.
+        /// </returns>
+        Task<Result> IncrementViewCountAsync(int driverId, int userId);
+
+        #endregion
     }
 }

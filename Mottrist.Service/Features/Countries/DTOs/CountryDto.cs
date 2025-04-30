@@ -7,6 +7,10 @@ namespace Mottrist.Service.Features.Countries.DTOs
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public List<CityDto> Cities { get; set; } = null!;
+    }
+
+    public class CountryWithCitiesDto : CountryDto
+    {
+        public List<CityDto> Cities { get; set; } = new();
     }
 }

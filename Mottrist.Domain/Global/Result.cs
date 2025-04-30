@@ -9,8 +9,8 @@ namespace Mottrist.Domain.Global
     /// </summary>
     public partial class Result
     {
-        public bool IsSuccess { get; private set; }
-        public HashSet<string> Errors { get; private set; } = new HashSet<string>();
+        public bool IsSuccess { get; protected set; }
+        public HashSet<string> Errors { get; set; } = new HashSet<string>();
 
         private Result(bool isSuccess , IEnumerable<string>? errors = null)
         {
@@ -46,8 +46,6 @@ namespace Mottrist.Domain.Global
         {
             return new Result(isSuccess: false, errors: errorMessages);
         }
-
-
 
         /// <summary>
         /// Adds a single error message to the collection of errors.
@@ -85,6 +83,50 @@ namespace Mottrist.Domain.Global
               return "Success";
             else 
               return $"Failure: {string.Join(", ", Errors)}";
+        }
+    }
+
+    public partial class Result<T> : Result
+    {
+        public T? Data { get; set; }
+
+        /// <summary>  
+        /// Creates a new <see cref="Result{T}"/> instance representing a successful operation with data.  
+        /// </summary>  
+        public static Result<T> Success(T? data)
+        {
+            return new Result<T> { IsSuccess = true, Data = data };
+        }
+
+        /// <summary>  
+        /// Creates a new <see cref="Result{T}"/> instance representing a failure with a single error message.  
+        /// </summary>  
+        public static new Result<T> Failure(string errorMessage)
+        {
+            var result = new Result<T> { IsSuccess = false };
+            result.AddError(errorMessage);
+            return result;
+        }
+
+        /// <summary>  
+        /// Creates a new <see cref="Result{T}"/> instance representing a failure with multiple error messages.  
+        /// </summary>  
+        public static new Result<T> Failure(IEnumerable<string> errorMessages)
+        {
+            var result = new Result<T> { IsSuccess = false };
+            result.AddErrors(errorMessages);
+            return result;
+        }
+
+        /// <summary>  
+        /// Returns a string representation of the result for debugging purposes.  
+        /// </summary>  
+        public override string ToString()
+        {
+            if (IsSuccess)
+                return Data != null ? $"Success: {Data}" : "Success";
+            else
+                return $"Failure: {string.Join(", ", Errors)}";
         }
     }
 }

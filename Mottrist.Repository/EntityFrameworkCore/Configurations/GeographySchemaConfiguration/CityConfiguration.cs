@@ -23,5 +23,5 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.GeographySchema
             builder.ToTable("Cities", schema: "Geography");
 
         }
-    } 
+    }
 }
