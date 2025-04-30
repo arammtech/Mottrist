@@ -8,10 +8,7 @@ namespace Mottrist.Service.Features.Cities.Mappers
     {
         public CityProfile()
         {
-            CreateMap<City, CityDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-                .ReverseMap();
+            CreateMap<City, CityDto>().ReverseMap();
         }
     }
     

@@ -45,7 +45,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
         [HttpGet("{id:int}", Name = "GetDestinationByIdAsync")]
-        [ProducesResponseType(typeof(ApiResponse<DestinationDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<DestinationDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
@@ -66,6 +66,10 @@ namespace Mottrist.API.Controllers
 
                 return SuccessResponse(destination, "Destination retrieved successfully.");
             }
+            catch (HttpRequestException httpEx)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", httpEx.Message);
+            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
@@ -81,7 +85,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
         [HttpGet("all", Name = "GetAllDestinationsAsync")]
-        [ProducesResponseType(typeof(ApiResponse<DataResult<DestinationDTO>?>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<DestinationDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
@@ -93,6 +97,10 @@ namespace Mottrist.API.Controllers
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Destinations retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
@@ -117,14 +125,12 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if pagination parameters are invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
-        [HttpGet("all/paged", Name = "GetAllDestinationsWithPaginationAsync")]
-        [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DestinationDTO>?>), StatusCodes.Status200OK)]
+        [HttpGet("all/page/{page:int}/size/{pageSize:int}", Name = "GetAllDestinationsWithPaginationAsync")]
+        [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DestinationDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllWithPaginationAsync(
-           int page = 1,
-           int pageSize = 10)
+        public async Task<IActionResult> GetAllDestinationsWithPaginationAsync(int page = 1, int pageSize = 10)
         {
             try
             {
@@ -139,6 +145,10 @@ namespace Mottrist.API.Controllers
                 return result != null
                     ? SuccessResponse(result, "Paginated destinations retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error:");
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
@@ -161,7 +171,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddAsync([FromForm] AddDestinationDTO destinationDto)
+        public async Task<IActionResult> AddAsync([FromForm] AddDestinationDto destinationDto)
         {
             if (!ModelState.IsValid)
             {
@@ -178,8 +188,12 @@ namespace Mottrist.API.Controllers
                 var result = await _destinationService.AddAsync(destinationDto);
 
                 return result.IsSuccess
-                    ? CreatedResponse("GetDestinationByIdAsync", new { id = destinationDto.Id }, new { id = destinationDto.Id }, "Destination created successfully.")
+                    ? CreatedResponse("GetDestinationByIdAsync", new { id = result.Data?.Id }, result.Data, "Destination created successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "CreationError", "Failed to create destination.");
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
@@ -199,11 +213,11 @@ namespace Mottrist.API.Controllers
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
         [HttpPut("{id:int}", Name = "UpdateDestinationDetailsAsync")]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<DestinationDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateAsync(int id, [FromForm] AddDestinationDTO destinationDto)
+        public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateDestinationDto destinationDto)
         {
             // Validate the input model
             if (!ModelState.IsValid)
@@ -225,12 +239,15 @@ namespace Mottrist.API.Controllers
             try
             {
                 // Set the destination id based on the route parameter.
-                destinationDto.Id = id;
                 var result = await _destinationService.UpdateAsync(destinationDto);
 
                 return result.IsSuccess
-                    ? SuccessResponse(result, "Destination details updated successfully.")
+                    ? SuccessResponse(result.Data, "Destination details updated successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UpdateError", "An error occurred during update.");
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
@@ -268,11 +285,14 @@ namespace Mottrist.API.Controllers
                     ? SuccessResponse("Destination deleted successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "DeletionError", "Failed to delete the destination.");
             }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
             }
         }
-
     }
 }

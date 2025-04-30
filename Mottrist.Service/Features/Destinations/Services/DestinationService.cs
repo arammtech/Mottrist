@@ -8,7 +8,9 @@ using Mottrist.Service.Features.General;
 using Mottrist.Service.Features.Destinations.DTOs;
 using Microsoft.EntityFrameworkCore;
 using static Mottrist.Utilities.Global.GlobalFunctions;
-using Mottrist.Service.Features.Traveller.DTOs;
+using AutoMapper;
+using Mottrist.Service.Features.Cities.Dtos;
+using Mottrist.Service.Features.Countries.DTOs;
 
 namespace Mottrist.Service.Features.DestinationServices
 {
@@ -17,58 +19,37 @@ namespace Mottrist.Service.Features.DestinationServices
     /// </summary>
     public class DestinationService : BaseService, IDestinationService
     {
-        private string _GetFolder(int desinationId) => $"destinations/{desinationId}";
-
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DestinationService"/> class.
-        /// </summary>
-        /// <param name="unitOfWork">Unit of work for managing repositories and transactions.</param>
-        /// <param name="mapper">Automapper for mapping entities to DTOs.</param>
-        public DestinationService(IUnitOfWork unitOfWork) : base(unitOfWork)
+        public DestinationService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
         {
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        /// <summary>
-        /// Retrieves a list of destinations, optionally filtered by criteria.
-        /// </summary>
-        /// <param name="filter">Optional filter to apply to the destination query.</param>
-        /// <returns>
-        /// A task representing the asynchronous operation. The result contains:
-        /// - A <see cref="DataResult{DestinationDto}"/> of destinations matching the filter.
-        /// - An empty result if no destinations match or an error occurs.
-        /// </returns>
-        public async Task<DataResult<DestinationDTO>?> GetAllAsync(Expression<Func<Destination, bool>>? filter = null)
+        public async Task<DataResult<DestinationDto>?> GetAllAsync(Expression<Func<Destination, bool>>? filter = null)
         {
             try
             {
-                // Build query from repository
+                // Build query from repository  
                 var destinationsQuery = _unitOfWork.Repository<Destination>().Table;
 
-                // Apply filter if provided
+                // Apply filter if provided  
                 if (filter != null)
                 {
                     destinationsQuery = destinationsQuery.Where(filter);
                 }
 
-                // Execute query and transform results
-                var destinations = await destinationsQuery
-                    .Select(dest => new DestinationDTO
-                    {
-                        Id = dest.Id,
-                        Name = dest.Name,
-                        CityName = dest.City.Name,
-                        Type = dest.Type,
-                        ImageUrl = dest.ImageUrl,
-                        Description = dest.Description
-                    })
-                    .ToListAsync();
+                destinationsQuery = destinationsQuery
+                    .Include(x => x.City)
+                    .ThenInclude(x => x.Country);
 
-                return new DataResult<DestinationDTO>
+                var destinations = await _mapper.ProjectTo<DestinationDto>(destinationsQuery).ToListAsync();
+
+                return new DataResult<DestinationDto>
                 {
-                    Data = destinations.Any() ? destinations : Enumerable.Empty<DestinationDTO>()
+                    Data = destinations.Any() ? destinations : Enumerable.Empty<DestinationDto>()
                 };
             }
             catch (Exception)
@@ -77,63 +58,32 @@ namespace Mottrist.Service.Features.DestinationServices
             }
         }
 
-        /// <summary>
-        /// Retrieves a paginated list of destinations.
-        /// </summary>
-        /// <param name="page">The page number to retrieve.</param>
-        /// <param name="pageSize">The number of destinations per page.</param>
-        /// <param name="filter">Optional filter criteria.</param>
-        /// <returns>
-        /// A task representing the asynchronous operation. The result contains:
-        /// - A <see cref="PaginatedResult{DestinationDTO}"/> of destinations for the specified page.
-        /// - The total count of matching records.
-        /// </returns>
-        public async Task<PaginatedResult<DestinationDTO>?> GetAllWithPaginationAsync(
-            int page = 1,
-            int pageSize = 10,
-            Expression<Func<Destination, bool>>? filter = null)
+        public async Task<PaginatedResult<DestinationDto>?> GetAllWithPaginationAsync(int page = 1, int pageSize = 10, Expression<Func<Destination, bool>>? filter = null)
         {
-            if (page < 1 || pageSize < 1)
-            {
-                throw new ArgumentException("Page and PageSize must be greater than 0.");
-            }
-
             try
             {
+                // Build query from repository  
                 var destinationsQuery = _unitOfWork.Repository<Destination>().Table;
 
-                // Apply filters if provided
+                // Apply filter if provided  
                 if (filter != null)
                 {
                     destinationsQuery = destinationsQuery.Where(filter);
                 }
 
-                // Get total count before pagination
-                var totalRecords = await destinationsQuery.CountAsync();
+                destinationsQuery = destinationsQuery
+                    .Include(x => x.City)
+                    .ThenInclude(x => x.Country);
 
-                // Apply pagination
-                var paginatedDestinations = await destinationsQuery
-                    .OrderBy(dest => dest.Id)
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .Select(dest => new DestinationDTO
-                    {
-                        Id = dest.Id,
-                        Name = dest.Name,
-                        CityName = dest.City.Name,
-                        Type = dest.Type,
-                        ImageUrl = dest.ImageUrl,
-                        Description = dest.Description
-                    })
-                    .ToListAsync();
+                var destinations = await _mapper.ProjectTo<DestinationDto>(destinationsQuery).ToListAsync();
 
-                return new PaginatedResult<DestinationDTO>
+                return new PaginatedResult<DestinationDto>
                 {
-                    Data = paginatedDestinations,
-                    TotalRecordsCount = totalRecords,
+                    Data = destinations,
+                    TotalRecordsCount = 10,
                     PageNumber = page,
                     PageSize = pageSize,
-                    DataRecordsCount = paginatedDestinations.Count
+                    DataRecordsCount = destinations.Count
                 };
             }
             catch (Exception)
@@ -142,33 +92,51 @@ namespace Mottrist.Service.Features.DestinationServices
             }
         }
 
-        /// <summary>
-        /// Retrieves a destination by its unique identifier.
-        /// </summary>
-        /// <param name="destinationId">The unique identifier of the destination.</param>
-        /// <returns>
-        /// A task representing the asynchronous operation. The result contains:
-        /// - A <see cref="DestinationDto"/> object if found.
-        /// - Null if not found or an error occurs.
-        /// </returns>
-        public async Task<DestinationDTO?> GetByIdAsync(int destinationId)
+        public async Task<DestinationDto?> GetByIdAsync(int destinationId)
         {
             try
             {
-                var destinationDto = await _unitOfWork.Repository<Destination>().Table
-                    .Select
-                    (
-                        dest => new DestinationDTO
-                        {
-                            Id = dest.Id,
-                            Name = dest.Name,
-                            CityName = dest.City.Name,
-                            Type = dest.Type,
-                            ImageUrl = dest.ImageUrl,
-                            Description = dest.Description
-                        }
-                    ).FirstOrDefaultAsync(x => x.Id == destinationId);
+                var destination = await _unitOfWork.Repository<Destination>()
+                    .Table
+                    .Include(x => x.City)
+                    .ThenInclude(x => x.Country)
+                    .FirstOrDefaultAsync(x=> x.Id == destinationId);
 
+                return _mapper.Map<DestinationDto>(destination);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public async Task<DestinationDto?> GetByIdAsync111111(int destinationId)
+        {
+            try
+            {
+                var destinationDto = await _unitOfWork.Repository<Destination>()
+                    .Table
+                    .Include(x => x.City)
+                    .ThenInclude(x => x.Country)
+                    .Select(x => new DestinationDto
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Type = x.Type,
+                        ImageUrl = x.ImageUrl,
+                        Description = x.Description,
+                        Country = new CountryDto
+                        {
+                            Id = x.City.Country.Id,
+                            Name = x.City.Country.Name,
+                        },
+                        City = new CityDto
+                        {
+                            Id = x.City.Id,
+                            Name = x.City.Name,
+                        },
+                    })
+                    .FirstOrDefaultAsync(x => x.Id == destinationId);
 
                 return destinationDto;
             }
@@ -177,126 +145,64 @@ namespace Mottrist.Service.Features.DestinationServices
                 return null;
             }
         }
-        /// <summary>
-        /// Adds a new destination to the database.
-        /// </summary>
-        /// <param name="destinationDto">The DTO containing destination details.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating success or failure.
-        /// </returns>
-        public async Task<Result> AddAsync(AddDestinationDTO destinationDto)
-        {
-            // Validate input DTO
-            if (destinationDto == null)
-                return Result.Failure("Invalid destination object.");
 
+        public async Task<Result<DestinationDto>> AddAsync(AddDestinationDto destinationDto)
+        {
             try
             {
-                // Create destination entity
-                var destination = new Destination
-                {
-                    Name = destinationDto.Name,
-                    CityId = destinationDto.CityId,
-                    Type = destinationDto.Type,
-                    ImageUrl = destinationDto.ImageUrl,
-                    Description = destinationDto.Description
-                };
+                string? savedImageUrl = await SaveImageAsync(destinationDto.Image, "destinations");
 
-                // Add destination to repository
+                if (string.IsNullOrEmpty(savedImageUrl))
+                    return Result<DestinationDto>.Failure("Failed to save image.");
+
+                var destination = _mapper.Map<Destination>(destinationDto);
+                destination.ImageUrl = savedImageUrl;
+
                 await _unitOfWork.Repository<Destination>().AddAsync(destination);
                 var saveResult = await _unitOfWork.SaveChangesAsync();
 
                 if (destination.Id <= 0 || !saveResult.IsSuccess)
-                    return Result.Failure("Failed to save destination.");
+                    return Result<DestinationDto>.Failure("Failed to save destination.");
 
-                #region Image Handling
-
-                if (destinationDto.Image != null)
-                {
-                    var savedImageUrl = await SaveImageAsync(destinationDto.Image, _GetFolder(destination.Id));
-
-                    // Ensure the image was saved successfully before updating
-                    if (!string.IsNullOrEmpty(savedImageUrl))
-                    {
-                        destination.ImageUrl = savedImageUrl;
-                        _unitOfWork.Repository<Destination>().Update(destination);
-
-                        saveResult = await _unitOfWork.SaveChangesAsync();
-                        if (!saveResult.IsSuccess)
-                        {
-                            await _unitOfWork.RollbackAsync();
-                            return Result.Failure("Failed to add the destination due to image update failure.");
-                        }
-                    }
-                }
-
-                #endregion
-
-                // Assign the generated ID and updated image URL back to DTO
-                destinationDto.Id = destination.Id;
-                destinationDto.ImageUrl = destination.ImageUrl;
-
-                return Result.Success();
+                var desntiationDto = _mapper.Map<DestinationDto>(destination);
+                return Result<DestinationDto>.Success(desntiationDto);
             }
             catch (Exception ex)
             {
-                return Result.Failure($"Unexpected error while creating destination: {ex.Message}");
+                return Result<DestinationDto>.Failure($"Error creating destination: {ex.Message}");
             }
         }
 
-        /// <summary>
-        /// Updates a destination entity with new data.
-        /// </summary>
-        /// <param name="destinationDto">DTO containing updated destination details.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating success or failure.
-        /// </returns>
-        public async Task<Result> UpdateAsync(AddDestinationDTO destinationDto)
+        public async Task<Result<DestinationDto>> UpdateAsync(UpdateDestinationDto updateDestinationDto)
         {
-            // Validate input DTO
-            if (destinationDto == null)
-                return Result.Failure("Invalid destination object.");
-
             try
             {
-                var destination = await _unitOfWork.Repository<Destination>().GetAsync(d => d.Id == destinationDto.Id);
+                var destination = await _unitOfWork.Repository<Destination>().GetAsync(d => d.Id == updateDestinationDto.Id);
+
                 if (destination == null)
-                    return Result.Failure("Destination not found.");
+                    return Result<DestinationDto>.Failure("Destination not found.");
 
-                // Update basic destination fields
-                destination.Name = destinationDto.Name;
-                destination.CityId = destinationDto.CityId;
-                destination.Type = destinationDto.Type;
-                destination.Description = destinationDto.Description;
+                // Check if a new image is provided
+                if (updateDestinationDto.Image != null)
+                {
+                    // Save the new image and update the URL
+                    string savedImageUrl = await ReplaceImageAsync(updateDestinationDto.Image, "destinations", destination.ImageUrl);
+                    destination.ImageUrl = savedImageUrl;
+                }
 
-                #region Handle Image Update
+                _mapper.Map(updateDestinationDto, destination);
 
-                var updateImageResult = await UpdateImageAsync(destinationDto.Image, _GetFolder(destinationDto.Id), destination.ImageUrl);
-
-                destination.ImageUrl = updateImageResult.NewImageUrl;
-
-                #endregion
-
-                // Perform update in repository
-                _unitOfWork.Repository<Destination>().Update(destination);
+                await _unitOfWork.Repository<Destination>().UpdateAsync(destination);
                 var result = await _unitOfWork.SaveChangesAsync();
 
-                return result;
-                   
+                return Result<DestinationDto>.Success(await GetByIdAsync(destination.Id));
             }
             catch (Exception ex)
             {
-                return Result.Failure($"Unexpected error while updating destination: {ex.Message}");
+                return Result<DestinationDto>.Failure($"Error updating destination: {ex.Message}");
             }
         }
 
-        /// <summary>
-        /// Deletes a destination by its unique identifier.
-        /// </summary>
-        /// <param name="destinationId">The unique identifier of the destination to delete.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating success or failure.
-        /// </returns>
         public async Task<Result> DeleteAsync(int destinationId)
         {
             // Validate input parameter
@@ -310,6 +216,11 @@ namespace Mottrist.Service.Features.DestinationServices
                 if (destination == null)
                     return Result.Failure("Destination not found.");
 
+                // Delete the image
+                var imageDeleted = await DeleteImageAsync(destination.ImageUrl);
+                if (!imageDeleted)
+                    return Result.Failure("Failed to delete image.");
+
                 await _unitOfWork.Repository<Destination>().DeleteAsync(destination);
                 var result = await _unitOfWork.SaveChangesAsync();
 
@@ -320,31 +231,5 @@ namespace Mottrist.Service.Features.DestinationServices
                 return Result.Failure($"Unexpected error while deleting destination: {ex.Message}");
             }
         }
-
-        /// <summary>
-        /// Checks whether a destination exists in the database by its unique identifier.
-        /// </summary>
-        /// <param name="destinationId">The unique identifier of the destination.</param>
-        /// <returns>
-        /// A task representing the asynchronous operation.
-        /// - Returns `true` if the destination exists.
-        /// - Returns `false` if the destination does not exist.
-        /// </returns>
-        public async Task<bool> DoesDestinationExistByIdAsync(int destinationId)
-        {
-            if (destinationId < 1)
-                return false; // Invalid ID
-
-            try
-            {
-                return await _unitOfWork.Repository<Destination>()
-                    .Table.AnyAsync(d => d.Id == destinationId);
-            }
-            catch (Exception)
-            {
-                return false; // Default to false if an error occurs
-            }
-        }
-
     }
 }

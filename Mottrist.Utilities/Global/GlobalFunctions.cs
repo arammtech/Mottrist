@@ -34,12 +34,12 @@ namespace Mottrist.Utilities.Global
         /// <param name="imageFile">The uploaded image file to save.</param>
         /// <param name="folderName">The folder where the image will be stored.</param>
         /// <returns>The relative URL of the saved image file.</returns>
-        public static async Task<string> SaveImageAsync(IFormFile imageFile, string folderName)
+        public static async Task<string?> SaveImageAsync(IFormFile imageFile, string folderName)
         {
             // Ensure the image file is not null
             if (imageFile == null || imageFile.Length == 0)
             {
-                throw new ArgumentException("Invalid image file.");
+                return null;
             }
 
             // Generate a unique file name to prevent overwriting

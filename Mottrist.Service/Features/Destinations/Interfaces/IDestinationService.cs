@@ -18,7 +18,7 @@ namespace Mottrist.Service.Interfaces
         /// <returns>
         /// A task representing the asynchronous operation, returning a list of destinations.
         /// </returns>
-        Task<DataResult<DestinationDTO>?> GetAllAsync(Expression<Func<Destination, bool>>? filter = null);
+        Task<DataResult<DestinationDto>?> GetAllAsync(Expression<Func<Destination, bool>>? filter = null);
 
         /// <summary>
         /// Retrieves a paginated list of destinations.
@@ -29,7 +29,7 @@ namespace Mottrist.Service.Interfaces
         /// <returns>
         /// A task representing the asynchronous operation, returning paginated results.
         /// </returns>
-        Task<PaginatedResult<DestinationDTO>?> GetAllWithPaginationAsync(
+        Task<PaginatedResult<DestinationDto>?> GetAllWithPaginationAsync(
             int page,
             int pageSize = 10,
             Expression<Func<Destination, bool>>? filter = null);
@@ -41,7 +41,7 @@ namespace Mottrist.Service.Interfaces
         /// <returns>
         /// A task representing the asynchronous operation, returning the destination if found.
         /// </returns>
-        Task<DestinationDTO?> GetByIdAsync(int destinationId);
+        Task<DestinationDto?> GetByIdAsync(int destinationId);
 
         /// <summary>
         /// Adds a new destination.
@@ -50,7 +50,7 @@ namespace Mottrist.Service.Interfaces
         /// <returns>
         /// A task representing the asynchronous operation, indicating success or failure.
         /// </returns>
-        Task<Result> AddAsync(AddDestinationDTO destinationDto);
+        Task<Result<DestinationDto>> AddAsync(AddDestinationDto destinationDto);
 
         /// <summary>
         /// Updates an existing destination.
@@ -59,7 +59,7 @@ namespace Mottrist.Service.Interfaces
         /// <returns>
         /// A task representing the asynchronous operation, indicating success or failure.
         /// </returns>
-        Task<Result> UpdateAsync(AddDestinationDTO destinationDto);
+        Task<Result<DestinationDto>> UpdateAsync(UpdateDestinationDto destinationDto);
 
         /// <summary>
         /// Deletes a destination by its unique identifier.
@@ -69,17 +69,5 @@ namespace Mottrist.Service.Interfaces
         /// A task representing the asynchronous operation, indicating success or failure.
         /// </returns>
         Task<Result> DeleteAsync(int destinationId);
-
-        /// <summary>
-        /// Checks whether a destination exists in the database by its unique identifier.
-        /// </summary>
-        /// <param name="destinationId">The unique identifier of the destination.</param>
-        /// <returns>
-        /// A task representing the asynchronous operation.
-        /// - Returns `true` if the destination exists.
-        /// - Returns `false` if the destination does not exist.
-        /// </returns>
-        Task<bool> DoesDestinationExistByIdAsync(int destinationId);
-
     }
 }

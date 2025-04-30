@@ -14,8 +14,8 @@ namespace Mottrist.Domain.Entities
     {
         public string Name { get; set; } = null!;
         public int CityId { get; set; }
-        public string? Type { get; set; }
-        public string? ImageUrl { get; set; }
+        public string Type { get; set; } = null!;
+        public string ImageUrl { get; set; } = null!;
         public string? Description { get; set; }
 
         #region Navigation Properties
