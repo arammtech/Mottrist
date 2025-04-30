@@ -2,6 +2,7 @@
 using Feature.Car.DTOs;
 using Mottrist.Domain.Entities;
 using Mottrist.Domain.Entities.CarDetails;
+using Mottrist.Domain.Enums;
 using Mottrist.Domain.Identity;
 using Mottrist.Service.Features.Drivers.DTOs;
 
@@ -12,70 +13,16 @@ namespace Mottrist.Service.Features.Drivers.Profiles
 
         public DriverProfile()
         {
-            CreateMap<>
+            CreateMap<Driver, DriverDto>()
+                .ForMember(dest => dest.CitiesWorkedOn, opt => opt.MapFrom(src => src.DriverCities.Where(dc => dc.WorkStatus == WorkStatus.WorkedOn).Select(dc => dc.City)))
+                .ForMember(dest => dest.CitiesCoverNow, opt => opt.MapFrom(src => src.DriverCities.Where(dc => dc.WorkStatus == WorkStatus.CoverNow).Select(dc => dc.City)))
+                .ForMember(dest => dest.CountriesWorkedOn, opt => opt.MapFrom(src => src.DriverCountries.Where(dc => dc.WorkStatus == WorkStatus.WorkedOn).Select(dc => dc.Country)))
+                .ForMember(dest => dest.CountriesCoverNow, opt => opt.MapFrom(src => src.DriverCountries.Where(dc => dc.WorkStatus == WorkStatus.CoverNow).Select(dc => dc.Country)))
+                .ForMember(dest => dest.SpokenLanguages, opt => opt.MapFrom(src => src.DriverLanguages.Select(dl => dl.Language)));
+           
+            CreateMap<AddDriverDto, Driver>();
+            
+            CreateMap<UpdateDriverDto, Driver>();
         }
-
-
-        //public DriverProfile()
-        //{
-        //    CreateMap<Driver, AddDriverDto>()
-        //        .ReverseMap();
-
-        //    CreateMap<ApplicationUser, AddDriverDto>()
-        //        .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.PasswordHash))
-        //        .ForMember(dest => dest.Id, opt => opt.Ignore()) // Ignore the Id property during mapping
-        //        .ReverseMap()
-        //        .ForMember(src => src.Id, opt => opt.Ignore()) // Ignore Id during reverse mapping
-        //        .ForMember(src => src.PasswordHash, opt => opt.MapFrom(dest => dest.Password))
-        //        .ForMember(src => src.UserName, opt => opt.MapFrom(dest => dest.Email));
-
-
-
-        //    CreateMap<Car, AddDriverDto>()
-        //        .ForMember(dest => dest.Id, opt => opt.Ignore()) // Ignore the Id property during mapping
-        //        .ReverseMap()
-        //        .ForMember(src => src.Id, opt => opt.Ignore()); // Ignore Id during reverse mapping
-
-        //    CreateMap<AddCarDto, AddDriverDto>()
-        //        .ForMember(dest => dest.Id, opt => opt.Ignore()) // Ignore the Id property during mapping
-        //        .ReverseMap()
-        //        .ForMember(src => src.Id, opt => opt.Ignore());
-
-        //    CreateMap<UpdateCarDto, UpdateDriverDto>()
-        //        .ForMember(dest => dest.Id, opt => opt.Ignore()) // Ignore the Id property during mapping
-        //        .ReverseMap()
-        //        .ForMember(src => src.Id, opt => opt.Ignore());
-
-
-        //    CreateMap<Driver, UpdateDriverDto>()
-        //        .ReverseMap();
-
-        //    CreateMap<ApplicationUser, UpdateDriverDto>()
-        //        .ForMember(dest => dest.Id, opt => opt.Ignore()) // Ignore the Id property during mapping
-        //        .ReverseMap()
-        //        .ForMember(src => src.Id, opt => opt.Ignore()); // Ignore Id during reverse mapping
-
-        //    CreateMap<AddCarDto, UpdateDriverDto>()
-        //        .ReverseMap();
-
-        //    CreateMap<Driver,DriverDto>()
-        //        .ForPath(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
-        //        .ForPath(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
-        //        .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
-        //        .ForPath(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
-        //        .ForPath(dest => dest.Nationality, opt => opt.MapFrom(src => src.Country.Name))
-        //        .ReverseMap();
-
-        //    CreateMap<Driver, ApplicationUser>()
-        //        .ForPath(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
-        //        .ForPath(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
-        //        .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
-        //        .ForPath(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Email))
-        //        .ForPath(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.User.Email))
-        //        .ForPath(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
-        //        .ReverseMap();
-
-
-        //}
     }
 }

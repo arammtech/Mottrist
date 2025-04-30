@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Feature.Car.DTOs;
+using Microsoft.AspNetCore.Http;
 
 namespace Mottrist.Service.Features.Drivers.DTOs
 {
@@ -7,56 +8,29 @@ namespace Mottrist.Service.Features.Drivers.DTOs
     /// </summary>
     public class UpdateDriverDto
     {
-        // Identification
-        public int Id { get; set; }
-
         // Personal Information
+        public int Id { get; set; }      
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
-        public string? WhatsAppNumber { get; set; }
         public string? PhoneNumber { get; set; }
+        public string? WhatsAppNumber { get; set; }
         public int NationalityId { get; set; }
         public string? Bio { get; set; }
-
-        // Images
-        public string LicenseImageUrl { get; set; } = null!;
-        public string PassportImageUrl { get; set; } = null!;
-        public string? ProfileImageUrl { get; set; } = string.Empty;
-
-        public IFormFile? ProfileImage { get; set; }
-        public IFormFile? LicenseImage { get; set; } 
-        public IFormFile? PassportImage { get; set; }
-
-
-        // Professional Information
         public byte YearsOfExperience { get; set; }
+        public decimal? PricePerHour { get; set; }
+        public DateTime? AvailableFrom { get; set; }
+        public DateTime? AvailableTo { get; set; }
+        public bool IsAvailableAllTime { get; set; }
+        public bool HasCar { get; set; }
+        public IFormFile? ProfileImage { get; set; }
 
-        // Pricing
-        public decimal? PricePerHour { get; set; } // Driver's hourly rate
-
-        // Availability (Storing Only Date)
-        public DateTime? AvailableFrom { get; set; } // When the driver starts being available
-        public DateTime? AvailableTo { get; set; }   // When the driver's availability ends
-        public bool IsAvailableAllTime { get; set; } // If true, driver ignores date restrictions
-
-        // Car Details
-        public bool HasCar { get; set; } = false;
-        public int? BrandId { get; set; }
-        public int? ModelId { get; set; }
-        public int? Year { get; set; }
-        public byte? NumberOfSeats { get; set; }
-        public int? ColorId { get; set; }
-        public int? BodyTypeId { get; set; }
-        public int? FuelTypeId { get; set; }
-        public string? MainCarImageUrl { get; set; } // Main car image URL
-        public List<string>? CarImageUrls { get; set; } // Additional car image URLs
-        public List<IFormFile>? CarImages { get; set; }
-
-        // Cities and Countries worked on and covered
-        public List<int> CitiesWorkedOn { get; set; } = new List<int>();
-        public List<int> CitiesCoverNow { get; set; } = new List<int>();
-        public List<int> CountriesWorkedOn { get; set; } = new List<int>();
-        public List<int> CountriesCoverNow { get; set; } = new List<int>();
-        public List<int> LanguagesSpoken { get; set; } = new List<int>();
+        #region Navigation Properties
+        public AddCarDto? Car { get; set; }
+        public List<int> CitiesWorkedOn { get; set; } = [];
+        public List<int> CitiesCoverNow { get; set; } = [];
+        public List<int> CountriesWorkedOn { get; set; } = [];
+        public List<int> CountriesCoverNow { get; set; } = [];
+        public List<int> LanguagesSpoken { get; set; } = [];
+        #endregion
     }
 }

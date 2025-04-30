@@ -11,12 +11,10 @@ namespace Mottrist.Service.Features.Cars.Mappers
     {
         public CarProfile() 
         {
-            CreateMap<Car, AddCarDto>().ReverseMap();
-            CreateMap<Car, UpdateCarDto>().ReverseMap();
-            CreateMap<AddCarDto, UpdateCarDto>().ReverseMap();
-            CreateMap<Car, CarDto>().ReverseMap();
-            CreateMap<CarImage, CarImageDto>().ReverseMap();
-
+            CreateMap<Car, CarDto>();
+            CreateMap<Car, AddCarDto>();
+            CreateMap<Car, UpdateCarDto>();
+            CreateMap<CarImage, CarImageDto>();
         }
     }
 }

@@ -4,9 +4,11 @@ namespace Mottrist.Domain.Entities.CarDetails
 {
     public class Car : BaseEntity
     {
-        public int BrandId { get; set; }
         public int Year { get; set; }
         public byte NumberOfSeats { get; set; }
+        public bool HasWiFi { get; set; }
+        public bool HasAirCondiations { get; set; }
+        public int BrandId { get; set; }
         public int ModelId { get; set; }
         public int ColorId { get; set; }
         public int BodyTypeId { get; set; }
@@ -18,7 +20,7 @@ namespace Mottrist.Domain.Entities.CarDetails
         public virtual Brand Brand { get; set; } = null!;
         public virtual BodyType BodyType { get; set; } = null!;
         public virtual FuelType FuelType { get; set; } = null!;
-       public virtual ICollection<CarImage> CarImages { get; set; } = new List<CarImage>();
+       public virtual ICollection<CarImage> CarImages { get; set; } = [];
         #endregion
     }
 }

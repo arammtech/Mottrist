@@ -177,7 +177,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                     CitiesWorkedOn = driver.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name).ToList(),
                     CountriesCoverNow = driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name).ToList(),
                     CountriesWorkedOn = driver.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name).ToList(),
-                    LanguagesSpoken = driver.DriverLanguages.Select(x => x.Language.Name).ToList()
+                    SpokenLanguages = driver.DriverLanguages.Select(x => x.Language.Name).ToList()
                 }).ToListAsync();
 
                 // Return the result
@@ -274,7 +274,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                             .Where(x => x.WorkStatus == WorkStatus.WorkedOn)
                             .Select(x => x.Country.Name)
                             .ToList(),
-                        LanguagesSpoken = driver.DriverLanguages
+                        SpokenLanguages = driver.DriverLanguages
                             .Select(x => x.Language.Name)
                             .ToList()
                     }
@@ -373,7 +373,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                         CitiesWorkedOn = x.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name).ToList(),
                         CountriesCoverNow = x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name).ToList(),
                         CountriesWorkedOn = x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name).ToList(),
-                        LanguagesSpoken = x.DriverLanguages.Select(x => x.Language.Name).ToList()
+                        SpokenLanguages = x.DriverLanguages.Select(x => x.Language.Name).ToList()
                     })
                     .ToListAsync();
 
@@ -452,7 +452,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                         CitiesWorkedOn =  x.DriverCities.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.City.Name).ToList(),
                         CountriesCoverNow =  x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.CoverNow).Select(x => x.Country.Name).ToList(),
                         CountriesWorkedOn = x.DriverCountries.Where(x => x.WorkStatus == WorkStatus.WorkedOn).Select(x => x.Country.Name).ToList(),
-                        LanguagesSpoken = x.DriverLanguages.Select(x => x.Language.Name).ToList()
+                        SpokenLanguages = x.DriverLanguages.Select(x => x.Language.Name).ToList()
                     })
                     .FirstOrDefaultAsync();
 
@@ -652,7 +652,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                                         .Where(x => x.WorkStatus == WorkStatus.WorkedOn)
                                         .Select(x => x.Country.Name)
                                         .ToList(),
-                    LanguagesSpoken = driver.DriverLanguages
+                    SpokenLanguages = driver.DriverLanguages
                                         .Select(x => x.Language.Name)
                                         .ToList()
                 })
@@ -811,7 +811,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                                             .Where(x => x.WorkStatus == WorkStatus.WorkedOn)
                                             .Select(x => x.Country.Name)
                                             .ToList(),
-                        LanguagesSpoken = driver.DriverLanguages
+                        SpokenLanguages = driver.DriverLanguages
                                             .Select(x => x.Language.Name)
                                             .ToList()
                     }).ToListAsync();
