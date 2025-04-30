@@ -365,4 +365,4 @@ FodyWeavers.xsd
 /MottristTestConsole
 
 # Ignore the images folder
-/Mottrist.API/wwwroot/images
+/Mottrist.API/wwwroot/images/
