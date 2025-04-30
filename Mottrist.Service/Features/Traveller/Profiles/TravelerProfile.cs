@@ -3,7 +3,7 @@ using Mottrist.Domain.Entities;
 using Mottrist.Domain.Identity;
 using Mottrist.Service.Features.Traveller.DTOs;
 
-namespace Mottrist.Service.Features.Traveller.Mappers
+namespace Mottrist.Service.Features.Traveller.Profiles
 {
     /// <summary>
     /// AutoMapper profile for Traveler mappings.
@@ -14,11 +14,10 @@ namespace Mottrist.Service.Features.Traveller.Mappers
         {
             // Mapping Traveler to TravelerDto
             CreateMap<Traveler, TravelerDto>()
-                .ForPath(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
-                .ForPath(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
-                .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
-                .ForPath(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
-                .ReverseMap();
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber));
 
             // Mapping DTOs to Traveler entity
             CreateMap<AddTravelerDto, Traveler>()
@@ -35,8 +34,7 @@ namespace Mottrist.Service.Features.Traveller.Mappers
 
             // Mapping DTOs to ApplicationUser entity
             CreateMap<AddTravelerDto, ApplicationUser>()
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
-                .ReverseMap();
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
 
             CreateMap<UpdateTravelerDto, ApplicationUser>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());

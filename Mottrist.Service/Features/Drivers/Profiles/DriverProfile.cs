@@ -36,6 +36,9 @@ namespace Mottrist.Service.Features.Drivers.Profiles
             CreateMap<AddDriverDto, ApplicationUser>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
 
+            CreateMap<UpdateDriverDto, ApplicationUser>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+
             CreateMap<UpdateDriverDto, Driver>();
             CreateMap<UpdateDriverDto, UpdateCarDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Car.Id));

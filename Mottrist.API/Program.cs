@@ -17,7 +17,6 @@ using Mottrist.Service.Features.Drivers.Interfaces;
 using Mottrist.Service.Features.Drivers.Services;
 using Mottrist.Service.Features.General.Mapper.Profiles;
 using Mottrist.Service.Features.Traveller.Interfaces;
-using Mottrist.Service.Features.Traveller.Mappers;
 using Mottrist.Service.Features.Traveller.Services;
 using Mottrist.Service.Features.Traveller.Validators;
 using Mottrist.Utilities.Identity;
@@ -38,6 +37,7 @@ using Mottrist.Service.SeedData;
 using Mottrist.Service.Interfaces;
 using Mottrist.Service.Features.DestinationServices;
 using Mottrist.Service.Features.Drivers.Profiles;
+using Mottrist.Service.Features.Traveller.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
