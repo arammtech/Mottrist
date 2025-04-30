@@ -125,12 +125,12 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if pagination parameters are invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
-        [HttpGet("all/page/{page:int}/size/{pageSize:int}", Name = "GetAllDestinationsWithPaginationAsync")]
+        [HttpGet("all/paged", Name = "GetAllDestinationsWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DestinationDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllDestinationsWithPaginationAsync(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> GetAllDestinationsWithPaginationAsync([FromQuery]int page = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
