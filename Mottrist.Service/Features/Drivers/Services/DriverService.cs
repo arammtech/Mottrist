@@ -871,6 +871,8 @@ namespace Mottrist.Service.Features.Drivers.Services
                 var driverEntity = _mapper.Map<Driver>(driverDto);
                 driverEntity.UserId = user.Id;
 
+                driverEntity.LicenseImageUrl = "temp";
+                driverEntity.PassportImageUrl = "temp";
 
                 if (driverEntity.IsAvailableAllTime)
                 {
