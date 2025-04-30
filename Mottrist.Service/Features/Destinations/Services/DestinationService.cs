@@ -11,6 +11,7 @@ using static Mottrist.Utilities.Global.GlobalFunctions;
 using AutoMapper;
 using Mottrist.Service.Features.Cities.Dtos;
 using Mottrist.Service.Features.Countries.DTOs;
+using Mottrist.Service.Features.General.Images.Interface;
 
 namespace Mottrist.Service.Features.DestinationServices
 {
@@ -21,11 +22,13 @@ namespace Mottrist.Service.Features.DestinationServices
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IImageService _imageService;
 
-        public DestinationService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
+        public DestinationService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _imageService = imageService;
         }
 
         public async Task<DataResult<DestinationDto>?> GetAllAsync(Expression<Func<Destination, bool>>? filter = null)
@@ -150,7 +153,7 @@ namespace Mottrist.Service.Features.DestinationServices
         {
             try
             {
-                string? savedImageUrl = await SaveImageAsync(destinationDto.Image, "destinations");
+                string? savedImageUrl = await _imageService.SaveImageAsync(destinationDto.Image, ImageCategory.Places);
 
                 if (string.IsNullOrEmpty(savedImageUrl))
                     return Result<DestinationDto>.Failure("Failed to save image.");
@@ -186,8 +189,8 @@ namespace Mottrist.Service.Features.DestinationServices
                 if (updateDestinationDto.Image != null)
                 {
                     // Save the new image and update the URL
-                    string savedImageUrl = await ReplaceImageAsync(updateDestinationDto.Image, "destinations", destination.ImageUrl);
-                    destination.ImageUrl = savedImageUrl;
+                    string? savedImageUrl = await  _imageService.ReplaceImageAsync(updateDestinationDto.Image, destination.ImageUrl,ImageCategory.Places);
+                    destination.ImageUrl = savedImageUrl ?? throw new ArgumentNullException();
                 }
 
                 _mapper.Map(updateDestinationDto, destination);
@@ -217,9 +220,10 @@ namespace Mottrist.Service.Features.DestinationServices
                     return Result.Failure("Destination not found.");
 
                 // Delete the image
-                var imageDeleted = await DeleteImageAsync(destination.ImageUrl);
-                if (!imageDeleted)
-                    return Result.Failure("Failed to delete image.");
+                _imageService.DeleteImage(destination.ImageUrl);
+
+                //if (!imageDeleted)
+                //    return Result.Failure("Failed to delete image.");
 
                 await _unitOfWork.Repository<Destination>().DeleteAsync(destination);
                 var result = await _unitOfWork.SaveChangesAsync();

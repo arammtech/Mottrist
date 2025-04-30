@@ -38,6 +38,8 @@ using Mottrist.Service.Features.Cars.Services.CarFields;
 using Mottrist.Service.SeedData;
 using Mottrist.Service.Interfaces;
 using Mottrist.Service.Features.DestinationServices;
+using Mottrist.Service.Features.General.Images.Interface;
+using Mottrist.Service.Features.General.Images.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -170,6 +172,7 @@ builder.Services.AddScoped<ICarBodyTypeService, CarBodyTypeService>();
 builder.Services.AddScoped<ICarFuelTypeService, CarFuelTypeService>();
 builder.Services.AddScoped<ICarBrandService, CarBrandService>();
 builder.Services.AddScoped<ISeedDb, SeedDb>();
+builder.Services.AddScoped<IImageService, ImageService>();
 #endregion
 
 var app = builder.Build();
