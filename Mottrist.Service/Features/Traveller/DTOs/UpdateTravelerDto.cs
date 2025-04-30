@@ -8,63 +8,36 @@ namespace Mottrist.Service.Features.Traveller.DTOs
     /// </summary>
     public class UpdateTravelerDto
     {
-        /// <summary>
-        /// Unique identifier for the traveler (required).
-        /// </summary>
+        // Identity Information
         [Required(ErrorMessage = "Traveler ID is required.")]
         public int Id { get; set; }
 
-        /// <summary>
-        /// WhatsApp contact number (optional).
-        /// </summary>
-        [RegularExpression(@"^\+?[1-9]\d{9,14}$", ErrorMessage = "Invalid phone number format. Example: +12345678901")]
-        public string? WhatsAppNumber { get; set; }
-
-        /// <summary>
-        /// Nationality ID of the traveler (required).
-        /// </summary>
-        [Required(ErrorMessage = "Nationality is required.")]
-        public int NationalityId { get; set; }
-
-        /// <summary>
-        /// City ID of the traveler.
-        /// </summary>
-        public int? CityId { get; set; }
-
-        /// <summary>
-        /// First name of the traveler (required, min 2 chars, max 50 chars).
-        /// </summary>
-        [Required(ErrorMessage = "First name is required.")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 50 characters.")]
+        [Required]
+        [StringLength(50, MinimumLength = 2)]
         public string FirstName { get; set; } = null!;
 
-        /// <summary>
-        /// Last name of the traveler (required, min 2 chars, max 50 chars).
-        /// </summary>
-        [Required(ErrorMessage = "Last name is required.")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "Last name must be between 2 and 50 characters.")]
+        [Required]
+        [StringLength(50, MinimumLength = 2)]
         public string LastName { get; set; } = null!;
 
-        /// <summary>
-        /// Phone number (optional, must be in international format).
-        /// </summary>
-        [RegularExpression(@"^\+?[1-9]\d{9,14}$", ErrorMessage = "Invalid phone number format. Example: +12345678901")]
+        // Location Information
+        [Range(1, 5, ErrorMessage = "Nationality ID must be between 1 and 5.")]
+        [Required]
+        public int NationalityId { get; set; }
+
+        public int? CityId { get; set; }
+
+        // Contact Details
+
+        [RegularExpression(@"^\+?[1-9]\d{9,14}$", ErrorMessage = "Invalid phone number format. Expected format: +12345678901 (10-15 digits).")]
         public string? PhoneNumber { get; set; }
 
-        /// <summary>
-        /// Profile image URL (optional).
-        /// </summary>
-        public string? ProfileImageUrl { get; set; }
+        public string? WhatsAppNumber { get; set; }
 
-        /// <summary>
-        /// Profile image as file
-        /// </summary>
+        // Preferences & Profile
         public IFormFile? ProfileImage { get; set; }
 
-
-        /// <summary>
-        /// Preferred LanguageId to speck with
-        /// </summary>
         public int? PreferredLanguageId { get; set; }
+
     }
 }

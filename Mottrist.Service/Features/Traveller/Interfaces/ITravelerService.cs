@@ -20,20 +20,6 @@ namespace Mottrist.Service.Features.Traveller.Interfaces
         Task<TravelerDto?> GetByIdAsync(int travelerId);
 
         /// <summary>
-        /// Retrieves a traveler based on a specified filter.
-        /// </summary>
-        /// <param name="filter">Expression filter to find the traveler.</param>
-        /// <returns>The matched traveler details.</returns>
-        TravelerDto? Get(Expression<Func<Traveler, bool>> filter);
-
-        /// <summary>
-        /// Retrieves all travelers based on an optional filter.
-        /// </summary>
-        /// <param name="filter">Optional filter for retrieving travelers.</param>
-        /// <returns>List of travelers.</returns>
-        IEnumerable<TravelerDto?> GetAll(Expression<Func<Traveler, bool>>? filter = null);
-
-        /// <summary>
         /// Retrieves all travelers asynchronously based on an optional filter.
         /// </summary>
         /// <param name="filter">Optional filter for retrieving travelers.</param>
@@ -55,58 +41,24 @@ namespace Mottrist.Service.Features.Traveller.Interfaces
 
         #region Add
         /// <summary>
-        /// Adds a new traveler.
-        /// </summary>
-        /// <param name="travelerDto">Traveler details.</param>
-        /// <returns>Result of the operation.</returns>
-        Result Add(AddTravelerDto travelerDto);
-
-        /// <summary>
         /// Adds a new traveler asynchronously.
         /// </summary>
         /// <param name="travelerDto">Traveler details.</param>
         /// <returns>Result of the operation.</returns>
-        Task<Result> AddAsync(AddTravelerDto travelerDto);
+        Task<Result<TravelerDto>> AddAsync(AddTravelerDto travelerDto);
 
-        /// <summary>
-        /// Adds multiple travelers.
-        /// </summary>
-        /// <param name="travelerDtos">List of travelers to add.</param>
-        /// <returns>Result of the operation.</returns>
-        Result AddRange(IEnumerable<AddTravelerDto> travelerDtos);
-
-        /// <summary>
-        /// Adds multiple travelers asynchronously.
-        /// </summary>
-        /// <param name="travelerDtos">List of travelers to add.</param>
-        /// <returns>Result of the operation.</returns>
-        Task<Result> AddRangeAsync(IEnumerable<AddTravelerDto> travelerDtos);
         #endregion
 
         #region Update
-        /// <summary>
-        /// Updates an existing traveler.
-        /// </summary>
-        /// <param name="travelerDto">Updated traveler details.</param>
-        /// <returns>Result of the update operation.</returns>
-        Result Update(UpdateTravelerDto travelerDto);
-
         /// <summary>
         /// Updates an existing traveler asynchronously.
         /// </summary>
         /// <param name="travelerDto">Updated traveler details.</param>
         /// <returns>Result of the update operation.</returns>
-        Task<Result> UpdateAsync(UpdateTravelerDto travelerDto);
+        Task<Result<TravelerDto>> UpdateAsync(UpdateTravelerDto travelerDto);
         #endregion
 
         #region Delete
-        /// <summary>
-        /// Deletes a traveler by their ID.
-        /// </summary>
-        /// <param name="travelerId">The ID of the traveler to delete.</param>
-        /// <returns>Result of the delete operation.</returns>
-        Result Delete(int travelerId);
-
         /// <summary>
         /// Deletes a traveler asynchronously by their ID.
         /// </summary>
