@@ -41,7 +41,7 @@ namespace Mottrist.Service.Features.Drivers.DTOs
                 return isWithinDateRange;
             }
         }
-        public bool HasCar { get; set; }
+        public bool HasCar => Car != null;
         public DateTime? AvailableFrom { get; set; }
         public DateTime? AvailableTo { get; set; }  
         public bool IsAvailableAllTime { get; set; }

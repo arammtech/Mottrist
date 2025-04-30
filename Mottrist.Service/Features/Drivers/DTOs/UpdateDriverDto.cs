@@ -25,7 +25,7 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public IFormFile? ProfileImage { get; set; }
 
         #region Navigation Properties
-        public AddCarDto? Car { get; set; }
+        public UpdateCarDto? Car { get; set; }
         public List<int> CitiesWorkedOn { get; set; } = [];
         public List<int> CitiesCoverNow { get; set; } = [];
         public List<int> CountriesWorkedOn { get; set; } = [];
