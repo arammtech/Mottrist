@@ -1,8 +1,9 @@
-﻿namespace Feature.Car.DTOs
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Feature.Car.DTOs
 {
     public class AddCarDto
     {
-        public int Id { get; set; }
         public int BrandId { get; set; }
         public int Year { get; set; }
         public byte NumberOfSeats { get; set; }
@@ -10,8 +11,6 @@
         public int ColorId { get; set; }
         public int BodyTypeId { get; set; }
         public int FuelTypeId { get; set; }
-
-        public string? MainCarImage { get; set; } 
-        public List<string>? AddtionalCarImages { get; set; } = new List<string>();
+        public List<IFormFile>? CarImages { get; set; }
     }
 }

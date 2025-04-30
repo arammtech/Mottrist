@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Mottrist.Domain.Identity;
 using Mottrist.Repository.EntityFrameworkCore.Context;
-using Mottrist.Service.Features.Drivers.Mappers;
+using Mottrist.Service.Features.Drivers.Profiles;
 using Mottrist.Service.Features.General.Mapper.Profiles;
 using Mottrist.Service.Features.Traveller.Mappers;
 using Mottrist.Service.Features.Traveller.Validators;

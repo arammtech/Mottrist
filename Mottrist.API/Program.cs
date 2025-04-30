@@ -14,7 +14,6 @@ using Mottrist.Repository.UnitOfWork;
 using Mottrist.Service.Features.Cars.Interfaces;
 using Mottrist.Service.Features.Cars.Services;
 using Mottrist.Service.Features.Drivers.Interfaces;
-using Mottrist.Service.Features.Drivers.Mappers;
 using Mottrist.Service.Features.Drivers.Services;
 using Mottrist.Service.Features.General.Mapper.Profiles;
 using Mottrist.Service.Features.Traveller.Interfaces;
@@ -38,6 +37,7 @@ using Mottrist.Service.Features.Cars.Services.CarFields;
 using Mottrist.Service.SeedData;
 using Mottrist.Service.Interfaces;
 using Mottrist.Service.Features.DestinationServices;
+using Mottrist.Service.Features.Drivers.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
