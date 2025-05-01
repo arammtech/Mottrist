@@ -602,7 +602,11 @@ namespace Mottrist.Service.Features.Drivers.Services
             try
             {
                 // Validate the existence of the driver.
-                var existingDriver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverDto.Id);
+                var existingDriver = await _unitOfWork.Repository<Driver>().Table
+                    .Include(x=> x.DriverCities)
+                    .Include(x => x.DriverCountries)
+                    .Include(x => x.DriverLanguages)
+                    .FirstOrDefaultAsync(d => d.Id == driverDto.Id);
                 if (existingDriver == null)
                 {
                     await _unitOfWork.RollbackAsync();
@@ -616,6 +620,22 @@ namespace Mottrist.Service.Features.Drivers.Services
                     await _unitOfWork.RollbackAsync();
                     return Result<DriverDto>.Failure("Image not saved.");
                 }
+                // Step 3: Update driver associations (cities, countries, languages).
+                if (existingDriver.DriverCities.Any())
+                {
+                    await _unitOfWork.Repository<DriverCity>().DeleteRangeAsync(existingDriver.DriverCities);
+                }
+
+                if (existingDriver.DriverCountries.Any())
+                {
+                    await _unitOfWork.Repository<DriverCountry>().DeleteRangeAsync(existingDriver.DriverCountries);
+                }
+
+                if (existingDriver.DriverLanguages.Any())
+                {
+                    await _unitOfWork.Repository<DriverLanguage>().DeleteRangeAsync(existingDriver.DriverLanguages);
+                }
+
                 // Step 1: Update driver details.
                 _mapper.Map(driverDto, existingDriver);
 
@@ -628,7 +648,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
 
                 existingDriver.IsAvailableAllTime = !(driverDto.AvailableFrom.HasValue && driverDto.AvailableTo.HasValue);
-                
+
                 // Step 5: Save updated driver details.
                 await _unitOfWork.Repository<Driver>().UpdateAsync(existingDriver);
                 var saveResult = await _unitOfWork.SaveChangesAsync();
@@ -760,7 +780,10 @@ namespace Mottrist.Service.Features.Drivers.Services
             {
                 if (existingDriver.CarId.HasValue && driverDto.Car != null)
                 {
-
+                    if(driverDto.Car.Id != existingDriver.CarId)
+                    {
+                        return Result.Failure("Car ID mismatch.");
+                    }
 
                     var carUpdateResult = await _carService.UpdateAsync(driverDto.Car);
                     if (!carUpdateResult.IsSuccess)

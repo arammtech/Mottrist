@@ -59,7 +59,23 @@ namespace Mottrist.Service.Features.Drivers.Profiles
             CreateMap<UpdateDriverDto, ApplicationUser>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
 
-            CreateMap<UpdateDriverDto, Driver>();
+            CreateMap<UpdateDriverDto, Driver>()
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.Ignore())
+                .ForMember(dest => dest.Car, opt => opt.Ignore())
+                .ForMember(dest => dest.CarId, opt => opt.Ignore())
+                .ForMember(dest => dest.LicenseImageUrl, opt => opt.Ignore())
+                .ForMember(dest => dest.PassportImageUrl, opt => opt.Ignore())
+                .ForMember(dest => dest.ProfileImageUrl, opt => opt.Ignore())
+                .ForMember(dest => dest.DriverCities, opt => opt.MapFrom(x =>
+                    x.CitiesCoverNow.Select(cityId => new DriverCity { CityId = cityId, WorkStatus = WorkStatus.CoverNow })
+                    .Concat(x.CitiesWorkedOn.Select(cityId => new DriverCity { CityId = cityId, WorkStatus = WorkStatus.WorkedOn }))
+                ))
+                .ForMember(dest => dest.DriverCountries, opt => opt.MapFrom(x =>
+                    x.CountriesCoverNow.Select(countryId => new DriverCountry { CountryId = countryId, WorkStatus = WorkStatus.CoverNow })
+                    .Concat(x.CountriesWorkedOn.Select(countryId => new DriverCountry { CountryId = countryId, WorkStatus = WorkStatus.WorkedOn }))
+                ))
+                .ForMember(dest => dest.DriverLanguages, opt => opt.MapFrom(x => x.LanguagesSpoken.Select(langId => new DriverLanguage { LanguageId = langId })));
             CreateMap<UpdateDriverDto, UpdateCarDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Car.Id));
 

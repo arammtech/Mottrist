@@ -32,7 +32,7 @@ public class Driver : BaseEntity, ICreateAt
     public virtual Country Country { get; set; } = null!;
     public virtual ICollection<DriverCity> DriverCities { get; set; } = [];
     public virtual ICollection<DriverCountry> DriverCountries { get; set; } = [];
-    public virtual ICollection<DriverLanguage> DriverLanguages { get; set; } = [];
+    public virtual ISet<DriverLanguage> DriverLanguages { get; set; } = new HashSet<DriverLanguage>();
     public virtual ICollection<DriverInteraction> DriverInteractions { get; set; } = [];
     public DateTime CreatedAt { get; set; }
     #endregion

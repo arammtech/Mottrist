@@ -197,7 +197,7 @@ namespace Mottrist.Service.Features.Cars.Services
 
             try
             {
-                var car = await _unitOfWork.Repository<Car>().GetAsync(c => c.Id == updateCarDto.Id);
+                var car = await _unitOfWork.Repository<Car>().Table.Include(x=> x.CarImages).FirstOrDefaultAsync(c => c.Id == updateCarDto.Id);
                 if (car == null) return Result<CarDto>.Failure("Car not found.");
 
                 _mapper.Map(updateCarDto, car);
@@ -208,12 +208,22 @@ namespace Mottrist.Service.Features.Cars.Services
                 {
                     
                     if (car.CarImages.Any())
-                        foreach (var carimage in car.CarImages) _imageService.DeleteImage(carimage.ImageUrl);
+                    {
+                        IEnumerable<CarImage> carImages = car.CarImages.ToList();
+
+                        foreach (var carimage in carImages)
+                        {
+                            _imageService.DeleteImage(carimage.ImageUrl);
+                        }
+
+                        car.CarImages.Clear();
+                    }
 
 
                     foreach (var image in updateCarDto.CarImages)
                     {
                         string? imageurl = await _imageService.SaveImageAsync(image, ImageCategory.Cars);
+
                         if (string.IsNullOrWhiteSpace(imageurl))
                         {
                             return Result<CarDto>.Failure("Failed to save car image.");
