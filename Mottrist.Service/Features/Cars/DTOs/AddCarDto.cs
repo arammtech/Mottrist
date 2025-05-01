@@ -6,6 +6,7 @@ namespace Feature.Car.DTOs
     public class AddCarDto
     {
         [Required]
+        [Range(1900, int.MaxValue)]
         public int Year { get; set; }
 
         [Required]

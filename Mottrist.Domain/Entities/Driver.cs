@@ -1,11 +1,12 @@
 ﻿using Mottrist.Domain.Common;
+using Mottrist.Domain.Common.Interfaces;
 using Mottrist.Domain.Entities;
 using Mottrist.Domain.Entities.CarDetails;
 using Mottrist.Domain.Enums;
 using Mottrist.Domain.Identity;
 using Mottrist.Domain.LookupEntities;
 
-public class Driver : BaseEntity
+public class Driver : BaseEntity, ICreateAt
 {
     // Professional Information
     public int UserId { get; set; }
@@ -33,5 +34,6 @@ public class Driver : BaseEntity
     public virtual ICollection<DriverCountry> DriverCountries { get; set; } = [];
     public virtual ICollection<DriverLanguage> DriverLanguages { get; set; } = [];
     public virtual ICollection<DriverInteraction> DriverInteractions { get; set; } = [];
+    public DateTime CreatedAt { get; set; }
     #endregion
 }

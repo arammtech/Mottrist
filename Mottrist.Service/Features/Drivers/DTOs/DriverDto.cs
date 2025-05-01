@@ -53,6 +53,7 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public string? ProfileImageUrl { get; set; }
         public string LicenseImageUrl { get; set; } = null!;
         public string PassportImageUrl { get; set; } = null!;
+        public DateTime CreatedAt { get; set; }
 
         #region Navigation Properties
         public CarDto? Car { get; set; }
