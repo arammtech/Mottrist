@@ -31,8 +31,17 @@ namespace Mottrist.Service.Features.Drivers.Profiles
 
 
 
-            CreateMap<AddDriverDto, Driver>();
-            CreateMap<AddDriverDto, AddCarDto>();
+            CreateMap<AddDriverDto, Driver>()
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.Ignore())
+                .ForMember(dest => dest.Car, opt => opt.Ignore())
+                .ForMember(dest => dest.CarId, opt => opt.Ignore())
+                .ForMember(dest => dest.LicenseImageUrl, opt => opt.Ignore())
+                .ForMember(dest => dest.PassportImageUrl, opt => opt.Ignore())
+                .ForMember(dest => dest.ProfileImageUrl, opt => opt.Ignore());
+
+            CreateMap<AddCarDto, Car>();
+
             CreateMap<AddDriverDto, ApplicationUser>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
 

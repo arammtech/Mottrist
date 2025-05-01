@@ -485,6 +485,9 @@ namespace Mottrist.Service.Features.Drivers.Services
                 var driverEntity = _mapper.Map<Driver>(driverDto);
                 driverEntity.UserId = user.Id;
 
+                // Process all driver-related images
+                await _ProcessDriverImagesAsync(driverDto, driverEntity);
+
 
                 driverEntity.IsAvailableAllTime = !(driverDto.AvailableFrom.HasValue && driverDto.AvailableTo.HasValue);
      
@@ -512,9 +515,6 @@ namespace Mottrist.Service.Features.Drivers.Services
                     await _unitOfWork.RollbackAsync();
                     return Result<DriverDto>.Failure(associationsResult.Errors);
                 }
-
-                // Process all driver-related images
-                await _ProcessDriverImagesAsync(driverDto, driverEntity);
 
                 // Add car details if HasCar is true
                 if (driverDto.HasCar)
@@ -655,11 +655,13 @@ namespace Mottrist.Service.Features.Drivers.Services
         #region Car Addition Operations
         private async Task<Result> _AddCarAsync(AddDriverDto driverDto, Driver driverEntity)
         {
-            // Map the driver DTO to a car DTO.
-            var carDto = _mapper.Map<AddCarDto>(driverDto);
+            if(driverDto.Car == null)
+            {
+                return Result.Failure("Car details are required.");
+            }
 
             // Add the car via the CarService.
-            var carAddResult = await _carService.AddAsync(carDto);
+            var carAddResult = await _carService.AddAsync(driverDto.Car);
 
             // Update the driver's CarId with the new car's id.
             driverEntity.CarId = carAddResult.Data?.Id;
