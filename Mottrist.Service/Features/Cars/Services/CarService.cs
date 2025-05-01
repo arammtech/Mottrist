@@ -16,6 +16,7 @@ using AutoMapper.QueryableExtensions;
 using Mottrist.Service.Features.Cars.Interfaces.CarFields;
 using Mottrist.Service.Features.Cars.Services.CarFields;
 using System.Reflection.Metadata.Ecma335;
+using Mottrist.Service.Features.General.Images.Interface;
 namespace Mottrist.Service.Features.Cars.Services
 {
     public class CarService : BaseService, ICarService
@@ -25,16 +26,18 @@ namespace Mottrist.Service.Features.Cars.Services
         private readonly ICarBrandService _carBrandService;
         private readonly ICarBodyTypeService _carBodyTypeService;
         private readonly ICarFuelTypeService _carFuelTypeService;
+        private readonly IImageService _imageService;
         private readonly ICarModelService _carModelService;
         public readonly ICarColorService _carColorService;
 
-        public CarService(IUnitOfWork unitOfWork, IMapper mapper, ICarModelService carModelService, ICarColorService carColorService, ICarBrandService carBrandService, ICarBodyTypeService carBodyTypeService, ICarFuelTypeService carFuelTypeService) : base(unitOfWork)
+        public CarService(IUnitOfWork unitOfWork, IMapper mapper, ICarModelService carModelService, ICarColorService carColorService, ICarBrandService carBrandService, ICarBodyTypeService carBodyTypeService, ICarFuelTypeService carFuelTypeService, IImageService imageService) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _carBrandService = carBrandService;
             _carBodyTypeService = carBodyTypeService;
             _carFuelTypeService = carFuelTypeService;
+            _imageService = imageService;
             _carModelService = carModelService;
             _carColorService = carColorService;
         }
@@ -144,7 +147,7 @@ namespace Mottrist.Service.Features.Cars.Services
                 {
                     foreach (var image in carDto.CarImages)
                     {
-                        string? imageurl = await SaveImageAsync(image, $"car-images");
+                        string? imageurl = await _imageService.SaveImageAsync(image, ImageCategory.Cars);
 
                         if (string.IsNullOrWhiteSpace(imageurl))
                         {
@@ -199,12 +202,18 @@ namespace Mottrist.Service.Features.Cars.Services
 
                 _mapper.Map(updateCarDto, car);
 
+
                 // handle car images
                 if (updateCarDto.CarImages != null && updateCarDto.CarImages.Any())
                 {
+                    
+                    if (car.CarImages.Any())
+                        foreach (var carimage in car.CarImages) _imageService.DeleteImage(carimage.ImageUrl);
+
+
                     foreach (var image in updateCarDto.CarImages)
                     {
-                        string? imageurl = await SaveImageAsync(image, $"car-images");
+                        string? imageurl = await _imageService.SaveImageAsync(image, ImageCategory.Cars);
                         if (string.IsNullOrWhiteSpace(imageurl))
                         {
                             return Result<CarDto>.Failure("Failed to save car image.");
