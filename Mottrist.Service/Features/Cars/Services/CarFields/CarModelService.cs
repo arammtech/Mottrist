@@ -42,7 +42,7 @@ namespace Mottrist.Service.Features.Cars.Services.CarFields
             try
             {
                 // Retrieve models from the repository as a queryable
-                var modelsQuery = _unitOfWork.Repository<Model>().Query().AsQueryable();
+                var modelsQuery = _unitOfWork.Repository<Model>().Table.AsQueryable();
 
                 // Apply filter if provided
                 if (filter != null)

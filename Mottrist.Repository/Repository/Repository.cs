@@ -225,12 +225,6 @@ namespace Mottrist.Repository.Repository
         {
             await Task.Run(() => _dbSet.UpdateRange(entities));
         }
-
-        public IQueryable<TEntity> Query()
-        {
-            return _context.Set<TEntity>();
-        }
-
         private void _OnAdd(TEntity entity)
         {
             if (entity is ICreateAt createAt)
