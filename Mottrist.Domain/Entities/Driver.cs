@@ -17,7 +17,7 @@ public class Driver : BaseEntity
     public DateTime? AvailableFrom { get; set; }
     public DateTime? AvailableTo { get; set; }
     public bool IsAvailableAllTime { get; set; }
-    public decimal? PricePerHour { get; set; }
+    public decimal PricePerHour { get; set; }
     public DriverStatus Status { get; set; } = DriverStatus.Pending;
 
     // Images

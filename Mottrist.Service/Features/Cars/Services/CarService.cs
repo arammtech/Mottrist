@@ -134,28 +134,13 @@ namespace Mottrist.Service.Features.Cars.Services
                 return Result<CarDto>.Failure("Invalid Car Object Be Null.");
             }
 
-            var transactionResult = await _unitOfWork.StartTransactionAsync();
             try
             {
 
-                if (!transactionResult.IsSuccess)
-                {
-                    return Result<CarDto>.Failure("Failed to start transaction.");
-                }
-
                 var car = _mapper.Map<Car>(carDto);
 
-                await _unitOfWork.Repository<Car>().AddAsync(car);
-                var saveResult = await _unitOfWork.SaveChangesAsync();
-
-                if (!saveResult.IsSuccess)
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return Result<CarDto>.Failure("Failed to add the car.");
-                }
-
                 // Save car images if provided
-                if(carDto.CarImages != null && carDto.CarImages.Any())
+                if (carDto.CarImages != null && carDto.CarImages.Any())
                 {
                     foreach (var image in carDto.CarImages)
                     {
@@ -163,7 +148,6 @@ namespace Mottrist.Service.Features.Cars.Services
 
                         if (string.IsNullOrWhiteSpace(imageurl))
                         {
-                            await _unitOfWork.RollbackAsync();
                             return Result<CarDto>.Failure("Failed to save car image.");
                         }
 
@@ -177,22 +161,26 @@ namespace Mottrist.Service.Features.Cars.Services
                     if (car.CarImages.Any())
                     {
                         car.CarImages.First().IsMain = true; // Set the first image as main
-                        var saveImagesResult = await _unitOfWork.SaveChangesAsync();
-                        if (!saveImagesResult.IsSuccess)
+                        await _unitOfWork.Repository<Car>().AddAsync(car);
+
+                        var saveCarResult = await _unitOfWork.SaveChangesAsync();
+                        if (!saveCarResult.IsSuccess)
                         {
-                            await _unitOfWork.RollbackAsync();
-                            return Result<CarDto>.Failure("Failed to save car images.");
+                            return Result<CarDto>.Failure(errorMessage: "Failed to save car .");
                         }
+
+                        return Result<CarDto>.Success(_mapper.Map<CarDto>(car));
                     }
+
+
+
                 }
 
-                // Commit the transaction
-                await _unitOfWork.CommitAsync();
-                return Result<CarDto>.Success(_mapper.Map<CarDto>(car));
+                return Result<CarDto>.Failure(errorMessage: "Failed to save car .");
+
             }
             catch (Exception ex)
             {
-                await _unitOfWork.RollbackAsync();
                 return Result<CarDto>.Failure($"Error creating car: {ex.Message}");
             }
         }

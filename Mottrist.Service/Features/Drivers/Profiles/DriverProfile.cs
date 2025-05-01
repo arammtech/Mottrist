@@ -4,6 +4,8 @@ using Mottrist.Domain.Entities;
 using Mottrist.Domain.Entities.CarDetails;
 using Mottrist.Domain.Enums;
 using Mottrist.Domain.Identity;
+using Mottrist.Domain.LookupEntities;
+using Mottrist.Service.Features.Cities.Dtos;
 using Mottrist.Service.Features.Drivers.DTOs;
 
 namespace Mottrist.Service.Features.Drivers.Profiles
@@ -30,7 +32,6 @@ namespace Mottrist.Service.Features.Drivers.Profiles
 
 
 
-
             CreateMap<AddDriverDto, Driver>()
                 .ForMember(dest => dest.User, opt => opt.Ignore())
                 .ForMember(dest => dest.UserId, opt => opt.Ignore())
@@ -38,7 +39,17 @@ namespace Mottrist.Service.Features.Drivers.Profiles
                 .ForMember(dest => dest.CarId, opt => opt.Ignore())
                 .ForMember(dest => dest.LicenseImageUrl, opt => opt.Ignore())
                 .ForMember(dest => dest.PassportImageUrl, opt => opt.Ignore())
-                .ForMember(dest => dest.ProfileImageUrl, opt => opt.Ignore());
+                .ForMember(dest => dest.ProfileImageUrl, opt => opt.Ignore())
+                .ForMember(dest => dest.DriverCities, opt => opt.MapFrom(x =>
+                    x.CitiesCoverNow.Select(cityId => new DriverCity { CityId = cityId, WorkStatus = WorkStatus.CoverNow })
+                    .Concat(x.CitiesWorkedOn.Select(cityId => new DriverCity { CityId = cityId, WorkStatus = WorkStatus.WorkedOn }))
+                ))
+                .ForMember(dest => dest.DriverCountries, opt => opt.MapFrom(x =>
+                    x.CountriesCoverNow.Select(countryId => new DriverCountry { CountryId = countryId, WorkStatus = WorkStatus.CoverNow })
+                    .Concat(x.CountriesWorkedOn.Select(countryId => new DriverCountry { CountryId = countryId, WorkStatus = WorkStatus.WorkedOn }))
+                ))
+                .ForMember(dest => dest.DriverLanguages, opt => opt.MapFrom(x => x.LanguagesSpoken.Select(langId => new DriverLanguage { LanguageId = langId })));
+
 
             CreateMap<AddCarDto, Car>();
 

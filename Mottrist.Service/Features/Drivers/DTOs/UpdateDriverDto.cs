@@ -17,7 +17,7 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public int NationalityId { get; set; }
         public string? Bio { get; set; }
         public byte YearsOfExperience { get; set; }
-        public decimal? PricePerHour { get; set; }
+        public decimal PricePerHour { get; set; }
         public DateTime? AvailableFrom { get; set; }
         public DateTime? AvailableTo { get; set; }
         public bool IsAvailableAllTime { get; set; }

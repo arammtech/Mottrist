@@ -38,7 +38,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
 
             //  Properties: Price 
             builder.Property(d => d.PricePerHour)
-                .IsRequired(false);
+                .IsRequired();
 
             //  Properties: Availability
             builder.Property(d => d.AvailableFrom)

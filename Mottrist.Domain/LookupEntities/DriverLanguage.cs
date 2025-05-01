@@ -3,7 +3,7 @@ using Mottrist.Domain.Entities;
 
 namespace Mottrist.Domain.LookupEntities
 {
-    public class DriverLanguage 
+    public class DriverLanguage : BaseEntity
     {
         public int DriverId { get; set; }
         public int LanguageId { get; set; }
