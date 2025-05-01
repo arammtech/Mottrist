@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 
@@ -11,9 +12,11 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250430130550_fix")]
+    partial class fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,9 +45,6 @@ namespace Mottrist.Repository.Migrations
                     b.Property<int?>("CarId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<bool>("IsAvailableAllTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -61,7 +61,7 @@ namespace Mottrist.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("PricePerHour")
+                    b.Property<decimal?>("PricePerHour")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ProfileImageUrl")
@@ -456,12 +456,6 @@ namespace Mottrist.Repository.Migrations
                     b.Property<int>("FuelTypeId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("HasAirCondiations")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasWiFi")
-                        .HasColumnType("bit");
-
                     b.Property<int>("ModelId")
                         .HasColumnType("int");
 
@@ -493,8 +487,6 @@ namespace Mottrist.Repository.Migrations
                             BrandId = 1,
                             ColorId = 1,
                             FuelTypeId = 1,
-                            HasAirCondiations = false,
-                            HasWiFi = false,
                             ModelId = 1,
                             NumberOfSeats = (byte)5,
                             Year = 2022
@@ -506,8 +498,6 @@ namespace Mottrist.Repository.Migrations
                             BrandId = 2,
                             ColorId = 2,
                             FuelTypeId = 2,
-                            HasAirCondiations = false,
-                            HasWiFi = false,
                             ModelId = 2,
                             NumberOfSeats = (byte)7,
                             Year = 2021
@@ -519,8 +509,6 @@ namespace Mottrist.Repository.Migrations
                             BrandId = 1,
                             ColorId = 1,
                             FuelTypeId = 1,
-                            HasAirCondiations = false,
-                            HasWiFi = false,
                             ModelId = 1,
                             NumberOfSeats = (byte)5,
                             Year = 2022
@@ -532,8 +520,6 @@ namespace Mottrist.Repository.Migrations
                             BrandId = 2,
                             ColorId = 2,
                             FuelTypeId = 2,
-                            HasAirCondiations = false,
-                            HasWiFi = false,
                             ModelId = 2,
                             NumberOfSeats = (byte)7,
                             Year = 2021
@@ -545,8 +531,6 @@ namespace Mottrist.Repository.Migrations
                             BrandId = 3,
                             ColorId = 3,
                             FuelTypeId = 1,
-                            HasAirCondiations = false,
-                            HasWiFi = false,
                             ModelId = 3,
                             NumberOfSeats = (byte)4,
                             Year = 2023
@@ -2598,21 +2582,13 @@ namespace Mottrist.Repository.Migrations
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.DriverLanguage", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int>("DriverId")
                         .HasColumnType("int");
 
                     b.Property<int>("LanguageId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("DriverId");
+                    b.HasKey("DriverId", "LanguageId");
 
                     b.HasIndex("LanguageId");
 
