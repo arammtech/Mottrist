@@ -7,6 +7,7 @@ using Mottrist.Service.Features.Users.DTOs;
 using Mottrist.Service.Features.Users.Interface;
 using Mottrist.Service.Features.Users.Services;
 using static Mottrist.API.Response.ApiResponseHelper;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Mottrist.API.Controllers
 {
@@ -72,7 +73,7 @@ namespace Mottrist.API.Controllers
                 if (result.IsLockedOut)
                     return Unauthorized("Account locked due to multiple failed attempts.");
 
-                // map it auto later
+                // map it auto
                 UserDto userDto = new()
                 {
                     Id = user.Id,
@@ -166,5 +167,23 @@ namespace Mottrist.API.Controllers
         }
 
 
+        [HttpPatch("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail(UserDto userDto)
+        {
+          try
+             {
+                var result = await _userService.ConfirmEmailAsync(userDto);
+
+                return result.IsSuccess ? SuccessResponse("Email confirmed") : StatusCodeResponse(StatusCodes.Status500InternalServerError, "ConfirmingError", "Failed to confirm user's email.");
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Unexpected error: {ex.Message}");
+            }
+        }
     }
 }
