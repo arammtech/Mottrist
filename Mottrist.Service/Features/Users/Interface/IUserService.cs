@@ -41,5 +41,6 @@ namespace Mottrist.Service.Features.Users.Interface
         /// <param name="email">User's email address.</param>
         /// <returns>User DTO containing user details.</returns>
         Task<UserDto> GetUserByEmail(string email);
+
     }
 }
