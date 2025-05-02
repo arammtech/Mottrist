@@ -32,8 +32,8 @@ namespace Mottrist.Service.Features.Cars.Services
 
         public CarService(IUnitOfWork unitOfWork, IMapper mapper, ICarModelService carModelService, ICarColorService carColorService, ICarBrandService carBrandService, ICarBodyTypeService carBodyTypeService, ICarFuelTypeService carFuelTypeService, IImageService imageService) : base(unitOfWork)
         {
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
             _carBrandService = carBrandService;
             _carBodyTypeService = carBodyTypeService;
             _carFuelTypeService = carFuelTypeService;
@@ -188,7 +188,7 @@ namespace Mottrist.Service.Features.Cars.Services
             }
         }
 
-        public async Task<Result<CarDto>> UpdateAsync(UpdateCarDto updateCarDto)
+        public async Task<Result<CarDto>> UpdateAsync(UpdateCarDto updateCarDto, int carId)
         {
             if (updateCarDto == null)
             {
@@ -197,7 +197,10 @@ namespace Mottrist.Service.Features.Cars.Services
 
             try
             {
-                var car = await _unitOfWork.Repository<Car>().Table.Include(x=> x.CarImages).FirstOrDefaultAsync(c => c.Id == updateCarDto.Id);
+                var car = await _unitOfWork.Repository<Car>()
+                    .Table.Include(x=> x.CarImages)
+                    .FirstOrDefaultAsync(c => c.Id == carId);
+
                 if (car == null) return Result<CarDto>.Failure("Car not found.");
 
                 _mapper.Map(updateCarDto, car);
@@ -627,6 +630,7 @@ namespace Mottrist.Service.Features.Cars.Services
             }
             catch (Exception)
             {
+                // log the exception
                 return null;
             }
         }

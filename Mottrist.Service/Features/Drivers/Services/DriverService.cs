@@ -596,7 +596,7 @@ namespace Mottrist.Service.Features.Drivers.Services
         #endregion
 
         #region Driver Update Operations
-        public async Task<Result<DriverDto>> UpdateAsync(UpdateDriverDto driverDto)
+        public async Task<Result<DriverDto>> UpdateAsync(UpdateDriverDto updateDriverDto)
         {
             await _unitOfWork.StartTransactionAsync();
             try
@@ -606,15 +606,15 @@ namespace Mottrist.Service.Features.Drivers.Services
                     .Include(x=> x.DriverCities)
                     .Include(x => x.DriverCountries)
                     .Include(x => x.DriverLanguages)
-                    .FirstOrDefaultAsync(d => d.Id == driverDto.Id);
+                    .FirstOrDefaultAsync(d => d.Id == updateDriverDto.Id);
+
                 if (existingDriver == null)
                 {
                     await _unitOfWork.RollbackAsync();
                     return Result<DriverDto>.Failure("Driver not found.");
                 }
 
-
-                var imageUpdateResult = await _UpdateProfileImageAsync(driverDto, existingDriver);
+                var imageUpdateResult = await _UpdateProfileImageAsync(updateDriverDto, existingDriver);
                 if (!imageUpdateResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
@@ -637,17 +637,17 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
 
                 // Step 1: Update driver details.
-                _mapper.Map(driverDto, existingDriver);
+                _mapper.Map(updateDriverDto, existingDriver);
 
                 // Step 2: Update associated user details.
-                var userUpdateResult = await _UpdateUserDetailsAsync(driverDto, existingDriver.UserId);
+                var userUpdateResult = await _UpdateUserDetailsAsync(updateDriverDto, existingDriver.UserId);
                 if (!userUpdateResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
                     return Result<DriverDto>.Failure($"Failed to update user details: {userUpdateResult.Errors.FirstOrDefault()}");
                 }
 
-                existingDriver.IsAvailableAllTime = !(driverDto.AvailableFrom.HasValue && driverDto.AvailableTo.HasValue);
+                existingDriver.IsAvailableAllTime = !(updateDriverDto.AvailableFrom.HasValue && updateDriverDto.AvailableTo.HasValue);
 
                 // Step 5: Save updated driver details.
                 await _unitOfWork.Repository<Driver>().UpdateAsync(existingDriver);
@@ -659,9 +659,10 @@ namespace Mottrist.Service.Features.Drivers.Services
                     return Result<DriverDto>.Failure("Failed to save driver updates.");
                 }
 
-                if (driverDto.HasCar)
+                if(updateDriverDto.Car != null)
                 {
-                    var carUpdateResult = await _UpdateOrAddCarDetailsAsync(driverDto, existingDriver);
+                    var carUpdateResult = await _UpdateOrAddCarDetailsAsync(updateDriverDto.Car, existingDriver);
+
                     if (!carUpdateResult.IsSuccess)
                     {
                         await _unitOfWork.RollbackAsync();
@@ -670,9 +671,9 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
 
                 // Commit the transaction.
-                 await _unitOfWork.CommitAsync();
+                await _unitOfWork.CommitAsync();
 
-                return Result<DriverDto>.Success(await GetByIdAsync(driverDto.Id));
+                return Result<DriverDto>.Success(await GetByIdAsync(updateDriverDto.Id));
             }
             catch (Exception ex)
             {
@@ -772,20 +773,13 @@ namespace Mottrist.Service.Features.Drivers.Services
             return Result.Success();
         }
 
-        private async Task<Result> _UpdateOrAddCarDetailsAsync(UpdateDriverDto driverDto, Driver existingDriver)
+        private async Task<Result> _UpdateOrAddCarDetailsAsync(UpdateCarDto? updateCarDto, Driver existingDriver)
         {
-
-
             try
             {
-                if (existingDriver.CarId.HasValue && driverDto.Car != null)
+                if (existingDriver.CarId.HasValue && updateCarDto != null)
                 {
-                    if(driverDto.Car.Id != existingDriver.CarId)
-                    {
-                        return Result.Failure("Car ID mismatch.");
-                    }
-
-                    var carUpdateResult = await _carService.UpdateAsync(driverDto.Car);
+                    var carUpdateResult = await _carService.UpdateAsync(updateCarDto, existingDriver.CarId.Value);
                     if (!carUpdateResult.IsSuccess)
                     {
                         return Result.Failure("Failed to update car details.");
@@ -793,7 +787,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
                 else
                 {
-                    var carDto = _mapper.Map<AddCarDto>(driverDto.Car);
+                    var carDto = _mapper.Map<AddCarDto>(updateCarDto);
 
                     var carAddResult = await _carService.AddAsync(carDto);
                     if (!carAddResult.IsSuccess)
