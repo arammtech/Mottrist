@@ -38,6 +38,10 @@ using Mottrist.Service.Features.Cars.Services.CarFields;
 using Mottrist.Service.SeedData;
 using Mottrist.Service.Interfaces;
 using Mottrist.Service.Features.DestinationServices;
+using Mottrist.Service.Features.Users.Interface;
+using Mottrist.Service.Features.Users.Services;
+using Mottrist.Service.Features.JWT.Interface;
+using Mottrist.Service.Features.JWT.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -126,24 +130,24 @@ builder.Services.AddCors(options =>
 #endregion
 
 #region Authentication (JWT) Configuration
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-//}).AddJwtBearer(options =>
-//{
-//    options.SaveToken = true;
-//    options.RequireHttpsMetadata = false; // change this to true later
-//    options.TokenValidationParameters = new()
-//    {
-//        ValidateIssuer = true,
-//        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-//        ValidateAudience = true,
-//        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
-//    };
-//});
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false; // change this to true later
+    options.TokenValidationParameters = new()
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+    };
+});
 #endregion
 
 #region Packages 
@@ -170,6 +174,8 @@ builder.Services.AddScoped<ICarBodyTypeService, CarBodyTypeService>();
 builder.Services.AddScoped<ICarFuelTypeService, CarFuelTypeService>();
 builder.Services.AddScoped<ICarBrandService, CarBrandService>();
 builder.Services.AddScoped<ISeedDb, SeedDb>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 #endregion
 
 var app = builder.Build();
