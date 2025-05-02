@@ -46,6 +46,9 @@ using Mottrist.Service.Features.JWT.Services;
 
 using Mottrist.Service.Features.General.Images.Interface;
 using Mottrist.Service.Features.General.Images.Services;
+using Mottrist.Service.Features.Traveller.DTOs;
+using Mottrist.Service.Features.Users.DTOs;
+using Mottrist.Service.Features.Users.Validators;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -159,6 +162,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAutoMapper(typeof(MappingProfile), typeof(TravelerProfile), typeof(DriverProfile));
 builder.Services.AddFluentValidationAutoValidation()
                 .AddValidatorsFromAssembly(typeof(AddTravelerDtoValidator).Assembly);
+
+//builder.Services.AddScoped<IValidator<AddUserDto>, AddUserDtoValidator>();
+
 #endregion
 
 #region Custom Services
