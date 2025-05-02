@@ -21,16 +21,15 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public DateTime? AvailableFrom { get; set; }
         public DateTime? AvailableTo { get; set; }
         public bool IsAvailableAllTime { get; set; }
-        public bool HasCar { get; set; }
         public IFormFile? ProfileImage { get; set; }
 
         #region Navigation Properties
         public UpdateCarDto? Car { get; set; }
-        public List<int> CitiesWorkedOn { get; set; } = [];
-        public List<int> CitiesCoverNow { get; set; } = [];
-        public List<int> CountriesWorkedOn { get; set; } = [];
-        public List<int> CountriesCoverNow { get; set; } = [];
-        public List<int> LanguagesSpoken { get; set; } = [];
+        public HashSet<int> CitiesWorkedOn { get; set; } = [];
+        public HashSet<int> CitiesCoverNow { get; set; } = [];
+        public HashSet<int> CountriesWorkedOn { get; set; } = [];
+        public HashSet<int> CountriesCoverNow { get; set; } = [];
+        public HashSet<int> LanguagesSpoken { get; set; } = [];
         #endregion
     }
 }

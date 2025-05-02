@@ -6,9 +6,6 @@ namespace Feature.Car.DTOs
     public class UpdateCarDto
     {
         [Required]
-        public int Id { get; set; }
-
-        [Required]
         public int Year { get; set; }
 
         [Required]

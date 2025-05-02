@@ -42,7 +42,7 @@ namespace Mottrist.Service.Features.Languages.Services
         {
             try
             {
-                var languageQuery = _unitOfWork.Repository<Language>().Query().AsQueryable();
+                var languageQuery = _unitOfWork.Repository<Language>().Table.AsQueryable();
 
                 if (filter != null)
                 {

@@ -78,7 +78,7 @@ namespace Mottrist.Service.Features.Cars.Interfaces
         /// <returns>
         /// A <see cref="Result"/> indicating the success or failure of the operation.
         /// </returns>
-        Task<Result<CarDto>> UpdateAsync(UpdateCarDto carDto);
+        Task<Result<CarDto>> UpdateAsync(UpdateCarDto carDto, int carId);
 
         /// <summary>
         /// Deletes a car from the system by its unique identifier.

@@ -31,11 +31,11 @@ namespace Mottrist.Service.Features.Drivers.DTOs
 
         #region Navigation Properties
         public AddCarDto? Car { get; set; } 
-        public List<int> CitiesWorkedOn { get; set; } = [];
-        public List<int> CitiesCoverNow { get; set; } = [];
-        public List<int> CountriesWorkedOn { get; set; } = [];
-        public List<int> CountriesCoverNow { get; set; } = [];
-        public List<int> LanguagesSpoken { get; set; } = [];
+        public HashSet<int> CitiesWorkedOn { get; set; } = [];
+        public HashSet<int> CitiesCoverNow { get; set; } = [];
+        public HashSet<int> CountriesWorkedOn { get; set; } = [];
+        public HashSet<int> CountriesCoverNow { get; set; } = [];
+        public HashSet<int> LanguagesSpoken { get; set; } = [];
         #endregion
     }
 }
