@@ -73,25 +73,25 @@ namespace Mottrist.Service.Features.Drivers.Validators
             {
                 RuleFor(driver => driver.Car!.Year)
                     .InclusiveBetween(1900, DateTime.UtcNow.Year)
-                    .WithMessage($"Car year must be between 1900 and {DateTime.UtcNow.Year}.");
+                    .NotNull().WithMessage($"Car year must be between 1900 and {DateTime.UtcNow.Year}.");
 
                 RuleFor(driver => driver.Car!.NumberOfSeats)
-                    .GreaterThan((byte)0).WithMessage("Number of seats must be greater than zero.");
+                    .NotNull().GreaterThan((byte)0).WithMessage("Number of seats must be greater than zero.");
 
                 RuleFor(driver => driver.Car!.BrandId)
-                    .GreaterThan(0).WithMessage("Brand ID must be a valid positive number.");
+                    .NotNull().GreaterThan(0).WithMessage("Brand ID must be a valid positive number.");
 
                 RuleFor(driver => driver.Car!.ModelId)
-                    .GreaterThan(0).WithMessage("Model ID must be a valid positive number.");
+                    .NotNull().GreaterThan(0).WithMessage("Model ID must be a valid positive number.");
 
                 RuleFor(driver => driver.Car!.ColorId)
-                    .GreaterThan(0).WithMessage("Color ID must be a valid positive number.");
+                    .NotNull().GreaterThan(0).WithMessage("Color ID must be a valid positive number.");
 
                 RuleFor(driver => driver.Car!.BodyTypeId)
-                    .GreaterThan(0).WithMessage("Body Type ID must be a valid positive number.");
+                    .NotNull().GreaterThan(0).WithMessage("Body Type ID must be a valid positive number.");
 
                 RuleFor(driver => driver.Car!.FuelTypeId)
-                    .GreaterThan(0).WithMessage("Fuel Type ID must be a valid positive number.");
+                    .NotNull().GreaterThan(0).WithMessage("Fuel Type ID must be a valid positive number.");
 
                 RuleFor(driver => driver.Car!.HasWiFi)
                     .NotNull().WithMessage("WiFi availability must be specified.");
