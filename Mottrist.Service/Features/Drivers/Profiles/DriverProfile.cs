@@ -76,8 +76,7 @@ namespace Mottrist.Service.Features.Drivers.Profiles
                     .Concat(x.CountriesWorkedOn.Select(countryId => new DriverCountry { CountryId = countryId, WorkStatus = WorkStatus.WorkedOn }))
                 ))
                 .ForMember(dest => dest.DriverLanguages, opt => opt.MapFrom(x => x.LanguagesSpoken.Select(langId => new DriverLanguage { LanguageId = langId })));
-            CreateMap<UpdateDriverDto, UpdateCarDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Car.Id));
+            CreateMap<UpdateDriverDto, UpdateCarDto>();
 
         }
     }

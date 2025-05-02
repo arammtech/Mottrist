@@ -46,9 +46,6 @@ using Mottrist.Service.Features.General.Images.Interface;
 using Mottrist.Service.Features.General.Images.Services;
 using Mottrist.Service.Features.Drivers.Profiles;
 using Mottrist.Service.Features.Traveller.Profiles;
-using Mottrist.Service.Features.Traveller.DTOs;
-using Mottrist.Service.Features.Users.DTOs;
-using Mottrist.Service.Features.Users.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
