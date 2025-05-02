@@ -1,15 +1,11 @@
 ﻿namespace Mottrist.Service.Features.Users.DTOs
 {
     /// <summary>
-    /// Data Transfer Object representing user details.
+    /// Data Transfer Object for representing user information.
+    /// Used for transferring user-related data between layers.
     /// </summary>
-    public class UserDto
+    public class AddUserDto
     {
-        /// <summary>
-        /// Gets or sets the unique identifier of the user.
-        /// </summary>
-        public int Id { get; set; }
-
         /// <summary>
         /// Gets or sets the first name of the user.
         /// </summary>
@@ -23,18 +19,20 @@
         /// <summary>
         /// Gets or sets the email address of the user.
         /// </summary>
+        [UniqueUser]
         public string Email { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the username of the user.
-        /// </summary>
-        public string UserName { get; set; } = null!;
-
-        /// <summary>
         /// Gets or sets the user's phone number.
-        /// This field is optional.
+        /// Optional field.
         /// </summary>
         public string? PhoneNumber { get; set; }
+
+        /// <summary>
+        /// Gets or sets the password of the user.
+        /// Used for authentication purposes.
+        /// </summary>
+        public string Password { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the user's WhatsApp number.
