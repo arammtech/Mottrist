@@ -1,13 +1,13 @@
 ﻿using FluentValidation;
-using Mottrist.Domain.Entities;
 using Mottrist.Service.Features.Drivers.DTOs;
-using System.ComponentModel;
-using System.Security.Cryptography;
+using Feature.Car.DTOs;
+using System.Text.RegularExpressions;
 
 namespace Mottrist.Service.Features.Drivers.Validators
 {
     /// <summary>
-    /// Validator for the AddDriverDto object to ensure input data is valid.
+    /// Validator for AddDriverDto, ensuring correct input when adding a new driver.
+    /// Car validation is applied only when HasCar is true.
     /// </summary>
     public class AddDriverDtoValidator : AbstractValidator<AddDriverDto>
     {
@@ -39,52 +39,76 @@ namespace Mottrist.Service.Features.Drivers.Validators
 
             // Validate NationalityId
             RuleFor(driver => driver.NationalityId)
-                .GreaterThan(0).WithMessage("Nationality ID must be greater than 0.");
+                .GreaterThan(0).WithMessage("Nationality ID must be greater than zero.");
 
+            // Validate Years of Experience
+            RuleFor(driver => driver.YearsOfExperience)
+                .GreaterThanOrEqualTo((byte)0)
+                .WithMessage("Years of experience must be zero or a positive number.");
+
+            // Validate Price Per Hour (must be positive if provided)
+            RuleFor(driver => driver.PricePerHour)
+                .Empty().GreaterThanOrEqualTo(0).WithMessage("Price per hour must be greater than zero.");
+
+            // Validate phone numbers using E.164 format
+            RuleFor(driver => driver.PhoneNumber)
+                .Matches(new Regex(@"^\+?[1-9]\d{1,14}$"))
+                .When(driver => !string.IsNullOrWhiteSpace(driver.PhoneNumber))
+                .WithMessage("Invalid phone number format.");
+
+            RuleFor(driver => driver.WhatsAppNumber)
+                .Matches(new Regex(@"^\+?[1-9]\d{1,14}$"))
+                .When(driver => !string.IsNullOrWhiteSpace(driver.WhatsAppNumber))
+                .WithMessage("Invalid WhatsApp number format.");
+
+            // Ensure AvailableFrom is before AvailableTo if both exist
+            When(driver => driver.AvailableFrom.HasValue && driver.AvailableTo.HasValue, () =>
+            {
+                RuleFor(driver => driver.AvailableFrom)
+                    .LessThanOrEqualTo(driver => driver.AvailableTo)
+                    .WithMessage("AvailableFrom date must be before or equal to AvailableTo date.");
+            });
+
+            // Validate image uploads
             RuleFor(driver => driver.LicenseImage)
                 .NotNull().WithMessage("License image is required.");
+
             RuleFor(driver => driver.PassportImage)
                 .NotNull().WithMessage("Passport image is required.");
 
-            //// Validate LicenseImageUrl
-            //RuleFor(driver => driver.LicenseImageUrl)
-            //    .NotEmpty().WithMessage("License image URL is required.");
-
-            //// Validate PassportImageUrl
-            //RuleFor(driver => driver.PassportImageUrl)
-            //    .NotEmpty().WithMessage("Passport image URL is required.");
-
-            //// Optional Fields
-            //RuleFor(driver => driver.PhoneNumber)
-            //    .MaximumLength(15).WithMessage("Phone number cannot exceed 15 characters.")
-            //    .Matches(@"^\+?[1-9]\d{1,14}$").When(driver => !string.IsNullOrEmpty(driver.PhoneNumber))
-            //    .WithMessage("Invalid phone number format.");
-
-            //RuleFor(driver => driver.WhatsAppNumber)
-            //    .MaximumLength(15).WithMessage("WhatsApp number cannot exceed 15 characters.")
-            //    .Matches(@"^\+?[1-9]\d{1,14}$").When(driver => !string.IsNullOrEmpty(driver.WhatsAppNumber))
-            //    .WithMessage("Invalid WhatsApp number format.");
-
-            // Validate HasCar and related car details
-            RuleFor(driver => driver.HasCar)
-                .Must(hasCar => hasCar == true || hasCar == false)
-                .WithMessage("HasCar must be a valid boolean value.");
-
+            // Conditional car validation (only if HasCar is true)
             When(driver => driver.HasCar, () =>
             {
+                RuleFor(driver => driver.Car)
+                    .NotNull().WithMessage("Car details must be provided when HasCar is true.");
 
-                //RuleFor(driver => driver.Year)
-                //    .NotNull().WithMessage("Car year is required when the driver has a car.")
-                //    .InclusiveBetween(1900, DateTime.Now.Year).WithMessage($"Car year must be between 1900 and {DateTime.Now.Year}.");
+                RuleFor(driver => driver.Car!.Year)
+                    .InclusiveBetween(1900, DateTime.UtcNow.Year)
+                    .WithMessage($"Car year must be between 1900 and {DateTime.UtcNow.Year}.");
 
-                //RuleFor(driver => driver.CarImages)
-                //        .NotEmpty().WithMessage("Car images are required when the driver has a car.");
+                RuleFor(driver => driver.Car!.NumberOfSeats)
+                    .GreaterThan((byte)0).WithMessage("Number of seats must be greater than zero.");
 
-                //RuleFor(driver => driver.MainCarImageIndex)
-                //    .NotNull()
-                //    .WithMessage("Main car image index is required when the driver has a car.")
-                //    .When(driver => driver.CarImages != null && driver.CarImages.Count > 0);
+                RuleFor(driver => driver.Car!.BrandId)
+                    .GreaterThan(0).WithMessage("Brand ID must be a valid positive number.");
 
+                RuleFor(driver => driver.Car!.ModelId)
+                    .GreaterThan(0).WithMessage("Model ID must be a valid positive number.");
+
+                RuleFor(driver => driver.Car!.ColorId)
+                    .GreaterThan(0).WithMessage("Color ID must be a valid positive number.");
+
+                RuleFor(driver => driver.Car!.BodyTypeId)
+                    .GreaterThan(0).WithMessage("Body Type ID must be a valid positive number.");
+
+                RuleFor(driver => driver.Car!.FuelTypeId)
+                    .GreaterThan(0).WithMessage("Fuel Type ID must be a valid positive number.");
+
+                RuleFor(driver => driver.Car!.HasWiFi)
+                    .NotNull().WithMessage("WiFi availability must be specified.");
+
+                RuleFor(driver => driver.Car!.HasAirCondiations)
+                    .NotNull().WithMessage("Air conditioning availability must be specified.");
             });
         }
     }
