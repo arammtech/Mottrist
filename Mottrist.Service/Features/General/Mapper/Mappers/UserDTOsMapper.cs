@@ -16,7 +16,6 @@ namespace Mottrist.Service.Features.General.Mapper.Mappers
                 LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Password = user.PasswordHash,
             };
         }
 
@@ -29,7 +28,6 @@ namespace Mottrist.Service.Features.General.Mapper.Mappers
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email,
-                PasswordHash = userDto.Password
             };
         }
     }
