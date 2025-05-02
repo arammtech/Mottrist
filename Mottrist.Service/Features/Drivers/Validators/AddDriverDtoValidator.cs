@@ -72,18 +72,11 @@ namespace Mottrist.Service.Features.Drivers.Validators
 
             When(driver => driver.HasCar, () =>
             {
-                RuleFor(driver => driver.BrandId)
-                    .NotNull().WithMessage("Brand ID is required when the driver has a car.");
-
-                RuleFor(driver => driver.ModelId)
-                    .NotNull().WithMessage("Model ID is required when the driver has a car.");
 
                 //RuleFor(driver => driver.Year)
                 //    .NotNull().WithMessage("Car year is required when the driver has a car.")
                 //    .InclusiveBetween(1900, DateTime.Now.Year).WithMessage($"Car year must be between 1900 and {DateTime.Now.Year}.");
 
-                RuleFor(driver => driver.NumberOfSeats)
-                    .NotNull().WithMessage("Number of seats is required when the driver has a car.");
                 //RuleFor(driver => driver.CarImages)
                 //        .NotEmpty().WithMessage("Car images are required when the driver has a car.");
 

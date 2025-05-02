@@ -38,7 +38,7 @@ namespace Mottrist.Service.Features.Cities.Services
         {
             try
             {
-                var cityQuery = _unitOfWork.Repository<City>().Query()
+                var cityQuery = _unitOfWork.Repository<City>().Table
                     .Include(c => c.Country)
                     .AsQueryable();
 
@@ -73,7 +73,7 @@ namespace Mottrist.Service.Features.Cities.Services
         {
             try
             {
-                var cityQuery = _unitOfWork.Repository<City>().Query()
+                var cityQuery = _unitOfWork.Repository<City>().Table
                     .Include(c => c.Country)
                     .AsQueryable();
 

@@ -3,7 +3,7 @@ using Feature.Car.DTOs;
 using Mottrist.Domain.Entities.CarDetails;
 using Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs;
 
-namespace Mottrist.Service.Features.Cars.Mappers
+namespace Mottrist.Service.Features.Cars.Profiles
 {
     class CarFieldsProfile : Profile
     {

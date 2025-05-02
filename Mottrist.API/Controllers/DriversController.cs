@@ -510,7 +510,7 @@ namespace Mottrist.API.Controllers
 
 
                 return result.IsSuccess
-                    ? CreatedResponse("GetDriverByIdAsync", new { id = driverDto.Id }, new { id = driverDto.Id }, "Driver created successfully.")
+                    ? CreatedResponse("GetDriverByIdAsync", new { id = result.Data?.Id }, result.Data, "Driver created successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "CreationError", "Failed to create driver.");
             }
             catch (Exception ex)

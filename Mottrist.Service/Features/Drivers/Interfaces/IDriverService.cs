@@ -73,21 +73,9 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
 
         Task<DataResult<DriverDto>?> GetByCountryCityAndDateAsync(int countryId, int cityId, DateTime date);
 
-        Task<PaginatedResult<DriverDto>?> GetByCountryWithPaginationAsync(
-                    int countryId,
-                    int page = 1,
-                    int pageSize = 10);
-        Task<PaginatedResult<DriverDto>?> GetByCountryAndCityWithPaginationAsync(
-                    int countryId,
-                    int cityId,
-                    int page = 1,
-                    int pageSize = 10);
-        Task<PaginatedResult<DriverDto>?> GetByCountryCityAndDateWithPaginationAsync(
-                    int countryId,
-                    int cityId,
-                    DateTime date,
-                    int page = 1,
-                    int pageSize = 10);
+        Task<PaginatedResult<DriverDto>?> GetByCountryWithPaginationAsync(int countryId,int page = 1,int pageSize = 10);
+        Task<PaginatedResult<DriverDto>?> GetByCountryAndCityWithPaginationAsync(int countryId, int cityId,int page = 1,int pageSize = 10);
+        Task<PaginatedResult<DriverDto>?> GetByCountryCityAndDateWithPaginationAsync(int countryId, int cityId,DateTime date,int page = 1,int pageSize = 10);
         #endregion
 
         #region Create Operation
@@ -99,7 +87,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A <see cref="Result"/> object indicating the success or failure of the addition operation.
         /// </returns>
-        Task<Result> AddAsync(AddDriverDto driverDto);
+        Task<Result<DriverDto>> AddAsync(AddDriverDto driverDto);
 
         #endregion
 
@@ -112,7 +100,7 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// <returns>
         /// A <see cref="Result"/> object indicating the success or failure of the update operation.
         /// </returns>
-        Task<Result> UpdateAsync(UpdateDriverDto driverDto);
+        Task<Result<DriverDto>> UpdateAsync(UpdateDriverDto driverDto);
 
         /// <summary>
         /// Updates the availability details of a specified driver.

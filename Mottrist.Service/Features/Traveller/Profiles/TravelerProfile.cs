@@ -3,7 +3,7 @@ using Mottrist.Domain.Entities;
 using Mottrist.Domain.Identity;
 using Mottrist.Service.Features.Traveller.DTOs;
 
-namespace Mottrist.Service.Features.Traveller.Mappers
+namespace Mottrist.Service.Features.Traveller.Profiles
 {
     /// <summary>
     /// AutoMapper profile for Traveler mappings.

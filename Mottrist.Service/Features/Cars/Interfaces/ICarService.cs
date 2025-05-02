@@ -40,10 +40,7 @@ namespace Mottrist.Service.Features.Cars.Interfaces
         /// - Cars: An <see cref="IEnumerable{AddCarDto}"/> of cars for the specified page.
         /// - TotalRecords: The total count of cars matching the criteria.
         /// </returns>
-        Task<PaginatedResult<CarDto>?> GetAllWithPaginationAsync(
-                    int page,
-                    int pageSize = 10,
-                    Expression<Func<Car, bool>>? filter = null);
+        Task<PaginatedResult<CarDto>?> GetAllWithPaginationAsync(int page, int pageSize = 10, Expression<Func<Car, bool>>? filter = null);
 
         /// <summary>
         /// Retrieves a specific car by its unique identifier.
@@ -72,7 +69,7 @@ namespace Mottrist.Service.Features.Cars.Interfaces
         /// <returns>
         /// A <see cref="Result"/> indicating the success or failure of the operation.
         /// </returns>
-        Task<Result> AddAsync(AddCarDto carDto);
+        Task<Result<CarDto>> AddAsync(AddCarDto carDto);
 
         /// <summary>
         /// Updates an existing car in the system.
@@ -81,7 +78,7 @@ namespace Mottrist.Service.Features.Cars.Interfaces
         /// <returns>
         /// A <see cref="Result"/> indicating the success or failure of the operation.
         /// </returns>
-        Task<Result> UpdateAsync(UpdateCarDto carDto);
+        Task<Result<CarDto>> UpdateAsync(UpdateCarDto carDto, int carId);
 
         /// <summary>
         /// Deletes a car from the system by its unique identifier.

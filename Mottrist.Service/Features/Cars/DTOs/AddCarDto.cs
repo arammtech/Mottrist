@@ -1,17 +1,38 @@
-﻿namespace Feature.Car.DTOs
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
+
+namespace Feature.Car.DTOs
 {
     public class AddCarDto
     {
-        public int Id { get; set; }
-        public int BrandId { get; set; }
+        [Required]
+        [Range(1900, int.MaxValue)]
         public int Year { get; set; }
+
+        [Required]
         public byte NumberOfSeats { get; set; }
+
+        [Required]
+        public bool HasWiFi { get; set; }
+
+        [Required]
+        public bool HasAirCondiations { get; set; }
+
+        [Required]
+        public int BrandId { get; set; }
+
+        [Required]
         public int ModelId { get; set; }
+
+        [Required]
         public int ColorId { get; set; }
+
+        [Required]
         public int BodyTypeId { get; set; }
+
+        [Required]
         public int FuelTypeId { get; set; }
 
-        public string? MainCarImage { get; set; } 
-        public List<string>? AddtionalCarImages { get; set; } = new List<string>();
+        public List<IFormFile>? CarImages { get; set; }
     }
 }

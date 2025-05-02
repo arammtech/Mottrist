@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using Mottrist.Domain.Common.Interfaces;
 using Mottrist.Domain.Common.IRepository;
 using Mottrist.Repository.EntityFrameworkCore.Context;
+using Mottrist.Domain.Common;
 
 namespace Mottrist.Repository.Repository
 {
@@ -21,21 +22,31 @@ namespace Mottrist.Repository.Repository
 
         public void Add(TEntity entity)
         {
+            _OnAdd(entity);
             _dbSet.Add(entity);
         }
 
         public async Task AddAsync(TEntity entity)
         {
+            _OnAdd(entity);
             await _dbSet.AddAsync(entity);
         }
 
         public void AddRange(IEnumerable<TEntity> entities)
         {
+            foreach (var entity in entities)
+            {
+                _OnAdd(entity);
+            }
             _dbSet.AddRange(entities);
         }
 
         public async Task AddRangeAsync(IEnumerable<TEntity> entities)
         {
+            foreach (var entity in entities)
+            {
+                _OnAdd(entity);
+            }
             await _dbSet.AddRangeAsync(entities);
         }
 
@@ -93,7 +104,7 @@ namespace Mottrist.Repository.Repository
         {
             return await (filter == null ? _dbSet.ToListAsync() : _dbSet.Where(filter).ToListAsync());
         }
-        
+
         public async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> filter)
         {
             return await _dbSet.FirstOrDefaultAsync(filter);
@@ -139,7 +150,7 @@ namespace Mottrist.Repository.Repository
                     query = query.Include(includeProperty);
                 }
                 catch (Exception ex)
-                { 
+                {
                     // Re-throw the exception or handle it as needed
                     throw new InvalidOperationException($"Failed to include property {includeProperty}.", ex);
                 }
@@ -214,10 +225,12 @@ namespace Mottrist.Repository.Repository
         {
             await Task.Run(() => _dbSet.UpdateRange(entities));
         }
-
-        public IQueryable<TEntity> Query()
+        private void _OnAdd(TEntity entity)
         {
-            return _context.Set<TEntity>();
+            if (entity is ICreateAt createAt)
+            {
+                createAt.CreatedAt = DateTime.UtcNow;
+            }
         }
     }
 }

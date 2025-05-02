@@ -44,7 +44,7 @@ namespace Mottrist.Service.Features.Cars.Services.CarFields
             try
             {
                 // Retrieve the brand query from the repository
-                var brandsQuery = _unitOfWork.Repository<Brand>().Query().AsQueryable();
+                var brandsQuery = _unitOfWork.Repository<Brand>().Table.AsQueryable();
 
                 // Apply the filter if provided
                 if (filter != null)

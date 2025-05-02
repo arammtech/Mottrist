@@ -14,11 +14,9 @@ using Mottrist.Repository.UnitOfWork;
 using Mottrist.Service.Features.Cars.Interfaces;
 using Mottrist.Service.Features.Cars.Services;
 using Mottrist.Service.Features.Drivers.Interfaces;
-using Mottrist.Service.Features.Drivers.Mappers;
 using Mottrist.Service.Features.Drivers.Services;
 using Mottrist.Service.Features.General.Mapper.Profiles;
 using Mottrist.Service.Features.Traveller.Interfaces;
-using Mottrist.Service.Features.Traveller.Mappers;
 using Mottrist.Service.Features.Traveller.Services;
 using Mottrist.Service.Features.Traveller.Validators;
 using Mottrist.Utilities.Identity;
@@ -46,10 +44,11 @@ using Mottrist.Service.Features.JWT.Services;
 
 using Mottrist.Service.Features.General.Images.Interface;
 using Mottrist.Service.Features.General.Images.Services;
+using Mottrist.Service.Features.Drivers.Profiles;
+using Mottrist.Service.Features.Traveller.Profiles;
 using Mottrist.Service.Features.Traveller.DTOs;
 using Mottrist.Service.Features.Users.DTOs;
 using Mottrist.Service.Features.Users.Validators;
-
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -41,9 +41,6 @@ namespace Mottrist.Service.Features.Drivers.Validators
             //    .WithMessage("Invalid WhatsApp number format.");
 
             // Validate Nationality
-            RuleFor(driver => driver.Nationality)
-                .NotEmpty().WithMessage("Nationality is required.")
-                .MaximumLength(100).WithMessage("Nationality cannot exceed 100 characters.");
 
             // Validate LicenseImageUrl
             RuleFor(driver => driver.LicenseImageUrl)
@@ -60,29 +57,7 @@ namespace Mottrist.Service.Features.Drivers.Validators
 
             When(driver => driver.HasCar, () =>
             {
-                RuleFor(driver => driver.CarBrand)
-                    .NotEmpty().WithMessage("Car brand is required when the driver has a car.")
-                    .MaximumLength(100).WithMessage("Car brand cannot exceed 100 characters.");
-
-                RuleFor(driver => driver.CarModel)
-                    .NotEmpty().WithMessage("Car model is required when the driver has a car.")
-                    .MaximumLength(100).WithMessage("Car model cannot exceed 100 characters.");
-
-                RuleFor(driver => driver.CarYear)
-                    .InclusiveBetween(1900, DateTime.Now.Year).WithMessage($"Car year must be between 1900 and {DateTime.Now.Year}.");
-
-
-                RuleFor(driver => driver.CarColor)
-                    .NotEmpty().WithMessage("Car color is required when the driver has a car.")
-                    .MaximumLength(50).WithMessage("Car color cannot exceed 50 characters.");
-
-                RuleFor(driver => driver.CarBodyType)
-                    .NotEmpty().WithMessage("Car body type is required when the driver has a car.")
-                    .MaximumLength(50).WithMessage("Car body type cannot exceed 50 characters.");
-
-                RuleFor(driver => driver.CarFuelType)
-                    .NotEmpty().WithMessage("Car fuel type is required when the driver has a car.")
-                    .MaximumLength(50).WithMessage("Car fuel type cannot exceed 50 characters.");
+                
 
             });
         }
