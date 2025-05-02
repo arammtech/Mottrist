@@ -50,6 +50,7 @@ namespace Mottrist.Service.Features.Drivers.Validators
             RuleFor(driver => driver.PricePerHour)
                 .GreaterThanOrEqualTo(0).WithMessage("Price per hour must be greater or equals than zero.");
 
+
             // Validate phone numbers using E.164 format
             RuleFor(driver => driver.PhoneNumber)
                 .Matches(new Regex(@"^\+?[1-9]\d{1,14}$"))
@@ -104,9 +105,8 @@ namespace Mottrist.Service.Features.Drivers.Validators
                 RuleFor(driver => driver.Car!.FuelTypeId)
                     .GreaterThan(0).WithMessage("Fuel Type ID must be a valid positive number.");
 
-
                     RuleFor(driver => driver.Car!.CarImages)
-                          .NotNull().WithMessage("Car images are required. between 0 to 10");
+                          .NotNull().WithMessage("Car images are required between 0 to 10");
 
                 When(driver => driver.Car!.CarImages != null, () =>
                 {
