@@ -42,5 +42,8 @@ namespace Mottrist.Service.Features.Users.Interface
         /// <returns>User DTO containing user details.</returns>
         Task<UserDto> GetUserByEmail(string email);
 
+
+        Task<Result> ConfirmEmailAsync(UserDto userDto);
+
     }
 }

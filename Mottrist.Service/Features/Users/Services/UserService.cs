@@ -154,6 +154,21 @@ namespace Mottrist.Service.Features.Users.Services
                 return null;
             }
         }
+
+        public async Task<Result> ConfirmEmailAsync(UserDto userDto)
+        {
+            ApplicationUser user = await _userManager.FindByEmailAsync(userDto.Email);
+
+            if (user == null) 
+                return Result.Failure("Failed to confirm user email.");
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = $"https://yourapp.com/api/auth/confirm-email?userId={user.Id}&token={token}";
+            //await _emailService.SendEmailAsync(user.Email, "Confirm Your Email", $"Click here: {confirmationLink}");
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            return result.Succeeded ? Result.Success() :  Result.Failure("Failed to confirm user email.");
+        }
     }
 }
 
