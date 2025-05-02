@@ -134,7 +134,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Register([FromBody] AddUserDto addUserDto)
+        public async Task<IActionResult> AddUserAsync([FromBody] AddUserDto addUserDto)
         {
             if (!ModelState.IsValid)
             {
@@ -147,13 +147,13 @@ namespace Mottrist.API.Controllers
             }
 
            try
-            {
-                var addUserResult = await _userService.RegisterAsync(addUserDto);
+              {
+                var addUserResult = await _userService.AddUserAsync(addUserDto);
 
-                if(!addUserResult.IsSuccess)
-                    StatusCodeResponse(StatusCodes.Status500InternalServerError, "CreationError", "Failed to create user.");
+                return addUserResult.IsSuccess
+                    ? CreatedResponse(null,null,"User created successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "CreationError", "Failed to create user.");
 
-                return SuccessResponse<TokenDto>(addUserResult.Data, "User registered successfully.");
             }
             catch (HttpRequestException ex)
             {

@@ -32,8 +32,8 @@ namespace Mottrist.Service.Features.Users.Interface
         /// Adds a new user and assigns roles.
         /// </summary>
         /// <param name="addUserDto">DTO containing user details.</param>
-        /// <returns>Result containing user DTO upon success.</returns>
-        Task<Result<UserDto>> AddUserAsync(AddUserDto addUserDto);
+        /// <returns>Result  upon success.</returns>
+        Task<Result> AddUserAsync(AddUserDto addUserDto);
 
         /// <summary>
         /// Retrieves user details by email.
@@ -41,5 +41,6 @@ namespace Mottrist.Service.Features.Users.Interface
         /// <param name="email">User's email address.</param>
         /// <returns>User DTO containing user details.</returns>
         Task<UserDto> GetUserByEmail(string email);
+
     }
 }
