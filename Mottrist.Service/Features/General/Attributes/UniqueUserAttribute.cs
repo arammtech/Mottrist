@@ -19,11 +19,11 @@ public class UniqueUserAttribute : ValidationAttribute
         // Check if the user exists; here we assume that value is the username. Adjust as needed.
         // Note: Using .Result or .GetAwaiter().GetResult() can cause issues in certain scenarios;
         // consider using asynchronous validation patterns if needed.
-        var userExists = userManager.FindByNameAsync(value.ToString()).GetAwaiter().GetResult();
+        var userExists = userManager.FindByEmailAsync(value.ToString()).GetAwaiter().GetResult();
 
         if (userExists != null)
         {
-            return new ValidationResult("A user with this username already exists.");
+            return new ValidationResult("A user with this email already exists.");
         }
 
         return ValidationResult.Success;

@@ -76,9 +76,7 @@ namespace Mottrist.Service.Features.Users.Services
             {
                 var addUserResult = await AddUserAsync(addUserDto);
 
-                return addUserResult.IsSuccess
-                    ? Result<TokenDto>.Success(await LoginAsync(addUserResult.Data))
-                    : Result<TokenDto>.Failure("Failed to register the user");
+                return Result<TokenDto>.Failure("Failed to register the user");
             }
             catch (Exception ex)
             {
@@ -105,12 +103,8 @@ namespace Mottrist.Service.Features.Users.Services
         /// </summary>
         /// <param name="addUserDto">DTO containing user details.</param>
         /// <returns>Result containing user DTO on success.</returns>
-        public async Task<Result<UserDto>> AddUserAsync(AddUserDto addUserDto)
+        public async Task<Result> AddUserAsync(AddUserDto addUserDto)
         {
-            var transactionResult = await _unitOfWork.StartTransactionAsync();
-
-            if (!transactionResult.IsSuccess)
-                return Result<UserDto>.Failure("Failed to start the transaction");
 
             try
             {
@@ -120,39 +114,21 @@ namespace Mottrist.Service.Features.Users.Services
                 var addUserResult = await _userManager.CreateAsync(user, addUserDto.Password);
 
                 if (!addUserResult.Succeeded)
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return Result<UserDto>.Failure("Failed to save the user to the database.");
-                }
+                    return Result.Failure("Failed to save the user to the database.");
 
                 // Assign roles to user
                 foreach (var role in addUserDto.Roles)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(user, role);
                     if (!roleResult.Succeeded)
-                    {
-                        await _unitOfWork.RollbackAsync();
-                        return Result<UserDto>.Failure("Failed to add the roles to the user");
-                    }
+                        return Result.Failure("Failed to add the roles to the user");
                 }
 
-                // Commit transaction
-                var commitResult = await _unitOfWork.CommitAsync();
-                if (!commitResult.IsSuccess)
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return Result<UserDto>.Failure("Failed to register the user");
-                }
-
-                UserDto newUserDto = await GetUserByEmail(addUserDto.Email);
-                newUserDto.Roles = addUserDto.Roles;
-
-                return Result<UserDto>.Success(newUserDto);
+                return Result.Success();
             }
             catch (Exception ex)
             {
-                await _unitOfWork.RollbackAsync();
-                return Result<UserDto>.Failure($"Error creating a user: {ex.Message}");
+                return Result.Failure($"Error creating a user: {ex.Message}");
             }
         }
 

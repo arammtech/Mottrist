@@ -19,6 +19,7 @@
         /// <summary>
         /// Gets or sets the email address of the user.
         /// </summary>
+        [UniqueUser]
         public string Email { get; set; } = null!;
 
         /// <summary>
