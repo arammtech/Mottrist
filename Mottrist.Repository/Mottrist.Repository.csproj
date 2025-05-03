@@ -23,7 +23,4 @@
 	  <ProjectReference Include="..\Mottrist.Domain\Mottrist.Domain.csproj" />
 	  <ProjectReference Include="..\Mottrist.Utilities\Mottrist.Utilities.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="EntityFrameworkCore\Configurations\SecuritySchemaConfiguration\" />
-	</ItemGroup>
 </Project>

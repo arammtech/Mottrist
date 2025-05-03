@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 
@@ -11,9 +12,11 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250503140714_add-message-table")]
+    partial class addmessagetable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -462,10 +465,8 @@ namespace Mottrist.Repository.Migrations
                     b.Property<bool>("HasWiFi")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                    b.Property<int>("ModelId")
+                        .HasColumnType("int");
 
                     b.Property<byte>("NumberOfSeats")
                         .HasColumnType("tinyint");
@@ -483,6 +484,8 @@ namespace Mottrist.Repository.Migrations
 
                     b.HasIndex("FuelTypeId");
 
+                    b.HasIndex("ModelId");
+
                     b.ToTable("Cars", "Vehicles");
 
                     b.HasData(
@@ -495,7 +498,7 @@ namespace Mottrist.Repository.Migrations
                             FuelTypeId = 1,
                             HasAirCondiations = false,
                             HasWiFi = false,
-                            Model = "DTG",
+                            ModelId = 1,
                             NumberOfSeats = (byte)5,
                             Year = 2022
                         },
@@ -508,7 +511,7 @@ namespace Mottrist.Repository.Migrations
                             FuelTypeId = 2,
                             HasAirCondiations = false,
                             HasWiFi = false,
-                            Model = "DTG",
+                            ModelId = 2,
                             NumberOfSeats = (byte)7,
                             Year = 2021
                         },
@@ -521,7 +524,7 @@ namespace Mottrist.Repository.Migrations
                             FuelTypeId = 1,
                             HasAirCondiations = false,
                             HasWiFi = false,
-                            Model = "DTG",
+                            ModelId = 1,
                             NumberOfSeats = (byte)5,
                             Year = 2022
                         },
@@ -534,7 +537,7 @@ namespace Mottrist.Repository.Migrations
                             FuelTypeId = 2,
                             HasAirCondiations = false,
                             HasWiFi = false,
-                            Model = "DTG",
+                            ModelId = 2,
                             NumberOfSeats = (byte)7,
                             Year = 2021
                         },
@@ -547,7 +550,7 @@ namespace Mottrist.Repository.Migrations
                             FuelTypeId = 1,
                             HasAirCondiations = false,
                             HasWiFi = false,
-                            Model = "DTG",
+                            ModelId = 3,
                             NumberOfSeats = (byte)4,
                             Year = 2023
                         });
@@ -815,6 +818,125 @@ namespace Mottrist.Repository.Migrations
                         {
                             Id = 20,
                             Type = "Compressed Natural Gas (CNG)"
+                        });
+                });
+
+            modelBuilder.Entity("Mottrist.Domain.Entities.CarDetails.Model", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Models", "Vehicles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Corolla"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Mustang"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Civic"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Model S"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "X5"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "F-150"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Accord"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "A4"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Camry"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Q5"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "RX"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "Tucson"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "Explorer"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "Kona"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "911"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "Grand Cherokee"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Name = "Range Rover"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Name = "Charger"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Name = "Cherokee"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Name = "X6"
                         });
                 });
 
@@ -2672,6 +2794,12 @@ namespace Mottrist.Repository.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Mottrist.Domain.Entities.CarDetails.Model", "Model")
+                        .WithMany()
+                        .HasForeignKey("ModelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("BodyType");
 
                     b.Navigation("Brand");
@@ -2679,6 +2807,8 @@ namespace Mottrist.Repository.Migrations
                     b.Navigation("Color");
 
                     b.Navigation("FuelType");
+
+                    b.Navigation("Model");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.Entities.CarDetails.CarImage", b =>
