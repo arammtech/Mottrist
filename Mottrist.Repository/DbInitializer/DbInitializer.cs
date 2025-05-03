@@ -42,9 +42,11 @@ namespace Mottrist.Repository.DbInitializer
                     ApplicationUser user = new();
                     user.FirstName = "admin";
                     user.LastName = "admin";
-                    user.Email = "admin@gmail.com";
-                    user.UserName = "admin@gmail.com";
+                    user.Email = "admin@mottrist.com";
+                    user.UserName = "admin@mottrist.com";
                     user.PasswordHash = "Admin123@";
+                    user.LockoutEnabled = false;
+                    user.IsAdmin = true;
 
                     var result = _userManager.CreateAsync(user, "Admin123@").GetAwaiter().GetResult();
 
