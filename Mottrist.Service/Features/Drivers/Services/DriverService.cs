@@ -115,6 +115,50 @@ namespace Mottrist.Service.Features.Drivers.Services
 
             }
         }
+
+        public async Task<DataResult<DriverDto>?> GetTopRatedAsync(int topCount = 3)
+        {
+            try
+            {
+                var driverQuery = _unitOfWork.Repository<Driver>().Table
+                    .AsNoTracking()
+                    .Include(x => x.User)
+                    .Include(x => x.Country)
+                    .Include(x => x.Car)
+                        .ThenInclude(c => c.CarImages)
+                    .Include(x => x.DriverCities)
+                        .ThenInclude(dc => dc.City)
+                    .Include(x => x.DriverCountries)
+                        .ThenInclude(x => x.Country)
+                    .Include(x => x.DriverLanguages)
+                        .ThenInclude(x => x.Language)
+                    .Include(x => x.DriverInteractions) // Include interactions for aggregation
+                    .AsQueryable();
+
+                // Aggregate likes from DriverInteractions
+                var topDrivers = await driverQuery
+                    .Select(driver => new
+                    {
+                        Driver = driver,
+                        TotalLikes = driver.DriverInteractions.Count(interaction => interaction.IsLiked == true) // Count likes
+                    })
+                    .OrderByDescending(x => x.TotalLikes) // Order by most likes
+                    .Take(topCount) // Get top N drivers
+                    .Select(x => x.Driver) // Extract Driver entity
+                    .ProjectTo<DriverDto>(_mapper.ConfigurationProvider)
+                    .ToListAsync();
+
+                return new DataResult<DriverDto>
+                {
+                    Data = topDrivers.Any() ? topDrivers : Enumerable.Empty<DriverDto>()
+                };
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public async Task<DriverDto?> GetByIdAsync(int driverId)
         {
             if (driverId <= 0)

@@ -150,6 +150,38 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
+        /// Retrieves the top-rated drivers based on the specified number of drivers.
+        /// </summary>
+        /// <param name="count">
+        /// The number of top-rated drivers to fetch. Defaults to <c>3</c> if not provided.
+        /// </param>
+        /// <returns>
+        /// - HTTP 200 OK with the list of top-rated drivers if successful.
+        /// - HTTP 204 No Content if no top-rated drivers are found.
+        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// </returns>
+        [HttpGet("top-rated", Name = "GetTopRatedDriversAsync")]
+        [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetTopRatedAsync(int count = 3)
+        {
+            try
+            {
+                var dataResult = await _driverService.GetTopRatedAsync(count);
+
+                return dataResult != null 
+                    ? SuccessResponse(dataResult, "Top-rated drivers retrieved successfully.")
+                    : NoContentResponse("No top-rated drivers found at the moment.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
+            }
+        }
+
+
+        /// <summary>
         /// Retrieves drivers filtered by country.
         /// </summary>
         /// <param name="countryId">
