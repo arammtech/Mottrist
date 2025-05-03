@@ -32,7 +32,7 @@ namespace Mottrist.Service.Features.Drivers.Profiles
                 .ForMember(dest => dest.Dislikes, opt => opt.MapFrom(src =>
                     src.DriverInteractions.Count(di => di.IsLiked != true)))
                 .ForMember(dest => dest.Natioanlity, opt => opt.MapFrom(src =>
-                    src.Country))  
+                    src.Country))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src =>
                     src.User.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src =>
@@ -40,12 +40,7 @@ namespace Mottrist.Service.Features.Drivers.Profiles
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src =>
                     src.User.Email))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src =>
-                    src.User.PhoneNumber))
-                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src =>
-                    CalculateRating(src.DriverInteractions.Count(di => di.IsLiked == true),
-                                    src.DriverInteractions.Count(di => di.IsLiked != true))));
-
-
+                    src.User.PhoneNumber));
 
             CreateMap<AddDriverDto, Driver>()
                 .ForMember(dest => dest.User, opt => opt.Ignore())
