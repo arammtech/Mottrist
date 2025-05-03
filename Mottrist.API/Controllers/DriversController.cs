@@ -7,6 +7,8 @@ using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Mottrist.Domain.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Mottrist.Utilities.Identity;
 
 namespace Mottrist.API.Controllers
 {
@@ -45,6 +47,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the provided ID is invalid.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetDriverByIdAsync")]
         [ProducesResponseType(typeof(ApiResponse<DriverDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -74,7 +77,6 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
         /// <summary>
         /// Retrieves all drivers from the service.
         /// </summary>
@@ -83,6 +85,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 204 No Content if no drivers are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("all", Name = "GetAllDriversAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -120,6 +123,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if pagination parameters are invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("all/paged", Name = "GetAllDriversWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -160,6 +164,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 204 No Content if no top-rated drivers are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("top-rated", Name = "GetTopRatedDriversAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -193,6 +198,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the country ID parameter is invalid.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("by-country/{countryId:int}", Name = "GetDriversByCountryAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -237,6 +243,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the country or city ID is invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("by-country/{countryId:int}/city/{cityId:int}", Name = "GetDriversByCountryAndCityAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -285,6 +292,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the country or city ID is invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("by-country/{countryId:int}/city/{cityId:int}/date", Name = "GetDriversByCountryCityAndDateAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -316,6 +324,7 @@ namespace Mottrist.API.Controllers
         }
 
 
+        [AllowAnonymous]
         [HttpGet("paged/by-country/{countryId:int}", Name = "GetDriversByCountryWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -345,6 +354,7 @@ namespace Mottrist.API.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}", Name = "GetDriversByCountryAndCityWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -375,6 +385,7 @@ namespace Mottrist.API.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}/date", Name = "GetDriversByCountryAndCityAndDateWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -426,6 +437,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the pagination parameters or status are invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("paged/by-status", Name = "GetDriversByStatusWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -475,6 +487,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the status parameter is invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("by-status", Name = "GetDriversByStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -512,6 +525,8 @@ namespace Mottrist.API.Controllers
         /// - HTTP 409 Conflict if a driver with the same unique details already exists.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        
+        [AllowAnonymous]
         [HttpPost (Name = "AddNewDriverAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -563,6 +578,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 404 Not Found if the driver does not exist.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpPut("{id:int}", Name = "UpdateDriverDetailsAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)] // Successful update
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)] // Validation errors
@@ -622,6 +638,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 404 Not Found if no driver matches the provided ID.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpPatch("update-status/{driverId:int}", Name = "UpdateDriverStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -713,6 +730,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 404 Not Found if the driver does not exist.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpPatch("update-price/{driverId:int}", Name = "UpdateDriverPriceAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -845,6 +863,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the driver ID is invalid.
         /// - HTTP 500 Internal Server Error with detailed error information for failures.
         /// </returns>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpDelete("{id:int}",Name = "DeleteAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)] // Driver deleted successfully
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)] // Invalid driver ID provided

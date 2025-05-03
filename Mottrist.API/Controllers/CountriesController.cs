@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Mottrist.API.Response;
 using Mottrist.Service.Features.Countries.Interfaces;
 using static Mottrist.API.Response.ApiResponseHelper;
@@ -36,6 +37,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">The provided country ID is invalid.</response>
         /// <response code="404">No country found with the provided ID.</response>
         /// <response code="500">An unexpected error occurred while processing the request.</response>
+        [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetCountryByIdAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]  // Success response
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]  // Invalid ID
@@ -76,6 +78,7 @@ namespace Mottrist.API.Controllers
         /// <response code="200">Returns a list of countries.</response>
         /// <response code="204">No countries found in the database.</response>
         /// <response code="500">An unexpected error occurred while processing the request.</response>
+        [AllowAnonymous]
         [HttpGet("All", Name = "GetAllCountriesAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]  // Success response
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]  // No countries found

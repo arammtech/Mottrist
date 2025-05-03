@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Mottrist.API.Response;
 using Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs;
 using Mottrist.Service.Features.Cars.Interfaces;
@@ -66,6 +67,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 200 OK with the list of car body types if successful.
         /// - HTTP 204 No Content if no car body types are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
+        [AllowAnonymous]
         [HttpGet("All/BodyTypes", Name = "GetAllCarBodyTypes")]
         [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -94,6 +96,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 200 OK with the list of car brands if successful.
         /// - HTTP 204 No Content if no car brands are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
+        [AllowAnonymous]
         [HttpGet("All/Brands", Name = "GetAllCarBrands")]
         [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -122,6 +125,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 200 OK with the list of car colors if successful.
         /// - HTTP 204 No Content if no car colors are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
+        [AllowAnonymous]
         [HttpGet("All/Colors", Name = "GetAllCarColors")]
         [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -150,6 +154,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 200 OK with the list of car fuel types if successful.
         /// - HTTP 204 No Content if no car fuel types are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
+        [AllowAnonymous]
         [HttpGet("All/FuelTypes", Name = "GetAllFuelTypes")]
         [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -179,6 +184,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 200 OK with the list of car fields if successful.
         /// - HTTP 204 No Content if no car fields are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
+        [AllowAnonymous]
         [HttpGet("All/CarFields", Name = "GetAllCarFields")]
         [ProducesResponseType(typeof(ApiResponse<CarFieldsDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
