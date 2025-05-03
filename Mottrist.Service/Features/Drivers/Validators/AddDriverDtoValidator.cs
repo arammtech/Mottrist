@@ -28,9 +28,9 @@ namespace Mottrist.Service.Features.Drivers.Validators
                 .MaximumLength(50).WithMessage("Last name cannot exceed 50 characters.");
 
             // Validate Email
-            RuleFor(driver => driver.Email)
+            RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Invalid email format.");
+                .EmailAddress().WithMessage("Invalid email format. Expected format: example@domain.com.");
 
             // Validate Password
             RuleFor(driver => driver.Password)
