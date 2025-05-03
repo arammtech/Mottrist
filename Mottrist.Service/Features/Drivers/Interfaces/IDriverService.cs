@@ -40,6 +40,20 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
             int pageSize = 10,
             Expression<Func<Driver, bool>>? filter = null);
 
+
+        /// <summary>
+        /// Retrieves a specified number of top-rated drivers based on their number of likes.
+        /// </summary>
+        /// <param name="topCount">
+        /// The number of top drivers to retrieve. Defaults to <c>3</c> if not specified.
+        /// </param>
+        /// <returns>
+        /// A <see cref="DataResult{T}"/> containing a list of <see cref="DriverDto"/> objects representing 
+        /// the highest-rated drivers or an empty list if no drivers meet the criteria.
+        /// Returns <c>null</c> if an error occurs.
+        /// </returns>
+        Task<DataResult<DriverDto>?> GetTopRatedAsync(int topCount = 3);
+
         /// <summary>
         /// Retrieves a driver by its unique identifier.
         /// </summary>
