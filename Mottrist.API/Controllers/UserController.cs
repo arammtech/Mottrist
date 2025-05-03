@@ -6,6 +6,8 @@ using Mottrist.Domain.Identity;
 using Mottrist.Service.Features.Users.DTOs;
 using Mottrist.Service.Features.Users.Interface;
 using Mottrist.Service.Features.Users.Services;
+using System.Text.RegularExpressions;
+using Mottrist.Utilities.Global;
 using static Mottrist.API.Response.ApiResponseHelper;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -68,12 +70,15 @@ namespace Mottrist.API.Controllers
                 if (!passwordValid)
                     return Unauthorized("Invalid username or password.");
 
+                // Validate if the user's account is locked
+                if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
+                    return StatusCodeResponse(StatusCodes.Status423Locked,"USER_ACCOUNT_lOCKED","User account is locked");
+
                 //Prevent Brute Force Attacks
                 var result = await _signInManager.PasswordSignInAsync(userLoginDto.Email, userLoginDto.Password, false, lockoutOnFailure: true);
                 if (result.IsLockedOut)
                     return Unauthorized("Account locked due to multiple failed attempts.");
 
-                // map it auto
                 UserDto userDto = new()
                 {
                     Id = user.Id,
@@ -166,16 +171,39 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
-        [HttpPatch("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail(UserDto userDto)
+        /// <summary>
+        /// Sends a confirmation email to the specified address.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint is public (no authentication required).  
+        /// It validates the email format, then calls into the user service to generate and send
+        /// an email confirmation link.
+        /// </remarks>
+        /// <param name="email">The email address to which the confirmation link will be sent.</param>
+        /// <returns>
+        /// • 200 OK with a success message if the email was sent successfully.  
+        /// • 400 Bad Request if the email is missing or malformatted.  
+        /// • 500 Internal Server Error on any service or unexpected exception.
+        /// </returns>
+        /// <response code="200">Confirmation email sent successfully.</response>
+        /// <response code="400">Invalid or missing email address.</response>
+        /// <response code="500">An error occurred while sending the email.</response>
+        [AllowAnonymous]
+        [HttpPost("send-confirm-email")]
+        public async Task<IActionResult> SendConfirmEmailToUser(string email)
         {
-          try
-             {
-                var result = await _userService.SendEmailAsync(userDto);
+            if (string.IsNullOrWhiteSpace(email))
+                return BadRequestResponse("INVALID_EMAIL", "Email is required.", "Email is required");
+
+            if (!Regex.IsMatch(email, GlobalSettings.EmailPattern))
+                return BadRequestResponse("INVALID_EMAIL_FORMAT", "Email format is incorrect.", "Provide a valid email.");
+
+            try
+            {
+                var result = await _userService.SendEmailAsync(email);
 
                 return result.IsSuccess ? SuccessResponse("Email confirmed") : StatusCodeResponse(StatusCodes.Status500InternalServerError, "ConfirmingError", "Failed to confirm user's email.");
-            }
+          }
             catch (HttpRequestException ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
@@ -187,14 +215,51 @@ namespace Mottrist.API.Controllers
         }
 
 
-        [HttpGet("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
-        {
-            var result = await _userService.ConfirmEmailAsync(userId, token);
 
-            return result.IsSuccess?
-                SuccessResponse("Email confirmed successfully.")
-                : BadRequestResponse("Email_Confirmation_Failed", "Email confirmation failed", result.Errors.ToArray());
+        /// <summary>
+        /// Confirms a user’s email address using the provided user ID and token.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint is public (no authentication required).  
+        /// It takes the user’s ID and the confirmation token that was emailed to them, 
+        /// validates both, and then marks the user’s email as confirmed if valid.
+        /// </remarks>
+        /// <param name="userId">The ID of the user to confirm (must be a positive integer).</param>
+        /// <param name="token">The email confirmation token that was generated and sent earlier.</param>
+        /// <returns>
+        /// • 200 OK if the email was confirmed successfully.  
+        /// • 400 Bad Request if the inputs are invalid or the confirmation fails.  
+        /// • 500 Internal Server Error on any service or unexpected exception.
+        /// </returns>
+        /// <response code="200">Email confirmed successfully.</response>
+        /// <response code="400">Invalid user ID, token, or confirmation failure.</response>
+        /// <response code="500">An error occurred while confirming the email.</response>
+        [AllowAnonymous]
+        [HttpPost("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail(int userId, string token)
+        {
+            if(userId == null || userId <= 0)
+                return BadRequestResponse("INVALID_USER_ID", "User id not valid.", "User Id is required and should be positive number");
+
+            if(string.IsNullOrWhiteSpace(token))
+                return BadRequestResponse("INVALID_TOKEN", "Token is required.", "Email token is required");
+
+            try
+            {
+                var result = await _userService.ConfirmEmailAsync(userId.ToString(), token);
+
+                return result.IsSuccess ?
+                    SuccessResponse("Email confirmed successfully.")
+                    : BadRequestResponse("Email_Confirmation_Failed", "Email confirmation failed", result.Errors.ToArray());
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Unexpected error: {ex.Message}");
+            }
         }
 
     }
