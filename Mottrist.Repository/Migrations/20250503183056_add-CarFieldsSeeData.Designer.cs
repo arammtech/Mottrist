@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 
@@ -11,9 +12,11 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250503183056_add-CarFieldsSeeData")]
+    partial class addCarFieldsSeeData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -208,12 +211,11 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BodyTypes", "Vehicle");
+                    b.ToTable("BodyTypes", "Vehicles");
 
                     b.HasData(
                         new
@@ -248,723 +250,368 @@ namespace Mottrist.Repository.Migrations
                         },
                         new
                         {
-                            Id = 7,
+                            Id = 9,
                             Type = "Crossover"
                         },
                         new
                         {
-                            Id = 8,
+                            Id = 36,
                             Type = "Electric Car"
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 37,
                             Type = "Hybrid Car"
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 38,
                             Type = "Sports Car"
                         },
                         new
                         {
-                            Id = 11,
+                            Id = 39,
                             Type = "Roadster"
                         },
                         new
                         {
-                            Id = 12,
+                            Id = 40,
                             Type = "Pony Car"
                         },
                         new
                         {
-                            Id = 13,
+                            Id = 41,
                             Type = "Muscle Car"
                         },
                         new
                         {
-                            Id = 14,
+                            Id = 42,
                             Type = "Supercar"
                         },
                         new
                         {
-                            Id = 15,
+                            Id = 43,
                             Type = "Hypercar"
                         },
                         new
                         {
-                            Id = 16,
+                            Id = 51,
                             Type = "Minicar"
                         },
                         new
                         {
-                            Id = 17,
+                            Id = 52,
                             Type = "Subcompact Car"
                         },
                         new
                         {
-                            Id = 18,
+                            Id = 53,
                             Type = "Compact Car"
                         },
                         new
                         {
-                            Id = 19,
+                            Id = 54,
                             Type = "Mid-Size Car"
                         },
                         new
                         {
-                            Id = 20,
+                            Id = 55,
                             Type = "Full-Size Car"
                         },
                         new
                         {
-                            Id = 21,
+                            Id = 56,
                             Type = "Luxury Car"
                         },
                         new
                         {
-                            Id = 22,
+                            Id = 57,
                             Type = "Grand Tourer"
                         },
                         new
                         {
-                            Id = 23,
+                            Id = 58,
                             Type = "Fastback"
                         },
                         new
                         {
-                            Id = 24,
+                            Id = 59,
                             Type = "Notchback"
                         },
                         new
                         {
-                            Id = 25,
+                            Id = 60,
                             Type = "Hardtop"
                         },
                         new
                         {
-                            Id = 26,
+                            Id = 61,
                             Type = "Targa Top"
                         },
                         new
                         {
-                            Id = 27,
+                            Id = 62,
                             Type = "Landau"
                         },
                         new
                         {
-                            Id = 28,
+                            Id = 63,
                             Type = "Shooting Brake"
                         },
                         new
                         {
-                            Id = 29,
+                            Id = 64,
                             Type = "Estate Car"
                         },
                         new
                         {
-                            Id = 30,
+                            Id = 101,
                             Type = "Liftback"
                         },
                         new
                         {
-                            Id = 31,
+                            Id = 102,
                             Type = "Kammback"
                         },
                         new
                         {
-                            Id = 32,
+                            Id = 103,
                             Type = "Bubble Car"
                         },
                         new
                         {
-                            Id = 33,
+                            Id = 104,
                             Type = "Microcar"
                         },
                         new
                         {
-                            Id = 34,
+                            Id = 105,
                             Type = "City Car"
                         },
                         new
                         {
-                            Id = 35,
+                            Id = 106,
                             Type = "Subcompact MPV"
                         },
                         new
                         {
-                            Id = 36,
+                            Id = 107,
                             Type = "Compact MPV"
                         },
                         new
                         {
-                            Id = 37,
+                            Id = 108,
                             Type = "Large MPV"
                         },
                         new
                         {
-                            Id = 38,
+                            Id = 109,
                             Type = "Panel Van"
                         },
                         new
                         {
-                            Id = 39,
+                            Id = 110,
                             Type = "Pickup SUV"
                         },
                         new
                         {
-                            Id = 40,
+                            Id = 111,
                             Type = "Coupe SUV"
                         },
                         new
                         {
-                            Id = 41,
+                            Id = 112,
                             Type = "Off-Road SUV"
                         },
                         new
                         {
-                            Id = 42,
+                            Id = 113,
                             Type = "Luxury SUV"
                         },
                         new
                         {
-                            Id = 43,
+                            Id = 114,
                             Type = "Performance SUV"
                         },
                         new
                         {
-                            Id = 44,
+                            Id = 115,
                             Type = "Electric SUV"
                         },
                         new
                         {
-                            Id = 45,
+                            Id = 116,
                             Type = "Hybrid SUV"
                         },
                         new
                         {
-                            Id = 46,
+                            Id = 117,
                             Type = "Extended Length SUV"
                         },
                         new
                         {
-                            Id = 47,
+                            Id = 118,
                             Type = "Three-Row SUV"
                         },
                         new
                         {
-                            Id = 48,
+                            Id = 119,
                             Type = "Two-Row SUV"
                         },
                         new
                         {
-                            Id = 49,
+                            Id = 120,
                             Type = "Compact Crossover SUV"
                         },
                         new
                         {
-                            Id = 50,
+                            Id = 121,
                             Type = "Mid-Size Crossover SUV"
                         },
                         new
                         {
-                            Id = 51,
+                            Id = 122,
                             Type = "Full-Size Crossover SUV"
                         },
                         new
                         {
-                            Id = 52,
+                            Id = 123,
                             Type = "Convertible SUV"
                         },
                         new
                         {
-                            Id = 53,
+                            Id = 124,
                             Type = "T-Top"
                         },
                         new
                         {
-                            Id = 54,
+                            Id = 125,
                             Type = "Phaeton"
                         },
                         new
                         {
-                            Id = 55,
+                            Id = 126,
                             Type = "Barchetta"
                         },
                         new
                         {
-                            Id = 56,
+                            Id = 127,
                             Type = "Spider"
                         },
                         new
                         {
-                            Id = 57,
+                            Id = 128,
                             Type = "Cabriolet"
                         },
                         new
                         {
-                            Id = 58,
+                            Id = 129,
                             Type = "Drophead Coupé"
                         },
                         new
                         {
-                            Id = 59,
+                            Id = 130,
                             Type = "Roadster Utility"
                         },
                         new
                         {
-                            Id = 60,
+                            Id = 131,
                             Type = "Club Coupe"
                         },
                         new
                         {
-                            Id = 61,
+                            Id = 132,
                             Type = "Opera Coupe"
                         },
                         new
                         {
-                            Id = 62,
+                            Id = 133,
                             Type = "Business Coupe"
                         },
                         new
                         {
-                            Id = 63,
+                            Id = 134,
                             Type = "Personal Luxury Coupe"
                         },
                         new
                         {
-                            Id = 64,
+                            Id = 135,
                             Type = "Four-Door Coupe"
                         },
                         new
                         {
-                            Id = 65,
+                            Id = 136,
                             Type = "Compact Executive Car"
                         },
                         new
                         {
-                            Id = 66,
+                            Id = 137,
                             Type = "Executive Car"
                         },
                         new
                         {
-                            Id = 67,
+                            Id = 138,
                             Type = "Luxury Sedan"
                         },
                         new
                         {
-                            Id = 68,
+                            Id = 139,
                             Type = "Full-Size Luxury Sedan"
                         },
                         new
                         {
-                            Id = 69,
+                            Id = 140,
                             Type = "Performance Sedan"
                         },
                         new
                         {
-                            Id = 70,
+                            Id = 141,
                             Type = "Sports Sedan"
                         },
                         new
                         {
-                            Id = 71,
+                            Id = 142,
                             Type = "Touring Sedan"
                         },
                         new
                         {
-                            Id = 72,
+                            Id = 143,
                             Type = "Wagon Sedan"
                         },
                         new
                         {
-                            Id = 73,
+                            Id = 144,
                             Type = "Fastback Sedan"
                         },
                         new
                         {
-                            Id = 74,
+                            Id = 145,
                             Type = "Notchback Sedan"
                         },
                         new
                         {
-                            Id = 75,
+                            Id = 146,
                             Type = "Hardtop Sedan"
                         },
                         new
                         {
-                            Id = 76,
+                            Id = 147,
                             Type = "Pillarless Hardtop"
                         },
                         new
                         {
-                            Id = 77,
+                            Id = 148,
                             Type = "Long-Wheelbase Sedan"
                         },
                         new
                         {
-                            Id = 78,
+                            Id = 149,
                             Type = "Short-Wheelbase Sedan"
                         },
                         new
                         {
-                            Id = 79,
-                            Type = "Hybrid Electric Sedan"
-                        },
-                        new
-                        {
-                            Id = 80,
-                            Type = "Compact Luxury Sedan"
-                        },
-                        new
-                        {
-                            Id = 81,
-                            Type = "Mid-Size Luxury Sedan"
-                        },
-                        new
-                        {
-                            Id = 82,
-                            Type = "Subcompact Luxury SUV"
-                        },
-                        new
-                        {
-                            Id = 83,
-                            Type = "Compact Luxury SUV"
-                        },
-                        new
-                        {
-                            Id = 84,
-                            Type = "Mid-Size Luxury SUV"
-                        },
-                        new
-                        {
-                            Id = 85,
-                            Type = "Full-Size Luxury SUV"
-                        },
-                        new
-                        {
-                            Id = 86,
-                            Type = "Retro Sedan"
-                        },
-                        new
-                        {
-                            Id = 87,
-                            Type = "Retro Coupe"
-                        },
-                        new
-                        {
-                            Id = 88,
-                            Type = "Soft-Top Convertible"
-                        },
-                        new
-                        {
-                            Id = 89,
-                            Type = "Hardtop Convertible"
-                        },
-                        new
-                        {
-                            Id = 90,
-                            Type = "Micro MPV"
-                        },
-                        new
-                        {
-                            Id = 91,
-                            Type = "Luxury Crossover"
-                        },
-                        new
-                        {
-                            Id = 92,
-                            Type = "Performance Crossover"
-                        },
-                        new
-                        {
-                            Id = 93,
-                            Type = "Electric Crossover"
-                        },
-                        new
-                        {
-                            Id = 94,
-                            Type = "Hybrid Crossover"
-                        },
-                        new
-                        {
-                            Id = 95,
-                            Type = "Compact Performance Car"
-                        },
-                        new
-                        {
-                            Id = 96,
-                            Type = "Mid-Size Performance Car"
-                        },
-                        new
-                        {
-                            Id = 97,
-                            Type = "Luxury Performance Car"
-                        },
-                        new
-                        {
-                            Id = 98,
-                            Type = "Electric Performance Car"
-                        },
-                        new
-                        {
-                            Id = 99,
-                            Type = "Hybrid Performance Car"
-                        },
-                        new
-                        {
-                            Id = 100,
-                            Type = "Subcompact Hatchback"
-                        },
-                        new
-                        {
-                            Id = 101,
-                            Type = "Compact Hatchback"
-                        },
-                        new
-                        {
-                            Id = 102,
-                            Type = "Mid-Size Hatchback"
-                        },
-                        new
-                        {
-                            Id = 103,
-                            Type = "Luxury Hatchback"
-                        },
-                        new
-                        {
-                            Id = 104,
-                            Type = "Performance Hatchback"
-                        },
-                        new
-                        {
-                            Id = 105,
-                            Type = "Electric Hatchback"
-                        },
-                        new
-                        {
-                            Id = 106,
-                            Type = "Hybrid Hatchback"
-                        },
-                        new
-                        {
-                            Id = 107,
-                            Type = "Subcompact Coupe"
-                        },
-                        new
-                        {
-                            Id = 108,
-                            Type = "Compact Coupe"
-                        },
-                        new
-                        {
-                            Id = 109,
-                            Type = "Mid-Size Coupe"
-                        },
-                        new
-                        {
-                            Id = 110,
-                            Type = "Luxury Coupe"
-                        },
-                        new
-                        {
-                            Id = 111,
-                            Type = "Performance Coupe"
-                        },
-                        new
-                        {
-                            Id = 112,
-                            Type = "Electric Coupe"
-                        },
-                        new
-                        {
-                            Id = 113,
-                            Type = "Hybrid Coupe"
-                        },
-                        new
-                        {
-                            Id = 114,
-                            Type = "Subcompact Convertible"
-                        },
-                        new
-                        {
-                            Id = 115,
-                            Type = "Compact Convertible"
-                        },
-                        new
-                        {
-                            Id = 116,
-                            Type = "Mid-Size Convertible"
-                        },
-                        new
-                        {
-                            Id = 117,
-                            Type = "Luxury Convertible"
-                        },
-                        new
-                        {
-                            Id = 118,
-                            Type = "Performance Convertible"
-                        },
-                        new
-                        {
-                            Id = 119,
-                            Type = "Electric Convertible"
-                        },
-                        new
-                        {
-                            Id = 120,
-                            Type = "Hybrid Convertible"
-                        },
-                        new
-                        {
-                            Id = 121,
-                            Type = "Compact Wagon"
-                        },
-                        new
-                        {
-                            Id = 122,
-                            Type = "Mid-Size Wagon"
-                        },
-                        new
-                        {
-                            Id = 123,
-                            Type = "Full-Size Wagon"
-                        },
-                        new
-                        {
-                            Id = 124,
-                            Type = "Luxury Wagon"
-                        },
-                        new
-                        {
-                            Id = 125,
-                            Type = "Performance Wagon"
-                        },
-                        new
-                        {
-                            Id = 126,
-                            Type = "Electric Wagon"
-                        },
-                        new
-                        {
-                            Id = 127,
-                            Type = "Hybrid Wagon"
-                        },
-                        new
-                        {
-                            Id = 128,
-                            Type = "Subcompact Crossover"
-                        },
-                        new
-                        {
-                            Id = 129,
-                            Type = "Adventure SUV"
-                        },
-                        new
-                        {
-                            Id = 130,
-                            Type = "Retro SUV"
-                        },
-                        new
-                        {
-                            Id = 131,
-                            Type = "Urban SUV"
-                        },
-                        new
-                        {
-                            Id = 132,
-                            Type = "Compact Off-Road SUV"
-                        },
-                        new
-                        {
-                            Id = 133,
-                            Type = "Mid-Size Off-Road SUV"
-                        },
-                        new
-                        {
-                            Id = 134,
-                            Type = "Luxury Off-Road SUV"
-                        },
-                        new
-                        {
-                            Id = 135,
-                            Type = "Performance Off-Road SUV"
-                        },
-                        new
-                        {
-                            Id = 136,
-                            Type = "Electric Off-Road SUV"
-                        },
-                        new
-                        {
-                            Id = 137,
-                            Type = "Hybrid Off-Road SUV"
-                        },
-                        new
-                        {
-                            Id = 138,
-                            Type = "Micro Crossover"
-                        },
-                        new
-                        {
-                            Id = 139,
-                            Type = "Subcompact Performance SUV"
-                        },
-                        new
-                        {
-                            Id = 140,
-                            Type = "Mid-Size Performance SUV"
-                        },
-                        new
-                        {
-                            Id = 141,
-                            Type = "Full-Size Performance SUV"
-                        },
-                        new
-                        {
-                            Id = 142,
-                            Type = "Luxury Performance SUV"
-                        },
-                        new
-                        {
-                            Id = 143,
-                            Type = "Compact Hybrid SUV"
-                        },
-                        new
-                        {
-                            Id = 144,
-                            Type = "Full-Size Hybrid SUV"
-                        },
-                        new
-                        {
-                            Id = 145,
-                            Type = "Compact Electric SUV"
-                        },
-                        new
-                        {
-                            Id = 146,
-                            Type = "Mid-Size Electric SUV"
-                        },
-                        new
-                        {
-                            Id = 147,
-                            Type = "Full-Size Electric SUV"
-                        },
-                        new
-                        {
-                            Id = 148,
-                            Type = "Luxury Electric SUV"
-                        },
-                        new
-                        {
-                            Id = 149,
-                            Type = "Retro Hatchback"
-                        },
-                        new
-                        {
                             Id = 150,
-                            Type = "Concept Car"
+                            Type = "Hybrid Electric Sedan"
                         });
                 });
 
