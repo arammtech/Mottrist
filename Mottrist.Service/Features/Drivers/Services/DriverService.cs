@@ -839,6 +839,8 @@ namespace Mottrist.Service.Features.Drivers.Services
                         return Result.Failure("Failed to add car details.");
                     }
                     existingDriver.CarId = carAddResult.Data?.Id;
+                    existingDriver.Status = DriverStatus.Pending;
+
                 }
 
                 return Result.Success();

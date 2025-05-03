@@ -23,7 +23,7 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public string Status { get; set; } = null!;
         public decimal PricePerHour { get; set; } // Driver's hourly rate
         
-        public byte Rating { get; set; } // Driver's rating out of 5
+        public double Rating { get; set; } 
         public bool IsAvailable
         {
             get
@@ -49,7 +49,6 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public bool IsAvailableAllTime { get; set; }
         public int Likes { get; set; }
         public int Dislikes { get; set; }
-        public int NumberOfViews { get; set; }
 
         // Images
         public string? ProfileImageUrl { get; set; }
