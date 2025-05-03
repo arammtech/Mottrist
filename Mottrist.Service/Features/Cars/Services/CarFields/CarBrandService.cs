@@ -14,20 +14,11 @@ using System.Linq.Expressions;
 
 namespace Mottrist.Service.Features.Cars.Services.CarFields
 {
-    /// <summary>
-    /// Service class responsible for handling car brand-related operations.
-    /// Implements ICarBrandService.
-    /// </summary>
     public class CarBrandService : BaseService, ICarBrandService
     {
-        private readonly IUnitOfWork _unitOfWork;  // Unit of Work for database interactions
-        private readonly IMapper _mapper;  // AutoMapper instance for DTO mapping
-        /// <summary>
-        /// Initializes a new instance of the CarBrandService class.
-        /// Throws ArgumentNullException if any dependency is null.
-        /// </summary>
-        /// <param name="unitOfWork">Unit of Work instance for database access</param>
-        /// <param name="mapper">AutoMapper instance for mapping entities</param>
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+        
         public CarBrandService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -86,11 +77,6 @@ namespace Mottrist.Service.Features.Cars.Services.CarFields
             }
         }
 
-        /// <summary>
-        /// Retrieves all car brands, optionally filtered based on the provided expression.
-        /// </summary>
-        /// <param name="filter">An optional filter expression</param>
-        /// <returns>A DataResult containing a list of CarBrandDto objects</returns>
         public async Task<DataResult<CarBrandDto>> GetAllAsync(Expression<Func<Brand, bool>>? filter = null)
         {
             try
@@ -192,13 +178,13 @@ namespace Mottrist.Service.Features.Cars.Services.CarFields
                 if (exstingBrand == null)
                     return Result<CarBrandDto>.Failure($"Brand Not Found");
 
-                var updatedBrand = _mapper.Map(updateCarBrandDto,exstingBrand);
+                _mapper.Map(updateCarBrandDto,exstingBrand);
 
-                await _unitOfWork.Repository<Brand>().UpdateAsync(updatedBrand);
+                await _unitOfWork.Repository<Brand>().UpdateAsync(exstingBrand);
                 var saveResult = await SaveChangesAsync();
 
                 if (saveResult.IsSuccess)
-                    return Result<CarBrandDto>.Success(_mapper.Map<CarBrandDto>(updateCarBrandDto));
+                    return Result<CarBrandDto>.Success(_mapper.Map<CarBrandDto>(exstingBrand));
                 return Result<CarBrandDto>.Failure($"Error deleting Brand");
             }
             catch (Exception ex)
