@@ -9,13 +9,12 @@ namespace Mottrist.Domain.Entities.CarDetails
         public bool HasWiFi { get; set; }
         public bool HasAirCondiations { get; set; }
         public int BrandId { get; set; }
-        public int ModelId { get; set; }
+        public string Model { get; set; } = null!;
         public int ColorId { get; set; }
         public int BodyTypeId { get; set; }
         public int FuelTypeId { get; set; }
 
         #region Navigation Properties
-        public virtual Model Model { get; set; } = null!;
         public virtual Color Color { get; set; } = null!;
         public virtual Brand Brand { get; set; } = null!;
         public virtual BodyType BodyType { get; set; } = null!;

@@ -96,9 +96,8 @@ namespace Mottrist.Service.Features.Drivers.Validators
                     .NotNull().WithMessage("Brand ID is required.")
                     .GreaterThan(0).WithMessage("Brand ID must be a valid positive number.");
 
-                RuleFor(driver => driver.Car!.ModelId)
-                    .NotNull().WithMessage("Model ID is required.")
-                    .GreaterThan(0).WithMessage("Model ID must be a valid positive number.");
+                RuleFor(driver => driver.Car!.Model)
+                    .NotNull().WithMessage("Model is required.");
 
                 RuleFor(driver => driver.Car!.ColorId)
                     .NotNull().WithMessage("Color ID is required.")

@@ -14,8 +14,7 @@ namespace Feature.Car.DTOs
         public bool HasAirCondiations { get; set; }
 
         public int BrandId { get; set; }
-
-        public int ModelId { get; set; }
+        public string Model { get; set; } = null!;
 
         public int ColorId { get; set; }
 
