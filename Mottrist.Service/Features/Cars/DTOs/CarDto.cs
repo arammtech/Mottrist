@@ -1,6 +1,7 @@
 ﻿using Feature.Car.DTOs;
 using Mottrist.Domain.Entities.CarDetails;
 using Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs;
+using Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs.BrandDTOs;
 using System.ComponentModel.DataAnnotations;
 
 namespace Mottrist.Service.Features.Cars.DTOs
