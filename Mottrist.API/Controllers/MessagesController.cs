@@ -102,7 +102,7 @@ namespace Mottrist.API.Controllers
         /// <response code="201">Message created successfully.</response>
         /// <response code="400">Validation error in message data.</response>
         /// <response code="500">An internal server error occurred.</response>
-        [HttpPost(Name = "AddNewMessageAsync")]
+        [HttpPost("paged",Name = "GetAllMessagesWithPaginationAsync")]
         [ProducesResponseType(typeof(MessageDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
