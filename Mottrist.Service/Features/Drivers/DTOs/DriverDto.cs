@@ -3,6 +3,7 @@ using Mottrist.Service.Features.Cities.Dtos;
 using Mottrist.Service.Features.Countries.DTOs;
 using Mottrist.Service.Features.Languages.DTOs;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Mottrist.Service.Features.Drivers.Helpers;
 
 namespace Mottrist.Service.Features.Drivers.DTOs
 {
@@ -22,6 +23,8 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public byte YearsOfExperience { get; set; }
         public string Status { get; set; } = null!;
         public decimal PricePerHour { get; set; } // Driver's hourly rate
+        
+        public double Rating => DriverCalculator.CalculateRating(Likes, Dislikes);
         public bool IsAvailable
         {
             get
@@ -47,7 +50,6 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public bool IsAvailableAllTime { get; set; }
         public int Likes { get; set; }
         public int Dislikes { get; set; }
-        public int NumberOfViews { get; set; }
 
         // Images
         public string? ProfileImageUrl { get; set; }

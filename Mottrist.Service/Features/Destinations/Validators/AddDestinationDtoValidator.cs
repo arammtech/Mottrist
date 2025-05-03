@@ -31,9 +31,7 @@ namespace Mottrist.Service.Features.Destinations.Validators
 
             // Validate Image (must be a valid file and an image)
             RuleFor(destination => destination.Image)
-                .NotNull().WithMessage("An image is required for the destination.")
-                .Must(file => file.Length > 0 && file.Length <= 5 * 1024 * 1024) // Max 5MB size
-                .WithMessage("Image file must be between 1KB and 5MB.");
+                .NotNull().WithMessage("An image is required for the destination.");
             // Optional Description Validation
             RuleFor(destination => destination.Description)
                 .MaximumLength(500).WithMessage("Description cannot exceed 500 characters.");

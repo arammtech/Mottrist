@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Mottrist.API.Response;
 using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Messages.DTOs;
 using Mottrist.Service.Features.Messages.Interfaces;
+using Mottrist.Utilities.Identity;
 using static Mottrist.API.Response.ApiResponseHelper;
 
 namespace Mottrist.API.Controllers
@@ -34,6 +36,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid message ID.</response>
         /// <response code="404">Message not found.</response>
         /// <response code="500">An internal server error occurred.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("{id:int}", Name = "GetMessageByIdAsync")]
         [ProducesResponseType(typeof(MessageDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -70,6 +73,7 @@ namespace Mottrist.API.Controllers
         /// <returns>List of messages.</returns>
         /// <response code="200">Messages retrieved successfully.</response>
         /// <response code="500">An internal server error occurred.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("all", Name = "GetAllMessagesAsync")]
         [ProducesResponseType(typeof(DataResult<MessageDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -93,16 +97,8 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
-        /// <summary>
-        /// Adds a new message.
-        /// </summary>
-        /// <param name="addMessageDto">The message data.</param>
-        /// <returns>Created message information.</returns>
-        /// <response code="201">Message created successfully.</response>
-        /// <response code="400">Validation error in message data.</response>
-        /// <response code="500">An internal server error occurred.</response>
-        [HttpPost(Name = "AddNewMessageAsync")]
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
+        [HttpGet("all/paged",Name = "GetAllMessagesWithPaginationAsync")]
         [ProducesResponseType(typeof(MessageDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -138,6 +134,7 @@ namespace Mottrist.API.Controllers
         /// <response code="201">Message created successfully.</response>
         /// <response code="400">Validation error in message data.</response>
         /// <response code="500">An internal server error occurred.</response>
+        [AllowAnonymous]
         [HttpPost(Name = "AddNewMessageAsync")]
         [ProducesResponseType(typeof(MessageDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -182,6 +179,7 @@ namespace Mottrist.API.Controllers
         /// <response code="200">Message updated successfully.</response>
         /// <response code="400">Invalid message ID or validation errors.</response>
         /// <response code="500">An internal server error occurred.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpPut("{id:int}", Name = "UpdateMessageDetailsAsync")]
         [ProducesResponseType(typeof(MessageDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -229,6 +227,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid message ID.</response>
         /// <response code="404">Message not found.</response>
         /// <response code="500">An internal server error occurred.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpDelete("{id:int}", Name = "DeleteMessageAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -4,6 +4,7 @@ using Mottrist.Service.Features.Cities.Dtos;
 using Mottrist.API.Response;
 using Mottrist.Service.Features.General.DTOs;
 using static Mottrist.API.Response.ApiResponseHelper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Mottrist.WebAPI.Controllers
 {
@@ -41,6 +42,7 @@ namespace Mottrist.WebAPI.Controllers
         /// - HTTP 400 Bad Request if the provided ID is invalid.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetCityByIdAsync")]
         [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -82,6 +84,7 @@ namespace Mottrist.WebAPI.Controllers
         /// - HTTP 204 No Content if no cities are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("All", Name = "GetAllCitiesAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<CityDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -119,6 +122,7 @@ namespace Mottrist.WebAPI.Controllers
         /// - HTTP 400 Bad Request if the provided country ID is invalid.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("country/{id:int}", Name = "GetAllByCountryAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<CityWithCountryDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -161,6 +165,7 @@ namespace Mottrist.WebAPI.Controllers
         /// - HTTP 204 No Content if no cities are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("WithCountry", Name = "GetAllCitiesWithCountryAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<CityWithCountryDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]

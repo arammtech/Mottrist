@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using Mottrist.API.Response;
 using Mottrist.Service.Features.General.DTOs;
 using static Mottrist.API.Response.ApiResponseHelper;
+using Microsoft.AspNetCore.Authorization;
+using Mottrist.Utilities.Identity;
+using System.Data;
 
 namespace Mottrist.API.Controllers
 {
@@ -44,6 +47,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the provided ID is invalid.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetDestinationByIdAsync")]
         [ProducesResponseType(typeof(ApiResponse<DestinationDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -84,6 +88,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 204 No Content if no destinations are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("all", Name = "GetAllDestinationsAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DestinationDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -125,6 +130,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if pagination parameters are invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("all/paged", Name = "GetAllDestinationsWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DestinationDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -166,6 +172,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 409 Conflict if a destination with the same unique details already exists.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpPost(Name = "AddNewDestinationAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -212,6 +219,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 404 Not Found if the destination does not exist.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpPut("{id:int}", Name = "UpdateDestinationDetailsAsync")]
         [ProducesResponseType(typeof(ApiResponse<DestinationDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -265,6 +273,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 404 Not Found if the destination does not exist.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpDelete("{id:int}", Name = "DeleteDestinationAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
