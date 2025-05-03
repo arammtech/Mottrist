@@ -12,9 +12,16 @@ namespace Mottrist.Service.Features.Drivers.Profiles
 {
     public class DriverProfile : Profile
     {
+        private readonly DriverCalculator _driverCalculator;
 
-        public DriverProfile()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DriverProfile"/> class.
+        /// </summary>
+        /// <param name="ratingCalculator">The calculator used to compute driver ratings based on likes and dislikes.</param>
+        public DriverProfile(DriverCalculator ratingCalculator)
         {
+
+            _driverCalculator = ratingCalculator;
             CreateMap<Driver, DriverDto>()
                 .ForMember(dest => dest.CitiesWorkedOn, opt => opt.MapFrom(src => src.DriverCities.Where(dc => dc.WorkStatus == WorkStatus.WorkedOn).Select(dc => dc.City)))
                 .ForMember(dest => dest.CitiesCoverNow, opt => opt.MapFrom(src => src.DriverCities.Where(dc => dc.WorkStatus == WorkStatus.CoverNow).Select(dc => dc.City)))
@@ -28,7 +35,8 @@ namespace Mottrist.Service.Features.Drivers.Profiles
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.User.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.User.LastName))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
-                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber));
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
+                .AfterMap((src, dest) => dest.Rating = _driverCalculator.CalculateRating(dest.Likes, dest.Dislikes));
 
 
 

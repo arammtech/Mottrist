@@ -22,6 +22,8 @@ namespace Mottrist.Service.Features.Drivers.DTOs
         public byte YearsOfExperience { get; set; }
         public string Status { get; set; } = null!;
         public decimal PricePerHour { get; set; } // Driver's hourly rate
+        
+        public byte Rating { get; set; } // Driver's rating out of 5
         public bool IsAvailable
         {
             get
