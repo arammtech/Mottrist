@@ -164,6 +164,23 @@ namespace Mottrist.Service.Features.Cars.Services.CarFields
             }
         }
 
+        public async Task<CarBrandDto?> GetByNameAsync(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return null;
+
+            try
+            {
+                var brand = await _unitOfWork.Repository<Brand>().Table
+                    .AsNoTracking().FirstOrDefaultAsync(x => x.Name == name);
+                return brand != null ? _mapper.Map<CarBrandDto>(brand) : null;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public async Task<Result<CarBrandDto>> UpdateAsync(UpdateCarBrandDto updateCarBrandDto)
         {
             if (updateCarBrandDto == null)

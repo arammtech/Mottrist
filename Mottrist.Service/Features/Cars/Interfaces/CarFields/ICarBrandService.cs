@@ -46,6 +46,7 @@ namespace Mottrist.Service.Features.Cars.Interfaces.CarFields
         /// </returns>
         Task<CarBrandDto?> GetByIdAsync(int brandId);
 
+        Task<CarBrandDto?> GetByNameAsync(string name);
         #endregion
 
         #region CRUD Methods

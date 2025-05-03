@@ -23,11 +23,12 @@ namespace Mottrist.Service.Features.Messages.Validators
                 .NotNull().WithMessage("UserId is required.");
 
             /// <summary>
-            /// Validates that <see cref="AddMessageDto.MessageBody"/> is not empty or null.
+            /// Validates that <see cref="AddMessageDto.MessageBody"/> is not empty or null and less than 500 char.
             /// </summary>
             RuleFor(x => x.MessageBody)
                 .NotEmpty().WithMessage("Message body cannot be empty.")
-                .NotNull().WithMessage("Message body is required.");
+                .NotNull().WithMessage("Message body is required.")
+                .MaximumLength(500).WithMessage("Message body cannot exceed 500 characters.");
         }
     }
 }
