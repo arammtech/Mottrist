@@ -22,7 +22,6 @@ namespace Mottrist.Repository.EntityFrameworkCore.Context
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<Car> Cars { get; set; } = null!;
         public virtual DbSet<Brand> Brands { get; set; } = null!;
-        public virtual DbSet<Model> Models { get; set; } = null!;
         public virtual DbSet<BodyType> BodyTypes { get; set; } = null!;
         public virtual DbSet<FuelType> FuelTypes { get; set; } = null!;
         public virtual DbSet<CarImage> CarImages { get; set; } = null!;

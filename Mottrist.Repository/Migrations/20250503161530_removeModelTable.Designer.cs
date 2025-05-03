@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mottrist.Repository.EntityFrameworkCore.Context;
 
@@ -11,9 +12,11 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250503161530_removeModelTable")]
+    partial class removeModelTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -882,32 +885,6 @@ namespace Mottrist.Repository.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("DriverInteractions", "Drivers");
-                });
-
-            modelBuilder.Entity("Mottrist.Domain.Entities.Message", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("MessageBody")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.Entities.Traveler", b =>
@@ -2722,17 +2699,6 @@ namespace Mottrist.Repository.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Mottrist.Domain.Entities.Message", b =>
-                {
-                    b.HasOne("Mottrist.Domain.Identity.ApplicationUser", "User")
-                        .WithMany("Messages")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Mottrist.Domain.Entities.Traveler", b =>
                 {
                     b.HasOne("Mottrist.Domain.LookupEntities.City", "City")
@@ -2851,8 +2817,6 @@ namespace Mottrist.Repository.Migrations
             modelBuilder.Entity("Mottrist.Domain.Identity.ApplicationUser", b =>
                 {
                     b.Navigation("DriverInteractions");
-
-                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("Mottrist.Domain.LookupEntities.City", b =>

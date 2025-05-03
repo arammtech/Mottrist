@@ -41,13 +41,15 @@ using Mottrist.Service.Features.Users.Interface;
 using Mottrist.Service.Features.Users.Services;
 using Mottrist.Service.Features.JWT.Interface;
 using Mottrist.Service.Features.JWT.Services;
-
 using Mottrist.Service.Features.General.Images.Interface;
 using Mottrist.Service.Features.General.Images.Services;
 using Mottrist.Service.Features.Drivers.Profiles;
 using Mottrist.Service.Features.Traveller.Profiles;
 using Mottrist.Service.Features.Messages.Interfaces;
 using Mottrist.Service.Features.Messages.Services;
+using Mottrist.Service.Features.Email.Interfaces;
+using Mottrist.Service.Features.Email;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -182,19 +184,17 @@ builder.Services.AddScoped<IDriverService, DriverService>();
 builder.Services.AddScoped<IDestinationService, DestinationService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
-builder.Services.AddScoped<ICarModelService, CarModelService>();
 builder.Services.AddScoped<ICarColorService, CarColorService>();
 builder.Services.AddScoped<ICarBodyTypeService, CarBodyTypeService>();
 builder.Services.AddScoped<ICarFuelTypeService, CarFuelTypeService>();
 builder.Services.AddScoped<ICarBrandService, CarBrandService>();
 builder.Services.AddScoped<ISeedDb, SeedDb>();
-
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
-
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
-
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IEmailSenderStrategy, MailKitEmailSender>();
 #endregion
 
 var app = builder.Build();

@@ -14,7 +14,6 @@ namespace Mottrist.Service.Features.Cars.Profiles
 
             CreateMap<Car, CarDto>()
                 .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand))
-                .ForMember(dest => dest.Model, opt => opt.MapFrom(src => src.Model))
                 .ForMember(dest => dest.Color, opt => opt.MapFrom(src => src.Color))
                 .ForMember(dest => dest.BodyType, opt => opt.MapFrom(src => src.BodyType))
                 .ForMember(dest => dest.FuelType, opt => opt.MapFrom(src => src.FuelType))

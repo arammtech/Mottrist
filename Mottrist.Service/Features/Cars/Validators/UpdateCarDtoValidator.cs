@@ -28,7 +28,7 @@ namespace Feature.Car.Validators
 
             // Validate Brand, Model, Color, BodyType, FuelType
             RuleFor(car => car.BrandId).NotNull().GreaterThan(0).WithMessage("Brand ID must be a valid positive number.");
-            RuleFor(car => car.ModelId).NotNull().GreaterThan(0).WithMessage("Model ID must be a valid positive number.");
+            RuleFor(car => car.Model).NotNull();
             RuleFor(car => car.ColorId).NotNull().GreaterThan(0).WithMessage("Color ID must be a valid positive number.");
             RuleFor(car => car.BodyTypeId).NotNull().GreaterThan(0).WithMessage("Body Type ID must be a valid positive number.");
             RuleFor(car => car.FuelTypeId).NotNull().GreaterThan(0).WithMessage("Fuel Type ID must be a valid positive number.");
