@@ -40,26 +40,26 @@ namespace Mottrist.Repository.EntityFrameworkCore.Context
 
             // Seed Countries
             modelBuilder.Entity<Country>().HasData(
-              new Country { Id = 1, Name = "USA", Continent = Continent.NorthAmerica },
-              new Country { Id = 2, Name = "Canada", Continent = Continent.NorthAmerica },
-              new Country { Id = 3, Name = "UK", Continent = Continent.Europe },
-              new Country { Id = 4, Name = "Germany", Continent = Continent.Europe },
-              new Country { Id = 5, Name = "France", Continent = Continent.Europe },
-              new Country { Id = 6, Name = "Australia", Continent = Continent.Australia },
-              new Country { Id = 7, Name = "Brazil", Continent = Continent.SouthAmerica },
-              new Country { Id = 8, Name = "Argentina", Continent = Continent.SouthAmerica },
-              new Country { Id = 9, Name = "China", Continent = Continent.Asia },
-              new Country { Id = 10, Name = "Japan", Continent = Continent.Asia },
-              new Country { Id = 11, Name = "India", Continent = Continent.Asia },
-              new Country { Id = 12, Name = "South Korea", Continent = Continent.Asia },
-              new Country { Id = 13, Name = "South Africa", Continent = Continent.Africa },
-              new Country { Id = 14, Name = "Nigeria", Continent = Continent.Africa },
-              new Country { Id = 15, Name = "Egypt", Continent = Continent.Africa },
-              new Country { Id = 16, Name = "Mexico", Continent = Continent.NorthAmerica },
-              new Country { Id = 17, Name = "Italy", Continent = Continent.Europe },
-              new Country { Id = 18, Name = "Spain", Continent = Continent.Europe },
-              new Country { Id = 19, Name = "Russia", Continent = Continent.Europe },
-              new Country { Id = 20, Name = "Turkey", Continent = Continent.Asia }
+              new Country { Id = 1, Name = "USA" },
+              new Country { Id = 2, Name = "Canada" },
+              new Country { Id = 3, Name = "UK" },
+              new Country { Id = 4, Name = "Germany" },
+              new Country { Id = 5, Name = "France" },
+              new Country { Id = 6, Name = "Australia" },
+              new Country { Id = 7, Name = "Brazil" },
+              new Country { Id = 8, Name = "Argentina" },
+              new Country { Id = 9, Name = "China" },
+              new Country { Id = 10, Name = "Japan" },
+              new Country { Id = 11, Name = "India" },
+              new Country { Id = 12, Name = "South Korea" },
+              new Country { Id = 13, Name = "South Africa" },
+              new Country { Id = 14, Name = "Nigeria" },
+              new Country { Id = 15, Name = "Egypt" },
+              new Country { Id = 16, Name = "Mexico" },
+              new Country { Id = 17, Name = "Italy" },
+              new Country { Id = 18, Name = "Spain" },
+              new Country { Id = 19, Name = "Russia" },
+              new Country { Id = 20, Name = "Turkey" }
              );
 
             // Seed Cities (10 cities per country)

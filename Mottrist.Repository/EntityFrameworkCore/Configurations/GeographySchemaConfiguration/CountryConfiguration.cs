@@ -15,13 +15,6 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.GeographySchema
                    .IsRequired()
                    .HasMaxLength(100);
 
-            builder.Property(c => c.Continent)
-                   .IsRequired()
-                   .HasConversion(
-                       continent => (byte)continent,
-                       value => (Continent)value
-                   );
-
             // Table mapping
             builder.ToTable("Countries", schema: "Geography");
         }
