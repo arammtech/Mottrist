@@ -1,44 +1,180 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Mottrist.Domain.Entities.CarDetails;
+using Mottrist.Domain.LookupEntities;
 
-namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehiclesSchemaConfiguration
+namespace Mottrist.Repository.EntityFrameworkCore.Configurations.VehicleSchemaConfiguration
 {
     public class BodyTypeConfiguration : IEntityTypeConfiguration<BodyType>
     {
         public void Configure(EntityTypeBuilder<BodyType> builder)
         {
-            builder.HasKey(bt => bt.Id);
+            builder.HasKey(b => b.Id);
 
-            builder.Property(bt => bt.Type)
-                   .IsRequired();
+            builder.Property(b => b.Type)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
-            builder.ToTable("BodyTypes", schema: "Vehicles");
+            builder.ToTable("BodyTypes", schema: "Vehicle");
 
-            // Seed data
-            builder.HasData(
-      new BodyType { Id = 1, Type = "Sedan" },
-      new BodyType { Id = 2, Type = "SUV" },
-      new BodyType { Id = 3, Type = "Hatchback" },
-      new BodyType { Id = 4, Type = "Coupe" },
-      new BodyType { Id = 5, Type = "Pickup" },
-      new BodyType { Id = 6, Type = "Convertible" },
-      new BodyType { Id = 7, Type = "Wagon" },
-      new BodyType { Id = 8, Type = "Minivan" },
-      new BodyType { Id = 9, Type = "Roadster" },
-      new BodyType { Id = 10, Type = "Crossover" },
-      new BodyType { Id = 11, Type = "Limousine" },
-      new BodyType { Id = 12, Type = "Van" },
-      new BodyType { Id = 13, Type = "Sports Car" },
-      new BodyType { Id = 14, Type = "Luxury Sedan" },
-      new BodyType { Id = 15, Type = "Coupe Convertible" },
-      new BodyType { Id = 16, Type = "Station Wagon" },
-      new BodyType { Id = 17, Type = "Supercar" },
-      new BodyType { Id = 18, Type = "Hypercar" },
-      new BodyType { Id = 19, Type = "Off-road" },
-      new BodyType { Id = 20, Type = "Targa" }
-  );
+            builder.HasData(GetBodyTypes());
+        }
 
+        private List<BodyType> GetBodyTypes()
+        {
+            return new List<BodyType>
+            {
+                new BodyType { Id = 1, Type = "Sedan" },
+                new BodyType { Id = 2, Type = "SUV" },
+                new BodyType { Id = 3, Type = "Hatchback" },
+                new BodyType { Id = 4, Type = "Coupe" },
+                new BodyType { Id = 5, Type = "Convertible" },
+                new BodyType { Id = 6, Type = "Minivan" },
+                new BodyType { Id = 7, Type = "Crossover" },
+                new BodyType { Id = 8, Type = "Electric Car" },
+                new BodyType { Id = 9, Type = "Hybrid Car" },
+                new BodyType { Id = 10, Type = "Sports Car" },
+                new BodyType { Id = 11, Type = "Roadster" },
+                new BodyType { Id = 12, Type = "Pony Car" },
+                new BodyType { Id = 13, Type = "Muscle Car" },
+                new BodyType { Id = 14, Type = "Supercar" },
+                new BodyType { Id = 15, Type = "Hypercar" },
+                new BodyType { Id = 16, Type = "Minicar" },
+                new BodyType { Id = 17, Type = "Subcompact Car" },
+                new BodyType { Id = 18, Type = "Compact Car" },
+                new BodyType { Id = 19, Type = "Mid-Size Car" },
+                new BodyType { Id = 20, Type = "Full-Size Car" },
+                new BodyType { Id = 21, Type = "Luxury Car" },
+                new BodyType { Id = 22, Type = "Grand Tourer" },
+                new BodyType { Id = 23, Type = "Fastback" },
+                new BodyType { Id = 24, Type = "Notchback" },
+                new BodyType { Id = 25, Type = "Hardtop" },
+                new BodyType { Id = 26, Type = "Targa Top" },
+                new BodyType { Id = 27, Type = "Landau" },
+                new BodyType { Id = 28, Type = "Shooting Brake" },
+                new BodyType { Id = 29, Type = "Estate Car" },
+                new BodyType { Id = 30, Type = "Liftback" },
+                new BodyType { Id = 31, Type = "Kammback" },
+                new BodyType { Id = 32, Type = "Bubble Car" },
+                new BodyType { Id = 33, Type = "Microcar" },
+                new BodyType { Id = 34, Type = "City Car" },
+                new BodyType { Id = 35, Type = "Subcompact MPV" },
+                new BodyType { Id = 36, Type = "Compact MPV" },
+                new BodyType { Id = 37, Type = "Large MPV" },
+                new BodyType { Id = 38, Type = "Panel Van" },
+                new BodyType { Id = 39, Type = "Pickup SUV" },
+                new BodyType { Id = 40, Type = "Coupe SUV" },
+                new BodyType { Id = 41, Type = "Off-Road SUV" },
+                new BodyType { Id = 42, Type = "Luxury SUV" },
+                new BodyType { Id = 43, Type = "Performance SUV" },
+                new BodyType { Id = 44, Type = "Electric SUV" },
+                new BodyType { Id = 45, Type = "Hybrid SUV" },
+                new BodyType { Id = 46, Type = "Extended Length SUV" },
+                new BodyType { Id = 47, Type = "Three-Row SUV" },
+                new BodyType { Id = 48, Type = "Two-Row SUV" },
+                new BodyType { Id = 49, Type = "Compact Crossover SUV" },
+                new BodyType { Id = 50, Type = "Mid-Size Crossover SUV" },
+                new BodyType { Id = 51, Type = "Full-Size Crossover SUV" },
+                new BodyType { Id = 52, Type = "Convertible SUV" },
+                new BodyType { Id = 53, Type = "T-Top" },
+                new BodyType { Id = 54, Type = "Phaeton" },
+                new BodyType { Id = 55, Type = "Barchetta" },
+                new BodyType { Id = 56, Type = "Spider" },
+                new BodyType { Id = 57, Type = "Cabriolet" },
+                new BodyType { Id = 58, Type = "Drophead Coupé" },
+                new BodyType { Id = 59, Type = "Roadster Utility" },
+                new BodyType { Id = 60, Type = "Club Coupe" },
+                new BodyType { Id = 61, Type = "Opera Coupe" },
+                new BodyType { Id = 62, Type = "Business Coupe" },
+                new BodyType { Id = 63, Type = "Personal Luxury Coupe" },
+                new BodyType { Id = 64, Type = "Four-Door Coupe" },
+                new BodyType { Id = 65, Type = "Compact Executive Car" },
+                new BodyType { Id = 66, Type = "Executive Car" },
+                new BodyType { Id = 67, Type = "Luxury Sedan" },
+                new BodyType { Id = 68, Type = "Full-Size Luxury Sedan" },
+                new BodyType { Id = 69, Type = "Performance Sedan" },
+                new BodyType { Id = 70, Type = "Sports Sedan" },
+                new BodyType { Id = 71, Type = "Touring Sedan" },
+                new BodyType { Id = 72, Type = "Wagon Sedan" },
+                new BodyType { Id = 73, Type = "Fastback Sedan" },
+                new BodyType { Id = 74, Type = "Notchback Sedan" },
+                new BodyType { Id = 75, Type = "Hardtop Sedan" },
+                new BodyType { Id = 76, Type = "Pillarless Hardtop" },
+                new BodyType { Id = 77, Type = "Long-Wheelbase Sedan" },
+                new BodyType { Id = 78, Type = "Short-Wheelbase Sedan" },
+                new BodyType { Id = 79, Type = "Hybrid Electric Sedan" },
+                new BodyType { Id = 80, Type = "Compact Luxury Sedan" },
+                new BodyType { Id = 81, Type = "Mid-Size Luxury Sedan" },
+                new BodyType { Id = 82, Type = "Subcompact Luxury SUV" },
+                new BodyType { Id = 83, Type = "Compact Luxury SUV" },
+                new BodyType { Id = 84, Type = "Mid-Size Luxury SUV" },
+                new BodyType { Id = 85, Type = "Full-Size Luxury SUV" },
+                new BodyType { Id = 86, Type = "Retro Sedan" },
+                new BodyType { Id = 87, Type = "Retro Coupe" },
+                new BodyType { Id = 88, Type = "Soft-Top Convertible" },
+                new BodyType { Id = 89, Type = "Hardtop Convertible" },
+                new BodyType { Id = 90, Type = "Micro MPV" },
+                new BodyType { Id = 91, Type = "Luxury Crossover" },
+                new BodyType { Id = 92, Type = "Performance Crossover" },
+                new BodyType { Id = 93, Type = "Electric Crossover" },
+                new BodyType { Id = 94, Type = "Hybrid Crossover" },
+                new BodyType { Id = 95, Type = "Compact Performance Car" },
+                new BodyType { Id = 96, Type = "Mid-Size Performance Car" },
+                new BodyType { Id = 97, Type = "Luxury Performance Car" },
+                new BodyType { Id = 98, Type = "Electric Performance Car" },
+                new BodyType { Id = 99, Type = "Hybrid Performance Car" },
+                new BodyType { Id = 100, Type = "Subcompact Hatchback" },
+                new BodyType { Id = 101, Type = "Compact Hatchback" },
+                new BodyType { Id = 102, Type = "Mid-Size Hatchback" },
+                new BodyType { Id = 103, Type = "Luxury Hatchback" },
+                new BodyType { Id = 104, Type = "Performance Hatchback" },
+                new BodyType { Id = 105, Type = "Electric Hatchback" },
+                new BodyType { Id = 106, Type = "Hybrid Hatchback" },
+                new BodyType { Id = 107, Type = "Subcompact Coupe" },
+                new BodyType { Id = 108, Type = "Compact Coupe" },
+                new BodyType { Id = 109, Type = "Mid-Size Coupe" },
+                new BodyType { Id = 110, Type = "Luxury Coupe" },
+                new BodyType { Id = 111, Type = "Performance Coupe" },
+                new BodyType { Id = 112, Type = "Electric Coupe" },
+                new BodyType { Id = 113, Type = "Hybrid Coupe" },
+                new BodyType { Id = 114, Type = "Subcompact Convertible" },
+                new BodyType { Id = 115, Type = "Compact Convertible" },
+                new BodyType { Id = 116, Type = "Mid-Size Convertible" },
+                new BodyType { Id = 117, Type = "Luxury Convertible" },
+                new BodyType { Id = 118, Type = "Performance Convertible" },
+                new BodyType { Id = 119, Type = "Electric Convertible" },
+                new BodyType { Id = 120, Type = "Hybrid Convertible" },
+                new BodyType { Id = 121, Type = "Compact Wagon" },
+                new BodyType { Id = 122, Type = "Mid-Size Wagon" },
+                new BodyType { Id = 123, Type = "Full-Size Wagon" },
+                new BodyType { Id = 124, Type = "Luxury Wagon" },
+                new BodyType { Id = 125, Type = "Performance Wagon" },
+                new BodyType { Id = 126, Type = "Electric Wagon" },
+                new BodyType { Id = 127, Type = "Hybrid Wagon" },
+                new BodyType { Id = 128, Type = "Subcompact Crossover" },
+                new BodyType { Id = 129, Type = "Adventure SUV" },
+                new BodyType { Id = 130, Type = "Retro SUV" },
+                new BodyType { Id = 131, Type = "Urban SUV" },
+                new BodyType { Id = 132, Type = "Compact Off-Road SUV" },
+                new BodyType { Id = 133, Type = "Mid-Size Off-Road SUV" },
+                new BodyType { Id = 134, Type = "Luxury Off-Road SUV" },
+                new BodyType { Id = 135, Type = "Performance Off-Road SUV" },
+                new BodyType { Id = 136, Type = "Electric Off-Road SUV" },
+                new BodyType { Id = 137, Type = "Hybrid Off-Road SUV" },
+                new BodyType { Id = 138, Type = "Micro Crossover" },
+                new BodyType { Id = 139, Type = "Subcompact Performance SUV" },
+                new BodyType { Id = 140, Type = "Mid-Size Performance SUV" },
+                new BodyType { Id = 141, Type = "Full-Size Performance SUV" },
+                new BodyType { Id = 142, Type = "Luxury Performance SUV" },
+                new BodyType { Id = 143, Type = "Compact Hybrid SUV" },
+                new BodyType { Id = 144, Type = "Full-Size Hybrid SUV" },
+                new BodyType { Id = 145, Type = "Compact Electric SUV" },
+                new BodyType { Id = 146, Type = "Mid-Size Electric SUV" },
+                new BodyType { Id = 147, Type = "Full-Size Electric SUV" },
+                new BodyType { Id = 148, Type = "Luxury Electric SUV" },
+                new BodyType { Id = 149, Type = "Retro Hatchback" },
+                new BodyType { Id = 150, Type = "Concept Car" }
+            };
         }
     }
 }
