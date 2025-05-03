@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Traveller.DTOs;
 using Mottrist.Service.Features.Traveller.Interfaces;
+using Mottrist.Utilities.Identity;
 using static Mottrist.API.Response.ApiResponseHelper;
 
 namespace Mottrist.API.Controllers
@@ -32,6 +33,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid traveler id.</response>
         /// <response code="404">Traveler not found.</response>
         /// <response code="500">An internal server error occurred.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleTraveler}")]
         [HttpGet("{id:int}", Name = "GetTravelerByIdAsync")]
         [ProducesResponseType(typeof(TravelerDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -68,6 +70,7 @@ namespace Mottrist.API.Controllers
         /// <response code="200">Travelers retrieved successfully.</response>
         /// <response code="204">No travelers found.</response>
         /// <response code="500">An internal server error occurred.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("all",Name = "GetAllTravelersAsync")]
         [ProducesResponseType(typeof(DataResult<TravelerDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -102,6 +105,7 @@ namespace Mottrist.API.Controllers
         /// <response code="200">Travelers retrieved successfully.</response>
         /// <response code="400">Invalid page or pageSize parameter.</response>
         /// <response code="500">An internal server error occurred.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("all/paged", Name = "GetAllTravelersWithPaginationAsync")]
         [ProducesResponseType(typeof(PaginatedResult<TravelerDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -139,6 +143,7 @@ namespace Mottrist.API.Controllers
         /// <response code="201">Traveler created successfully.</response>
         /// <response code="400">Validation error or invalid traveler data.</response>
         /// <response code="500">An internal server error occurred.</response>
+        [AllowAnonymous]
         [HttpPost(Name = "AddNewTravelerAsync")]
         [ProducesResponseType(typeof(AddTravelerDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -186,6 +191,7 @@ namespace Mottrist.API.Controllers
         /// <response code="200">Traveler updated successfully.</response>
         /// <response code="400">Validation error or mismatched traveler id.</response>
         /// <response code="500">An internal server error occurred.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleTraveler}")]
         [HttpPut("{id:int}", Name = "UpdateTravelerAsync")]
         [ProducesResponseType(typeof(UpdateTravelerDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -237,6 +243,7 @@ namespace Mottrist.API.Controllers
         /// <response code="204">Traveler record deleted successfully.</response>
         /// <response code="400">Invalid traveler id.</response>
         /// <response code="500">An internal server error occurred.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleTraveler}")]
         [HttpDelete("{id:int}", Name = "DeleteTraveler")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

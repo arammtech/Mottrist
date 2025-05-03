@@ -50,6 +50,7 @@ using Mottrist.Service.Features.Messages.Services;
 using Mottrist.Service.Features.Email.Interfaces;
 using Mottrist.Service.Features.Email;
 using Mottrist.Service.Features.Drivers;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -196,6 +197,9 @@ builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IEmailSenderStrategy, MailKitEmailSender>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+
 #endregion
 
 var app = builder.Build();
