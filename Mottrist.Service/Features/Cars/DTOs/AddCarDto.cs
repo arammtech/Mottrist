@@ -5,32 +5,22 @@ namespace Feature.Car.DTOs
 {
     public class AddCarDto
     {
-        [Required]
-        [Range(1900, int.MaxValue)]
         public int Year { get; set; }
 
-        [Required]
         public byte NumberOfSeats { get; set; }
 
-        [Required]
         public bool HasWiFi { get; set; }
 
-        [Required]
         public bool HasAirCondiations { get; set; }
 
-        [Required]
         public int BrandId { get; set; }
 
-        [Required]
-        public int ModelId { get; set; }
+        public string Model { get; set; } = null!;
 
-        [Required]
         public int ColorId { get; set; }
 
-        [Required]
         public int BodyTypeId { get; set; }
 
-        [Required]
         public int FuelTypeId { get; set; }
 
         public List<IFormFile>? CarImages { get; set; }

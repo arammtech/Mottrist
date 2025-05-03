@@ -17,13 +17,6 @@ namespace Mottrist.Service.Features.Users.Interface
         Task<TokenDto> LoginAsync(UserDto userDto);
 
         /// <summary>
-        /// Registers a new user and returns authentication token upon successful registration.
-        /// </summary>
-        /// <param name="addUserDto">DTO containing user details.</param>
-        /// <returns>Result containing authentication token.</returns>
-        Task<Result<TokenDto>> RegisterAsync(AddUserDto addUserDto);
-
-        /// <summary>
         /// Logs out the currently authenticated user.
         /// </summary>
         Task LogoutAsync();
@@ -43,7 +36,8 @@ namespace Mottrist.Service.Features.Users.Interface
         Task<UserDto> GetUserByEmail(string email);
 
 
-        Task<Result> ConfirmEmailAsync(UserDto userDto);
+        Task<Result> SendEmailAsync(string Email);
+        Task<Result> ConfirmEmailAsync(string userId, string token);
 
     }
 }

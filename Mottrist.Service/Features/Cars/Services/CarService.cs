@@ -27,10 +27,9 @@ namespace Mottrist.Service.Features.Cars.Services
         private readonly ICarBodyTypeService _carBodyTypeService;
         private readonly ICarFuelTypeService _carFuelTypeService;
         private readonly IImageService _imageService;
-        private readonly ICarModelService _carModelService;
         public readonly ICarColorService _carColorService;
 
-        public CarService(IUnitOfWork unitOfWork, IMapper mapper, ICarModelService carModelService, ICarColorService carColorService, ICarBrandService carBrandService, ICarBodyTypeService carBodyTypeService, ICarFuelTypeService carFuelTypeService, IImageService imageService) : base(unitOfWork)
+        public CarService(IUnitOfWork unitOfWork, IMapper mapper,ICarColorService carColorService, ICarBrandService carBrandService, ICarBodyTypeService carBodyTypeService, ICarFuelTypeService carFuelTypeService, IImageService imageService) : base(unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -38,7 +37,6 @@ namespace Mottrist.Service.Features.Cars.Services
             _carBodyTypeService = carBodyTypeService;
             _carFuelTypeService = carFuelTypeService;
             _imageService = imageService;
-            _carModelService = carModelService;
             _carColorService = carColorService;
         }
 
@@ -76,7 +74,7 @@ namespace Mottrist.Service.Features.Cars.Services
             {
                 // Build the base query with necessary includes
                 var carsQuery = _unitOfWork.Repository<Car>()
-                    .Include(x => x.Brand, x => x.Model, x => x.FuelType, x => x.BodyType, x => x.Color, x => x.CarImages)
+                    .Include(x => x.Brand, x => x.FuelType, x => x.BodyType, x => x.Color, x => x.CarImages)
                     .AsNoTracking();
 
                 // Apply filters if provided
@@ -116,7 +114,7 @@ namespace Mottrist.Service.Features.Cars.Services
             try
             {
                 var carFromDb = await _unitOfWork.Repository<Car>()
-                    .Include(x => x.Brand, x => x.Model, x => x.FuelType, x => x.BodyType, x => x.Color, x => x.CarImages)
+                    .Include(x => x.Brand, x => x.FuelType, x => x.BodyType, x => x.Color, x => x.CarImages)
                     .FirstOrDefaultAsync(c => c.Id == carId);
 
                 if (carFromDb == null) return null;
@@ -619,7 +617,6 @@ namespace Mottrist.Service.Features.Cars.Services
             {
                 CarFieldsDto carFields = new CarFieldsDto
                 {
-                    CarModels = await _carModelService.GetAllAsync(),
                     CarBodyTypes = await _carBodyTypeService.GetAllAsync(),
                     CarBrands = await _carBrandService.GetAllAsync(),
                     CarColors = await _carColorService.GetAllAsync(),

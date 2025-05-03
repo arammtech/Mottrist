@@ -40,6 +40,20 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
             int pageSize = 10,
             Expression<Func<Driver, bool>>? filter = null);
 
+
+        /// <summary>
+        /// Retrieves a specified number of top-rated drivers based on their number of likes.
+        /// </summary>
+        /// <param name="topCount">
+        /// The number of top drivers to retrieve. Defaults to <c>3</c> if not specified.
+        /// </param>
+        /// <returns>
+        /// A <see cref="DataResult{T}"/> containing a list of <see cref="DriverDto"/> objects representing 
+        /// the highest-rated drivers or an empty list if no drivers meet the criteria.
+        /// Returns <c>null</c> if an error occurs.
+        /// </returns>
+        Task<DataResult<DriverDto>?> GetTopRatedAsync(int topCount = 3);
+
         /// <summary>
         /// Retrieves a driver by its unique identifier.
         /// </summary>
@@ -67,15 +81,100 @@ namespace Mottrist.Service.Features.Drivers.Interfaces
         /// Returns null if an error occurs.
         /// </returns>
         Task<DriverFormFieldsDto?> GetAllDriverFormFields();
+        /// <summary>
+        /// Retrieves a single driver record based on the specified country ID.
+        /// </summary>
+        /// <param name="countryId">The ID of the country to filter drivers by.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation, containing a <see cref="DataResult{DriverDto}"/> 
+        /// with the driver data, or null if no driver is found.
+        /// </returns>
+        /// <remarks>
+        /// Returns a single driver matching the country ID. If multiple drivers exist, 
+        /// the implementation determines which is returned (e.g., first match).
+        /// </remarks>
         Task<DataResult<DriverDto>?> GetByCountryAsync(int countryId);
-     
+
+        /// <summary>
+        /// Retrieves a single driver record based on the specified country and city IDs.
+        /// </summary>
+        /// <param name="countryId">The ID of the country to filter drivers by.</param>
+        /// <param name="cityId">The ID of the city to filter drivers by.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation, containing a <see cref="DataResult{DriverDto}"/> 
+        /// with the driver data, or null if no driver is found.
+        /// </returns>
+        /// <remarks>
+        /// Narrows the search by both country and city. The implementation defines behavior 
+        /// if multiple matches exist.
+        /// </remarks>
         Task<DataResult<DriverDto>?> GetByCountryAndCityAsync(int countryId, int cityId);
 
+        /// <summary>
+        /// Retrieves a single driver record based on the specified country, city, and date.
+        /// </summary>
+        /// <param name="countryId">The ID of the country to filter drivers by.</param>
+        /// <param name="cityId">The ID of the city to filter drivers by.</param>
+        /// <param name="date">The date to filter drivers by (e.g., availability or registration date).</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation, containing a <see cref="DataResult{DriverDto}"/> 
+        /// with the driver data, or null if no driver is found.
+        /// </returns>
+        /// <remarks>
+        /// Filters drivers by country, city, and date. The date's purpose (e.g., availability) 
+        /// depends on the implementation.
+        /// </remarks>
         Task<DataResult<DriverDto>?> GetByCountryCityAndDateAsync(int countryId, int cityId, DateTime date);
 
-        Task<PaginatedResult<DriverDto>?> GetByCountryWithPaginationAsync(int countryId,int page = 1,int pageSize = 10);
-        Task<PaginatedResult<DriverDto>?> GetByCountryAndCityWithPaginationAsync(int countryId, int cityId,int page = 1,int pageSize = 10);
-        Task<PaginatedResult<DriverDto>?> GetByCountryCityAndDateWithPaginationAsync(int countryId, int cityId,DateTime date,int page = 1,int pageSize = 10);
+        /// <summary>
+        /// Retrieves a paginated list of driver records based on the specified country ID.
+        /// </summary>
+        /// <param name="countryId">The ID of the country to filter drivers by.</param>
+        /// <param name="page">The page number to retrieve (default is 1).</param>
+        /// <param name="pageSize">The number of records per page (default is 10).</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation, containing a <see cref="PaginatedResult{DriverDto}"/> 
+        /// with the paginated driver data, or null if no drivers are found.
+        /// </returns>
+        /// <remarks>
+        /// Supports pagination for large datasets, allowing retrieval of drivers in the specified 
+        /// country with configurable page and page size.
+        /// </remarks>
+        Task<PaginatedResult<DriverDto>?> GetByCountryWithPaginationAsync(int countryId, int page = 1, int pageSize = 10);
+
+        /// <summary>
+        /// Retrieves a paginated list of driver records based on the specified country and city IDs.
+        /// </summary>
+        /// <param name="countryId">The ID of the country to filter drivers by.</param>
+        /// <param name="cityId">The ID of the city to filter drivers by.</param>
+        /// <param name="page">The page number to retrieve (default is 1).</param>
+        /// <param name="pageSize">The number of records per page (default is 10).</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation, containing a <see cref="PaginatedResult{DriverDto}"/> 
+        /// with the paginated driver data, or null if no drivers are found.
+        /// </returns>
+        /// <remarks>
+        /// Supports pagination for drivers filtered by both country and city.
+        /// </remarks>
+        Task<PaginatedResult<DriverDto>?> GetByCountryAndCityWithPaginationAsync(int countryId, int cityId, int page = 1, int pageSize = 10);
+
+        /// <summary>
+        /// Retrieves a paginated list of driver records based on the specified country, city, and date.
+        /// </summary>
+        /// <param name="countryId">The ID of the country to filter drivers by.</param>
+        /// <param name="cityId">The ID of the city to filter drivers by.</param>
+        /// <param name="date">The date to filter drivers by (e.g., availability or registration date).</param>
+        /// <param name="page">The page number to retrieve (default is 1).</param>
+        /// <param name="pageSize">The number of records per page (default is 10).</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation, containing a <see cref="PaginatedResult{DriverDto}"/> 
+        /// with the paginated driver data, or null if no drivers are found.
+        /// </returns>
+        /// <remarks>
+        /// Supports pagination for drivers filtered by country, city, and date. The date's role 
+        /// is implementation-specific.
+        /// </remarks>
+        Task<PaginatedResult<DriverDto>?> GetByCountryCityAndDateWithPaginationAsync(int countryId, int cityId, DateTime date, int page = 1, int pageSize = 10);
         #endregion
 
         #region Create Operation

@@ -4,6 +4,7 @@ using Mottrist.Service.Features.Languages.DTOs;
 using Mottrist.API.Response;
 using Mottrist.Service.Features.General.DTOs;
 using static Mottrist.API.Response.ApiResponseHelper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Mottrist.WebAPI.Controllers
 {
@@ -41,6 +42,7 @@ namespace Mottrist.WebAPI.Controllers
         /// - HTTP 400 Bad Request if the provided ID is invalid.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetLanguageByIdAsync")]
         [ProducesResponseType(typeof(ApiResponse<LanguageDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -82,6 +84,7 @@ namespace Mottrist.WebAPI.Controllers
         /// - HTTP 204 No Content if no languages are found.
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("All", Name = "GetAllLanguagesAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<LanguageDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]

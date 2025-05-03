@@ -1,4 +1,12 @@
-﻿using System.Text.Encodings.Web;
+﻿using System.ComponentModel;
+using System.Drawing;
+using System.Net;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Mottrist.Utilities.Identity
 {
@@ -79,97 +87,53 @@ namespace Mottrist.Utilities.Identity
                 ";
         }
 
-        public static string GetEmailVerificationEmailBody(string callbackUrl)
+        public static string GetEmailConfirmEmailBody(string callbackUrl)
         {
-
             return $@"
-    <!DOCTYPE html>
-    <html lang='ar'>
-    <head>
-        <meta charset='UTF-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        <style>
-            body {{
-                font-family: 'Arial', sans-serif;
-                background-color: #f4f4f4;
-                margin: 0;
-                padding: 0;
-            }}
-            .container {{
-                max-width: 600px;
-                margin: 20px auto;
-                background-color: #ffffff;
-                border-radius: 8px;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                overflow: hidden;
-            }}
-            .header {{
-                background-color: #db4b4e;
-                color: #ffffff;
-                padding: 25px;
-                text-align: center;
-                font-size: 24px;
-                font-weight: bold;
-            }}
-            .content {{
-                padding: 25px;
-                text-align: right;
-                font-size: 18px;
-                line-height: 1.6;
-            }}
-            .button-container {{
-                text-align: center; /* توسيط الزر */
-                margin: 20px 0;
-            }}
-            .button {{
-                display: inline-block;
-                font-size: 20px;
-                font-weight: bold;
-                color: #db4b4e !important; /* لون الخط */
-                background-color: #ffffff;
-                padding: 12px 25px;
-                border: 2px solid #db4b4e;
-                border-radius: 5px;
-                text-decoration: none; /* إزالة التسطير */
-            }}
-            .button:hover {{
-                background-color: #db4b4e;
-                color: #ffffff !important;
-                transition: 0.3s;
-            }}
-            .footer {{
-                padding: 15px;
-                text-align: center;
-                font-size: 14px;
-                color: #ffffff;
-                background-color: #db4b4e;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class='container'>
-            <div class='header'>
-                تفعيل حسابك
-            </div>
-            <div class='content'>
-                <p>مرحبًا،</p>
-                <p>شكرًا لتسجيلك معنا. يرجى النقر على الزر أدناه لتفعيل حسابك:</p>
-                <div class='button-container'>
-                    <a href='{HtmlEncoder.Default.Encode(callbackUrl)}' class='button'>تفعيل الحساب</a>
-                </div>
-                <p>إذا لم تكن قد طلبت هذا، يرجى تجاهل هذه الرسالة.</p>
-                <p>شكرًا لك!</p>
-            </div>
-            <div class='footer'>
-                <p>حقوق النشر © {DateTime.Now.Year} شركتنا. جميع الحقوق محفوظة.</p>
-            </div>
-        </div>
-    </body>
-    </html>
-";
-
-
-
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <title>Email Confirmation</title>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }}
+        .container {{
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }}
+        .button {{
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 16px;
+            color: white !important;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }}
+        .button:hover {{
+            background-color: #0056b3;
+        }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <h2>Confirm Your Email Address</h2>
+        <p>Thank you for signing up! Please confirm your email address by clicking the button below:</p>
+        <a href='{System.Net.WebUtility.HtmlEncode(callbackUrl)}' class='button'>Confirm Email</a>
+        <p>If you didn’t request this, you can safely ignore this email.</p>
+    </div>
+</body>
+</html>";
         }
 
     }

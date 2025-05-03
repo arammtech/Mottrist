@@ -10,5 +10,6 @@ namespace Mottrist.Domain.Identity
         public bool IsAdmin { get; set; } = false;
 
         public virtual ICollection<DriverInteraction> DriverInteractions { get; set; } = new List<DriverInteraction>();
+        public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
     }
 }

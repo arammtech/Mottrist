@@ -1,12 +1,17 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Mottrist.Domain.Common.IUnitOfWork;
 using Mottrist.Domain.Global;
 using Mottrist.Domain.Identity;
+using Mottrist.Service.Features.Email.Interfaces;
 using Mottrist.Service.Features.General;
 using Mottrist.Service.Features.JWT.Interface;
 using Mottrist.Service.Features.Users.DTOs;
 using Mottrist.Service.Features.Users.Interface;
+using Mottrist.Utilities.Identity;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -22,6 +27,8 @@ namespace Mottrist.Service.Features.Users.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMapper _mapper;
+        private readonly IEmailSender _emailSender;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserService"/> class.
@@ -31,13 +38,15 @@ namespace Mottrist.Service.Features.Users.Services
         /// <param name="userManager">User manager for handling user operations.</param>
         /// <param name="signInManager">Sign-in manager for authentication operations.</param>
         /// <param name="mapper">AutoMapper instance for object mapping.</param>
-        public UserService(IUnitOfWork unitOfWork , IJwtService jwtService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,IMapper mapper) : base(unitOfWork)
+        public UserService(IUnitOfWork unitOfWork , IJwtService jwtService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,IMapper mapper, IEmailSender emailService, IConfiguration configuration) : base(unitOfWork)
         {
-            this._unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
             _jwtService = jwtService;
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
+            _emailSender = emailService;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -47,6 +56,9 @@ namespace Mottrist.Service.Features.Users.Services
         /// <returns>JWT token with expiration date.</returns>
         public async Task<TokenDto> LoginAsync(UserDto userDto)
         {
+
+
+
             try
             {
                 JwtSecurityToken token = _jwtService.GenerateToken(_jwtService.GenerateUserClaims(userDto.UserName, userDto.Id, userDto.Roles));
@@ -62,25 +74,6 @@ namespace Mottrist.Service.Features.Users.Services
             catch (Exception ex)
             {
                 return null;
-            }
-        }
-
-        /// <summary>
-        /// Registers a new user and returns authentication token.
-        /// </summary>
-        /// <param name="addUserDto">User details for registration.</param>
-        /// <returns>Result containing authentication token upon successful registration.</returns>
-        public async Task<Result<TokenDto>> RegisterAsync(AddUserDto addUserDto)
-        {
-            try
-            {
-                var addUserResult = await AddUserAsync(addUserDto);
-
-                return Result<TokenDto>.Failure("Failed to register the user");
-            }
-            catch (Exception ex)
-            {
-                return Result<TokenDto>.Failure("Failed to register the user");
             }
         }
 
@@ -132,7 +125,6 @@ namespace Mottrist.Service.Features.Users.Services
             }
         }
 
-
         /// <summary>
         /// Retrieves user details by email.
         /// </summary>
@@ -155,20 +147,39 @@ namespace Mottrist.Service.Features.Users.Services
             }
         }
 
-        public async Task<Result> ConfirmEmailAsync(UserDto userDto)
+        public async Task<Result> SendEmailAsync(string Email)
         {
-            ApplicationUser user = await _userManager.FindByEmailAsync(userDto.Email);
+            ApplicationUser user = await _userManager.FindByEmailAsync(Email);
 
             if (user == null) 
                 return Result.Failure("Failed to confirm user email.");
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var confirmationLink = $"https://yourapp.com/api/auth/confirm-email?userId={user.Id}&token={token}";
-            //await _emailService.SendEmailAsync(user.Email, "Confirm Your Email", $"Click here: {confirmationLink}");
+
+            var confirmUrl = $"{_configuration["JWT:ValidIssuer"]}/api/user/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+            var emailHtml = EmailTemplates.GetEmailConfirmEmailBody(confirmUrl);
+            
+            //await _emailSender.SendEmailAsync(user.Email, "Confirm Your Email", $"Click here: {confirmUrl}");
+            await _emailSender.SendEmailAsync("merykassis48@gmail.com", "Confirm Your Email", emailHtml);
+
+            return Result.Success();
+
+        }
+
+        public async Task<Result> ConfirmEmailAsync(string userId, string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Result.Failure("Invalid user ID.");
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
-            return result.Succeeded ? Result.Success() :  Result.Failure("Failed to confirm user email.");
+            if (result.Succeeded)
+                return Result.Success();
+
+            return Result.Failure("Email confirmation failed.");
+
         }
+
     }
 }
 

@@ -7,7 +7,6 @@ namespace Mottrist.Domain.LookupEntities
     public class Country : LookupEntity
     {
         public string Name { get; set; } = null!;
-        public Continent Continent { get; set; }
 
         #region Navigation Properties
         public virtual ICollection<DriverCountry> DriverCountries { get; set; } = new List<DriverCountry>();
