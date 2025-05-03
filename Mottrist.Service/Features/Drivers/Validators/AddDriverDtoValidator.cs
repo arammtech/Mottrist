@@ -84,26 +84,33 @@ namespace Mottrist.Service.Features.Drivers.Validators
                     .NotNull().WithMessage("Car details must be provided when HasCar is true.");
 
                 RuleFor(driver => driver.Car!.Year)
+                    .NotNull().WithMessage("Car year is required.")
                     .InclusiveBetween(1900, DateTime.UtcNow.Year)
                     .WithMessage($"Car year must be between 1900 and {DateTime.UtcNow.Year}.");
 
                 RuleFor(driver => driver.Car!.NumberOfSeats)
-                    .NotNull().GreaterThan((byte)0).WithMessage("Number of seats must be greater than zero.");
+                    .NotNull().WithMessage("Number of seats is required.")
+                    .GreaterThan((byte)0).WithMessage("Number of seats must be greater than zero.");
 
                 RuleFor(driver => driver.Car!.BrandId)
-                    .NotNull().GreaterThan(0).WithMessage("Brand ID must be a valid positive number.");
+                    .NotNull().WithMessage("Brand ID is required.")
+                    .GreaterThan(0).WithMessage("Brand ID must be a valid positive number.");
 
                 RuleFor(driver => driver.Car!.ModelId)
-                    .NotNull().GreaterThan(0).WithMessage("Model ID must be a valid positive number.");
+                    .NotNull().WithMessage("Model ID is required.")
+                    .GreaterThan(0).WithMessage("Model ID must be a valid positive number.");
 
                 RuleFor(driver => driver.Car!.ColorId)
-                    .NotNull().GreaterThan(0).WithMessage("Color ID must be a valid positive number.");
+                    .NotNull().WithMessage("Color ID is required.")
+                    .GreaterThan(0).WithMessage("Color ID must be a valid positive number.");
 
                 RuleFor(driver => driver.Car!.BodyTypeId)
-                    .NotNull().GreaterThan(0).WithMessage("Body Type ID must be a valid positive number.");
+                    .NotNull().WithMessage("Body Type ID is required.")
+                    .GreaterThan(0).WithMessage("Body Type ID must be a valid positive number.");
 
                 RuleFor(driver => driver.Car!.FuelTypeId)
-                    .NotNull().GreaterThan(0).WithMessage("Fuel Type ID must be a valid positive number.");
+                    .NotNull().WithMessage("Fuel Type ID is required.")
+                    .GreaterThan(0).WithMessage("Fuel Type ID must be a valid positive number.");
 
                     RuleFor(driver => driver.Car!.CarImages)
                           .NotNull().WithMessage("Car images are required between 0 to 10");
