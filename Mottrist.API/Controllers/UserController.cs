@@ -172,7 +172,7 @@ namespace Mottrist.API.Controllers
         {
           try
              {
-                var result = await _userService.ConfirmEmailAsync(userDto);
+                var result = await _userService.SendEmailAsync(userDto);
 
                 return result.IsSuccess ? SuccessResponse("Email confirmed") : StatusCodeResponse(StatusCodes.Status500InternalServerError, "ConfirmingError", "Failed to confirm user's email.");
             }
@@ -185,5 +185,17 @@ namespace Mottrist.API.Controllers
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Unexpected error: {ex.Message}");
             }
         }
+
+
+        [HttpGet("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            var result = await _userService.ConfirmEmailAsync(userId, token);
+
+            return result.IsSuccess?
+                SuccessResponse("Email confirmed successfully.")
+                : BadRequestResponse("Email_Confirmation_Failed", "Email confirmation failed", result.Errors.ToArray());
+        }
+
     }
 }

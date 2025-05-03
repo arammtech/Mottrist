@@ -46,6 +46,8 @@ using Mottrist.Service.Features.General.Images.Interface;
 using Mottrist.Service.Features.General.Images.Services;
 using Mottrist.Service.Features.Drivers.Profiles;
 using Mottrist.Service.Features.Traveller.Profiles;
+using Mottrist.Service.Features.Email.Interfaces;
+using Mottrist.Service.Features.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -191,6 +193,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IEmailSenderStrategy, MailKitEmailSender>();
 
 #endregion
 

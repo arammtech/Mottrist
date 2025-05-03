@@ -43,7 +43,8 @@ namespace Mottrist.Service.Features.Users.Interface
         Task<UserDto> GetUserByEmail(string email);
 
 
-        Task<Result> ConfirmEmailAsync(UserDto userDto);
+        Task<Result> SendEmailAsync(UserDto userDto);
+        Task<Result> ConfirmEmailAsync(string userId, string token);
 
     }
 }
