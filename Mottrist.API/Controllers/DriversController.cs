@@ -690,6 +690,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if the driver ID is invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [AllowAnonymous]
         [HttpPatch("update-availability/{driverId:int}", Name = "UpdateDriverAvailabilityAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -781,6 +782,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 400 Bad Request if input parameters are invalid.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [AllowAnonymous]
         [HttpPost("like-dislike/{driverId:int}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -825,6 +827,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 404 Not Found if the driver or user does not exist.
         /// - HTTP 500 Internal Server Error for unexpected failures.
         /// </returns>
+        [AllowAnonymous]
         [HttpPost("increment-view/{driverId:int}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -902,6 +905,7 @@ namespace Mottrist.API.Controllers
         /// - **204 No Content**: If no data is available.
         /// - **500 Internal Server Error**: If an exception occurs.
         /// </returns>
+        [AllowAnonymous]
         [HttpGet("all-driver-form-fields", Name = "GetAllDriverFormFields")]
         [ProducesResponseType(typeof(ApiResponse<DriverFormFieldsDto>), StatusCodes.Status200OK)] // Success response
         [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status204NoContent)] // No content
