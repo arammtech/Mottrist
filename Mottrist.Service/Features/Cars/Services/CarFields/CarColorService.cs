@@ -42,7 +42,7 @@ namespace Mottrist.Service.Features.Cars.Services.CarFields
             try
             {
                 // Retrieve color data from the repository
-                var colorsQuery = _unitOfWork.Repository<Color>().Query().AsQueryable();
+                var colorsQuery = _unitOfWork.Repository<Color>().Table.AsQueryable();
 
                 // Apply filter if provided
                 if (filter != null)

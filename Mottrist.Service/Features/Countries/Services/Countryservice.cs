@@ -45,7 +45,7 @@ namespace Mottrist.Service.Features.Countries.Services
             try
             {
                 var country = _unitOfWork.Repository<Country>()
-                    .Query()
+                    .Table
                     .Include(c => c.Cities)
                     .FirstOrDefault(i => i.Id == id);
 
@@ -70,7 +70,7 @@ namespace Mottrist.Service.Features.Countries.Services
             try
             {
                 var country = await _unitOfWork.Repository<Country>()
-                 .Query()
+                 .Table
                  .Include(c => c.Cities) 
                  .FirstOrDefaultAsync(i => i.Id == id);
 
@@ -94,7 +94,7 @@ namespace Mottrist.Service.Features.Countries.Services
         {
             try
             {
-                var countryQuery = _unitOfWork.Repository<Country>().Query()
+                var countryQuery = _unitOfWork.Repository<Country>().Table
                     .Include(c => c.Cities)
                     .AsQueryable();
 
@@ -125,7 +125,7 @@ namespace Mottrist.Service.Features.Countries.Services
         {
             try
             {
-                var countryQuery = _unitOfWork.Repository<Country>().Query()
+                var countryQuery = _unitOfWork.Repository<Country>().Table
                     .Include(c => c.Cities)
                     .AsQueryable();
 

@@ -3,7 +3,6 @@ using Mottrist.Domain.Entities;
 using Mottrist.Domain.Global;
 using Mottrist.Service.Features.Cars.Interfaces;
 using Mottrist.Service.Features.Drivers.DTOs;
-using Mottrist.Service.Features.Drivers.Mappers;
 using System.Threading.Tasks;
 
 namespace Mottrist.Service.Features.Drivers.Helpers

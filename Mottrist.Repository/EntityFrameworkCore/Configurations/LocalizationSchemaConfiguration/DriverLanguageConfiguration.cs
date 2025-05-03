@@ -8,7 +8,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.LocalizationSch
     {
         public void Configure(EntityTypeBuilder<DriverLanguage> builder)
         {
-            builder.HasKey(dcc => new { dcc.DriverId, dcc.LanguageId });
+            builder.HasKey(dcc => dcc.Id);
 
             builder.HasOne(x => x.Driver)
                 .WithMany(x => x.DriverLanguages)

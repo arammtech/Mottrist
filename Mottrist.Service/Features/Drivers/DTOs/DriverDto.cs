@@ -1,4 +1,8 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Mottrist.Service.Features.Cars.DTOs;
+using Mottrist.Service.Features.Cities.Dtos;
+using Mottrist.Service.Features.Countries.DTOs;
+using Mottrist.Service.Features.Languages.DTOs;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Mottrist.Service.Features.Drivers.DTOs
 {
@@ -7,47 +11,17 @@ namespace Mottrist.Service.Features.Drivers.DTOs
     /// </summary>
     public class DriverDto
     {
-        // Identification
-        public int Id { get; set; }
-
         // Personal Information
+        public int Id { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string? PhoneNumber { get; set; }
         public string? WhatsAppNumber { get; set; }
-        public string Nationality { get; set; } = null!;
         public string? Bio { get; set; }
-
-        // Images
-        public string? ProfileImageUrl { get; set; } = string.Empty;
-        public string LicenseImageUrl { get; set; } = null!;
-        public string PassportImageUrl { get; set; } = null!;
-
-        // Professional Information
         public byte YearsOfExperience { get; set; }
         public string Status { get; set; } = null!;
-
-        // Car Details
-        public bool HasCar { get; set; } = false;
-        public string? CarBrand { get; set; }
-        public string? CarModel { get; set; }
-        public int? CarYear { get; set; }
-        public byte? CarNumberOfSeats { get; set; }
-        public string? CarColor { get; set; }
-        public string? CarBodyType { get; set; }
-        public string? CarFuelType { get; set; }
-        public string? MainCarImageUrl { get; set; }
-        public List<string>? AddtionalCarImageUrls { get; set; }
-
-        // Pricing
-        public decimal? PricePerHour { get; set; } // Driver's hourly rate
-
-        // Availability (Storing Only Date)
-        public DateTime? AvailableFrom { get; set; } // When the driver starts being available
-        public DateTime? AvailableTo { get; set; }   // When the driver's availability ends
-        public bool IsAvailableAllTime { get; set; } // If true, driver ignores date restrictions
-
+        public decimal PricePerHour { get; set; } // Driver's hourly rate
         public bool IsAvailable
         {
             get
@@ -57,37 +31,38 @@ namespace Mottrist.Service.Features.Drivers.DTOs
                     return true;
 
                 // Ensure both availability dates exist before checking the range
-                bool hasValidDates = AvailableFrom.HasValue && AvailableTo.HasValue;
+                if(AvailableFrom == null || AvailableTo == null)
+                    return false;   
 
-                if (!hasValidDates)
-                {
-                    return false;
-                }
-
-                bool isWithinDateRange = hasValidDates && 
-                                         DateTime.Now >= AvailableFrom.Value && 
-                                         DateTime.Now <= AvailableTo.Value;
+                bool isWithinDateRange = 
+                   AvailableFrom.Value.Date <= DateTime.Today &&
+                   AvailableTo.Value.Date >= DateTime.Today;
 
                 return isWithinDateRange;
             }
         }
+        public bool HasCar => Car != null;
+        public DateTime? AvailableFrom { get; set; }
+        public DateTime? AvailableTo { get; set; }  
+        public bool IsAvailableAllTime { get; set; }
+        public int Likes { get; set; }
+        public int Dislikes { get; set; }
+        public int NumberOfViews { get; set; }
 
-        // Cities and Countries worked on and covered
-        public List<string>? CitiesWorkedOn { get; set; } = new List<string>();
-        public List<string>? CitiesCoverNow { get; set; } = new List<string>();
-        public List<string>? CountriesWorkedOn { get; set; } = new List<string>();
-        public List<string>? CountriesCoverNow { get; set; } = new List<string>();
-        public List<string>? LanguagesSpoken { get; set; } = new List<string>();
+        // Images
+        public string? ProfileImageUrl { get; set; }
+        public string LicenseImageUrl { get; set; } = null!;
+        public string PassportImageUrl { get; set; } = null!;
+        public DateTime CreatedAt { get; set; }
 
-        // User Interaction
-        /// <summary>
-        /// The total count of likes received by the driver.
-        /// </summary>
-        public int LikesCount { get; set; } = 0;
-
-        /// <summary>
-        /// The total count of dislikes received by the driver.
-        /// </summary>
-        public int DislikesCount { get; set; } = 0;
+        #region Navigation Properties
+        public CarDto? Car { get; set; }
+        public CountryDto Natioanlity { get; set; } = null!;
+        public IEnumerable<CityDto>? CitiesWorkedOn { get; set; } = [];
+        public IEnumerable<CityDto>? CitiesCoverNow { get; set; } = [];
+        public IEnumerable<CountryDto>? CountriesWorkedOn { get; set; } = [];
+        public IEnumerable<CountryDto>? CountriesCoverNow { get; set; } = [];
+        public IEnumerable<LanguageDto>? SpokenLanguages { get; set; } = [];
+        #endregion
     }
 }

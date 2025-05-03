@@ -43,7 +43,7 @@ namespace Mottrist.Service.Features.Cars.Services.CarFields
             try
             {
                 // Fetch body types query from the repository
-                var bodyTypesQuery = _unitOfWork.Repository<BodyType>().Query().AsQueryable();
+                var bodyTypesQuery = _unitOfWork.Repository<BodyType>().Table.AsQueryable();
 
                 // Apply filter if provided
                 if (filter != null)

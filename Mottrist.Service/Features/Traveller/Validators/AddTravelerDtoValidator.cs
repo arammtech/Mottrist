@@ -34,8 +34,8 @@ namespace Mottrist.Service.Features.Traveller.Validators
 
             RuleFor(x => x.Email)
                   .NotEmpty().WithMessage("Email is required.")
-                  .EmailAddress().WithMessage("Invalid email format. Expected format: example@domain.com");
-                    //.MustAsync(EmailNotTaken).WithMessage("Email is already taken.");
+                  .EmailAddress().WithMessage("Invalid email format. Expected format: example@domain.com")
+                    .MustAsync(EmailNotTaken).WithMessage("Email is already taken.");
 
             RuleFor(x => x.PhoneNumber)
                 .Matches(@"^\+?[1-9]\d{9,14}$")

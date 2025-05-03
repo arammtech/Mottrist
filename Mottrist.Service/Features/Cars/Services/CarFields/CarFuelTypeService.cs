@@ -42,7 +42,7 @@ namespace Mottrist.Service.Features.Cars.Services.CarFields
             try
             {
                 // Retrieve the fuel type query from the repository
-                var fuelTypesQuery = _unitOfWork.Repository<FuelType>().Query().AsQueryable();
+                var fuelTypesQuery = _unitOfWork.Repository<FuelType>().Table.AsQueryable();
 
                 // Apply filter if provided
                 if (filter != null)

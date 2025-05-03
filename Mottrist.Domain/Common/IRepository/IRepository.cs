@@ -12,9 +12,7 @@ namespace Mottrist.Domain.Common.IRepository
         IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>>? filter = null);
         IQueryable<TEntity> FindByCondition(Expression<Func<TEntity, bool>> filter);
         IQueryable<TEntity> Table { get; }
-        IQueryable<TEntity> Include(params Expression<Func<TEntity, object>>[] includeProperties);
-        IQueryable<TEntity> Query();
-        
+        IQueryable<TEntity> Include(params Expression<Func<TEntity, object>>[] includeProperties);        
         
         #endregion
 

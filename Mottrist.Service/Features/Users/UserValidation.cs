@@ -18,9 +18,6 @@ namespace Mottrist.Service.Features.Users
             if (string.IsNullOrWhiteSpace(userDto.Email))
                 result.AddError("البريد الإلكتروني مطلوب");
 
-            if (string.IsNullOrWhiteSpace(userDto.Password))
-                result.AddError("كلمة المرور مطلوبة");
-
             return result;
         }
 
