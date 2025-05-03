@@ -1,4 +1,4 @@
-﻿namespace Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs
+﻿namespace Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs.BrandDTOs
 {
     public class CarBrandDto
     {
