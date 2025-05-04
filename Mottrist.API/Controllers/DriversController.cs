@@ -593,7 +593,7 @@ namespace Mottrist.API.Controllers
         /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpPut("{id:int}", Name = "UpdateDriverDetailsAsync")]
-        [ProducesResponseType(typeof(ApiResponse<DriverDto), StatusCodes.Status200OK)] // Successful update
+        [ProducesResponseType(typeof(ApiResponse<DriverDto>), StatusCodes.Status200OK)] // Successful update
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)] // Validation errors
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)] // Unexpected errors
         public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateDriverDto driverDto)
