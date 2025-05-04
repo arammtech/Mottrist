@@ -16,13 +16,6 @@ namespace Mottrist.Service.Features.Messages.Validators
         public AddMessagerValidator()
         {
             /// <summary>
-            /// Validates that <see cref="AddMessageDto.UserId"/> is greater than zero and not null.
-            /// </summary>
-            RuleFor(x => x.UserId)
-                .GreaterThan(0).WithMessage("UserId must be greater than zero.")
-                .NotNull().WithMessage("UserId is required.");
-
-            /// <summary>
             /// Validates that <see cref="AddMessageDto.MessageBody"/> is not empty or null and less than 500 char.
             /// </summary>
             RuleFor(x => x.MessageBody)

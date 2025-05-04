@@ -5,6 +5,7 @@ using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Messages.DTOs;
 using Mottrist.Service.Features.Messages.Interfaces;
 using Mottrist.Utilities.Identity;
+using System.Security.Claims;
 using static Mottrist.API.Response.ApiResponseHelper;
 
 namespace Mottrist.API.Controllers
@@ -31,7 +32,7 @@ namespace Mottrist.API.Controllers
         /// Retrieves a message by its unique identifier.
         /// </summary>
         /// <param name="id">The unique identifier of the message.</param>
-        /// <returns>Message data if found; otherwise, an error message.</returns>
+        /// <returns>The requested message if found; otherwise, a not found or error response.</returns>
         /// <response code="200">Message retrieved successfully.</response>
         /// <response code="400">Invalid message ID.</response>
         /// <response code="404">Message not found.</response>
@@ -66,11 +67,10 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
         /// <summary>
         /// Retrieves all messages.
         /// </summary>
-        /// <returns>List of messages.</returns>
+        /// <returns>A list of all messages.</returns>
         /// <response code="200">Messages retrieved successfully.</response>
         /// <response code="500">An internal server error occurred.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
@@ -97,9 +97,18 @@ namespace Mottrist.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of messages.
+        /// </summary>
+        /// <param name="page">The page number (starting from 1).</param>
+        /// <param name="pageSize">The number of messages per page.</param>
+        /// <returns>A paginated list of messages.</returns>
+        /// <response code="200">Paginated messages retrieved successfully.</response>
+        /// <response code="400">Invalid pagination parameters.</response>
+        /// <response code="500">An internal server error occurred.</response>[Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("all/paged",Name = "GetAllMessagesWithPaginationAsync")]
-        [ProducesResponseType(typeof(MessageDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(PaginatedResult<MessageDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllMessagesWithPaginationAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
@@ -125,35 +134,31 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
         /// <summary>
         /// Adds a new message.
         /// </summary>
-        /// <param name="addMessageDto">The message data.</param>
-        /// <returns>Created message information.</returns>
+        /// <param name="addMessageDto">The message data to add.</param>
+        /// <returns>The created message with route information.</returns>
         /// <response code="201">Message created successfully.</response>
-        /// <response code="400">Validation error in message data.</response>
+        /// <response code="400">Validation error occurred.</response>
         /// <response code="500">An internal server error occurred.</response>
-        [AllowAnonymous]
+        [Authorize]
         [HttpPost(Name = "AddNewMessageAsync")]
         [ProducesResponseType(typeof(MessageDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddAsync([FromForm] AddMessageDto addMessageDto)
+        public async Task<IActionResult> AddAsync([FromBody] AddMessageDto addMessageDto)
         {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values
-                                       .SelectMany(v => v.Errors)
-                                       .Select(e => e.ErrorMessage)
-                                       .ToList();
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                    ?? User.FindFirst("sub")?.Value
+                    ?? User.FindFirst("userId")?.Value;
 
-                return BadRequestResponse("ValidationError", "Invalid data provided.", errors.ToArray());
-            }
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                return BadRequest("Invalid or missing user ID in token.");
 
             try
             {
-                var result = await _messageService.AddAsync(addMessageDto);
+                var result = await _messageService.AddAsync(userId,addMessageDto);
 
                 return result.IsSuccess
                     ? CreatedResponse("GetMessageByIdAsync", new { id = result.Data?.Id }, result.Data, "Message created successfully.")
@@ -169,33 +174,22 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
         /// <summary>
-        /// Updates an existing message.
+        /// Updates an existing message's details.
         /// </summary>
         /// <param name="id">The ID of the message to update.</param>
         /// <param name="updateMessageDto">The updated message data.</param>
-        /// <returns>Updated message information.</returns>
-        /// <response code="200">Message updated successfully.</response>
-        /// <response code="400">Invalid message ID or validation errors.</response>
+        /// <returns>The updated message if successful.</returns>
+        /// <response code="200">Message details updated successfully.</response>
+        /// <response code="400">Invalid data or parameters.</response>
         /// <response code="500">An internal server error occurred.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpPut("{id:int}", Name = "UpdateMessageDetailsAsync")]
         [ProducesResponseType(typeof(MessageDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateMessageDto updateMessageDto)
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateMessageDto updateMessageDto)
         {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-
-                return BadRequestResponse("ValidationError", "Invalid data provided.", errors.ToArray());
-            }
-
             if (id < 1)
                 return BadRequestResponse("InvalidId", $"The parameter '{nameof(id)}' must be a positive integer.");
 
@@ -217,21 +211,18 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
         /// <summary>
         /// Deletes a message by its unique identifier.
         /// </summary>
-        /// <param name="id">The unique identifier of the message to delete.</param>
-        /// <returns>A success message if deleted; otherwise, an error message.</returns>
+        /// <param name="id">The unique identifier of the message.</param>
+        /// <returns>Status message indicating result of deletion.</returns>
         /// <response code="200">Message deleted successfully.</response>
         /// <response code="400">Invalid message ID.</response>
-        /// <response code="404">Message not found.</response>
-        /// <response code="500">An internal server error occurred.</response>
+        /// <response code="500">An internal server error occurred.</response>[Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpDelete("{id:int}", Name = "DeleteMessageAsync")]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteAsync(int id)
         {
