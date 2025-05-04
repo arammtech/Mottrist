@@ -304,10 +304,10 @@ namespace Mottrist.Service.Features.Traveller.Services
         {
             try
             {
-                var transactionResult = await _unitOfWork.StartTransactionAsync();
+                //var transactionResult = await _unitOfWork.StartTransactionAsync();
 
-                if (!transactionResult.IsSuccess)
-                    return Result.Failure("Failed to start the transaction");
+                //if (!transactionResult.IsSuccess)
+                //    return Result.Failure("Failed to start the transaction");
 
                 var existingTraveler = await _unitOfWork.Repository<Traveler>()
                    .Include(t => t.User).Include(t => t.Country).FirstOrDefaultAsync(t => t.Id == travelerId);
@@ -319,20 +319,20 @@ namespace Mottrist.Service.Features.Traveller.Services
                 // Delete traveler
                 await _unitOfWork.Repository<Traveler>().DeleteAsync(existingTraveler);
             
-                // Delete user
-                var result = await _userManager.DeleteAsync(user);
+                //// Delete user
+                //var result = await _userManager.DeleteAsync(user);
 
-                if (!result.Succeeded)
-                {
-                    await _unitOfWork.RollbackAsync();
+                //if (!result.Succeeded)
+                //{
+                //    await _unitOfWork.RollbackAsync();
 
-                    return Result.Failure("Failed to delete the traveler.");
-                }
+                //    return Result.Failure("Failed to delete the traveler.");
+                //}
 
-                var commitResult = await _unitOfWork.CommitAsync();
+                var commitResult = await _unitOfWork.SaveChangesAsync();
                 if (!commitResult.IsSuccess)
                 {
-                    await _unitOfWork.RollbackAsync();
+                    //await _unitOfWork.RollbackAsync();
                     return Result.Failure("Failed to delete the traveler.");
                 }
 
