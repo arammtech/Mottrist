@@ -131,8 +131,8 @@ Create two environments in Postman (Development and Production) with the followi
 | Method | Endpoint                                   | Description                                 |
 | ------ | ------------------------------------------ | ------------------------------------------- |
 | POST   | `{{baseUrl}}/api/users/register`           | Registers a new user.                       |
-| POST   | `{{baseUrl}}/api/users/send-confirm-email` | Sends a confirmation email.                 |
-| POST   | `{{baseUrl}}/api/users/confirm-email`      | Confirms a user’s email using ID and token. |
+| POST   | `{{baseUrl}}/api/users/email/send`         | Sends a confirmation email.                 |
+| POST   | `{{baseUrl}}/api/users/email/confirm`      | Confirms a user’s email using ID and token. |
 
 ### Drivers
 
