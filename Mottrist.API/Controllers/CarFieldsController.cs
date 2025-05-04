@@ -36,7 +36,6 @@ namespace Mottrist.API.Controllers
         /// </summary>
         private readonly ICarFuelTypeService _carFuelTypeService;
 
-
         /// <summary>
         /// Service for managing car colors.
         /// </summary>
@@ -62,10 +61,11 @@ namespace Mottrist.API.Controllers
         /// <summary>
         /// Retrieves all car body types.
         /// </summary>
-        /// <returns>A list of car body types.</returns>
-        /// - HTTP 200 OK with the list of car body types if successful.
-        /// - HTTP 204 No Content if no car body types are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// <returns>
+        /// An API response containing car body types details.
+        /// </returns>
+        /// <response code="200">Successfully retrieved car colors.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("all/bodyTypes", Name = "GetAllCarBodyTypes")]
         [ProducesResponseType(typeof(ApiResponse<CarBodyTypeDto>), StatusCodes.Status200OK)]
@@ -76,7 +76,7 @@ namespace Mottrist.API.Controllers
             {
                 var dataResult = await _carBodyTypeService.GetAllAsync();
 
-                return  dataResult != null
+                return dataResult != null
                   ? SuccessResponse(dataResult, "Car's body types retrieved successfully.")
                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
             }
@@ -85,7 +85,6 @@ namespace Mottrist.API.Controllers
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", ex.Message);
             }
         }
-
 
         /// <summary>
         /// Retrieves a list of all available car colors.
@@ -142,7 +141,6 @@ namespace Mottrist.API.Controllers
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", ex.Message);
             }
         }
-
 
         /// <summary>
         /// Retrieves all necessary car-related fields.

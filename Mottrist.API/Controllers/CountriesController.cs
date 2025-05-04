@@ -88,9 +88,9 @@ namespace Mottrist.API.Controllers
             {
                 var dataResult = await _countryService.GetAllAsync();
 
-                   return dataResult != null
-                    ? SuccessResponse(dataResult, "Countries retrieved successfully.")
-                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
+                return dataResult != null
+                 ? SuccessResponse(dataResult, "Countries retrieved successfully.")
+                 : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
             }
             catch (Exception ex)
             {

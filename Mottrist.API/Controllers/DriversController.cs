@@ -66,7 +66,7 @@ namespace Mottrist.API.Controllers
             {
                 var driver = await _driverService.GetByIdAsync(id);
 
-                if(driver is null)
+                if (driver is null)
                     return NotFoundResponse("DriverNotFound", "No driver found with the provided ID.");
 
                 return SuccessResponse(driver, "Driver retrieved successfully.");
@@ -123,7 +123,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllDriversWithPaginationAsync(int page = 1,int pageSize = 10)
+        public async Task<IActionResult> GetAllDriversWithPaginationAsync(int page = 1, int pageSize = 10)
         {
             try
             {
@@ -164,7 +164,7 @@ namespace Mottrist.API.Controllers
             {
                 var dataResult = await _driverService.GetTopRatedAsync(count);
 
-                return dataResult != null 
+                return dataResult != null
                     ? SuccessResponse(dataResult, "Top-rated drivers retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
             }
@@ -228,7 +228,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByCountryAndCityAsync( int countryId, int cityId)
+        public async Task<IActionResult> GetByCountryAndCityAsync(int countryId, int cityId)
         {
             if (countryId < 1 || cityId < 1)
             {
@@ -276,7 +276,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByCountryCityAndDateAsync(int countryId,int cityId,DateTime date)
+        public async Task<IActionResult> GetByCountryCityAndDateAsync(int countryId, int cityId, DateTime date)
         {
             if (countryId < 1 || cityId < 1)
             {
@@ -321,9 +321,9 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByCountryWithPaginationAsync(int countryId,int page = 1,int pageSize = 10)
+        public async Task<IActionResult> GetByCountryWithPaginationAsync(int countryId, int page = 1, int pageSize = 10)
         {
-            if (countryId  < 1 || page < 1 || pageSize < 1)
+            if (countryId < 1 || page < 1 || pageSize < 1)
             {
                 return BadRequestResponse("InvalidRequest", "Country ID, city ID, page, and page size must be greater than 0.");
             }
@@ -368,7 +368,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByCountryAndCityWithPaginationAsync(int countryId,int cityId,int page = 1,int pageSize = 10)
+        public async Task<IActionResult> GetByCountryAndCityWithPaginationAsync(int countryId, int cityId, int page = 1, int pageSize = 10)
         {
             if (countryId < 1 || page < 1 || pageSize < 1)
             {
@@ -377,7 +377,7 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                var dataResult = await _driverService.GetByCountryAndCityWithPaginationAsync(countryId, cityId,page, pageSize);
+                var dataResult = await _driverService.GetByCountryAndCityWithPaginationAsync(countryId, cityId, page, pageSize);
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
@@ -420,7 +420,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByCountryCityAndDateWithPaginationAsync(int countryId,int cityId,DateTime date,int page = 1,int pageSize = 10)
+        public async Task<IActionResult> GetByCountryCityAndDateWithPaginationAsync(int countryId, int cityId, DateTime date, int page = 1, int pageSize = 10)
         {
             if (countryId < 1 || page < 1 || pageSize < 1)
             {
@@ -429,7 +429,7 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                var dataResult = await _driverService.GetByCountryCityAndDateWithPaginationAsync(countryId,cityId,date, page, pageSize);
+                var dataResult = await _driverService.GetByCountryCityAndDateWithPaginationAsync(countryId, cityId, date, page, pageSize);
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
@@ -464,7 +464,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByStatusWithPaginationAsync(string status,int page = 1,int pageSize = 10)
+        public async Task<IActionResult> GetByStatusWithPaginationAsync(string status, int page = 1, int pageSize = 10)
         {
             try
             {
@@ -544,7 +544,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Bad request due to invalid input.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpPost (Name = "AddNewDriverAsync")]
+        [HttpPost(Name = "AddNewDriverAsync")]
         [ProducesResponseType(typeof(ApiResponse<DriverDto>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
@@ -562,7 +562,7 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                
+
                 var result = await _driverService.AddAsync(driverDto);
 
 
@@ -701,7 +701,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateAvailabilityAsync(int driverId,DateTime? availableFrom,DateTime? availableTo,bool availableAllTime)
+        public async Task<IActionResult> UpdateAvailabilityAsync(int driverId, DateTime? availableFrom, DateTime? availableTo, bool availableAllTime)
         {
             if (driverId < 1)
             {
@@ -742,7 +742,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdatePriceAsync(int driverId,decimal? newPricePerHour)
+        public async Task<IActionResult> UpdatePriceAsync(int driverId, decimal? newPricePerHour)
         {
             if (driverId < 1)
             {
@@ -788,7 +788,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> LikeOrDislikeAsync(int driverId,int userId,bool? isLiked)
+        public async Task<IActionResult> LikeOrDislikeAsync(int driverId, int userId, bool? isLiked)
         {
             if (driverId < 1 || userId < 1)
                 return BadRequestResponse("InvalidRequest", "Driver ID and User ID must be greater than 0.");
@@ -828,25 +828,25 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> IncrementViewCountAsync( int driverId,[FromQuery]int userId)
+        public async Task<IActionResult> IncrementViewCountAsync(int driverId, [FromQuery] int userId)
         {
             // Validate input parameters
             if (driverId < 1 || userId < 1)
                 return BadRequestResponse("InvalidRequest", "Driver ID and User ID must be greater than 0.");
 
             try
-            {             
+            {
                 var result = await _driverService.IncrementViewCountAsync(driverId, userId);
 
-                return result.IsSuccess 
-                    ? SuccessResponse("View count recorded successfully.") 
+                return result.IsSuccess
+                    ? SuccessResponse("View count recorded successfully.")
                     : BadRequestResponse("UpdateFailed", result?.Errors?.FirstOrDefault() ?? string.Empty);
             }
-            catch (Exception ex) 
-            { 
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ServerError", $"Unexpected error: {ex.Message}"); 
+            catch (Exception ex)
+            {
+                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ServerError", $"Unexpected error: {ex.Message}");
             }
-          
+
         }
 
         /// <summary>
@@ -862,7 +862,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Bad request due to an invalid driver ID.</response>
         /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
-        [HttpDelete("{id:int}",Name = "DeleteAsync")]
+        [HttpDelete("{id:int}", Name = "DeleteAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)] // Driver deleted successfully
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)] // Invalid driver ID provided
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)] // Unexpected errors
@@ -874,7 +874,7 @@ namespace Mottrist.API.Controllers
             }
 
             try
-            {          
+            {
                 var result = await _driverService.DeleteAsync(id);
 
                 return result.IsSuccess

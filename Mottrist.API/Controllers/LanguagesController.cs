@@ -93,7 +93,7 @@ namespace Mottrist.WebAPI.Controllers
             {
                 var dataResult = await _languageService.GetAllAsync();
 
-                return dataResult != null 
+                return dataResult != null
                     ? SuccessResponse(dataResult, "Languages retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
             }

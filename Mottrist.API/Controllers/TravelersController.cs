@@ -52,10 +52,6 @@ namespace Mottrist.API.Controllers
                 return travelerDto != null ? SuccessResponse(travelerDto, "Traveler retrieved successfully.")
                        : NotFoundResponse("TRAVELER_NOT_FOUND", "Traveler not found.", $"Traveler with Id {id} was not found.");
             }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Unexpected error: {ex.Message}");
@@ -81,10 +77,6 @@ namespace Mottrist.API.Controllers
                 return travelerDtos != null 
                     ? SuccessResponse(travelerDtos, "Travelers retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NO_DATA_FOUND", "No data found.", "There is no data found for travelers.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -118,10 +110,6 @@ namespace Mottrist.API.Controllers
                 return travelerDtos != null ? SuccessResponse(travelerDtos, "Travelers retrieved successfully.")
                        : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NO_DATA_FOUND", "No data found.", "There is no data found for travelers.");
 
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -163,10 +151,6 @@ namespace Mottrist.API.Controllers
                 : StatusCodeResponse(StatusCodes.Status500InternalServerError, "CreationError", "Failed to create traveler.");
 
   
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -247,10 +231,6 @@ namespace Mottrist.API.Controllers
                 ? SuccessResponse("Traveler deleted successfully.")
                 : StatusCodeResponse(StatusCodes.Status500InternalServerError, "FAILD_DELETE_TRAVELER", "Error deleting traveler.", result.Errors.ToArray());
 
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
             }
             catch (Exception ex)
             {
