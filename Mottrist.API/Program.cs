@@ -51,6 +51,7 @@ using Mottrist.Service.Features.Email.Interfaces;
 using Mottrist.Service.Features.Email;
 using Mottrist.Service.Features.Drivers;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Mottrist.Repository.EntityFrameworkCore.Interceptors;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -116,9 +117,12 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 #endregion
 
 #region EF Configuration
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddScoped<SoftDeleteInterceptor>();
+builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 {
+    var interceptor = serviceProvider.GetRequiredService<SoftDeleteInterceptor>();
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.AddInterceptors(interceptor);
 });
 #endregion
 

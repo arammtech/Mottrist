@@ -6,7 +6,7 @@ using Mottrist.Domain.Enums;
 using Mottrist.Domain.Identity;
 using Mottrist.Domain.LookupEntities;
 
-public class Driver : BaseEntity, ICreateAt
+public class Driver : BaseEntity, ICreateAt , ISoftDeleteable
 {
     // Professional Information
     public int UserId { get; set; }
@@ -25,6 +25,9 @@ public class Driver : BaseEntity, ICreateAt
     public string LicenseImageUrl { get; set; } = null!;
     public string PassportImageUrl { get; set; } = null!;
     public string? ProfileImageUrl { get; set; }
+
+    public bool IsDeleted { get; set; }
+    public DateTime? DateDeleted { get; set; }
 
     #region Navigation Properties
     public virtual ApplicationUser User { get; set; } = null!;
