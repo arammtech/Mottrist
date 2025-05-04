@@ -84,7 +84,7 @@ namespace Mottrist.WebAPI.Controllers
         /// <response code="200">Successfully retrieved language data.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpGet("All", Name = "GetAllLanguagesAsync")]
+        [HttpGet("all", Name = "GetAllLanguagesAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<LanguageDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
