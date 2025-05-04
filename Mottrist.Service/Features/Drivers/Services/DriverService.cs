@@ -779,10 +779,10 @@ namespace Mottrist.Service.Features.Drivers.Services
                 return Result.Failure($"Unexpected error occurred: {ex.Message}");
             }
         }
-        public async Task<Result> UpdatePriceAsync(int driverId, decimal newPricePerHour)
+        public async Task<Result> UpdatePriceAsync(int driverId, decimal newPricePerHour = 0)
         {
             // Validate parameters
-            if (driverId < 1 || newPricePerHour <= 0)
+            if (driverId < 1)
                 return Result.Failure("Invalid driver ID or price.");
 
             try
@@ -1525,6 +1525,16 @@ namespace Mottrist.Service.Features.Drivers.Services
 
             try
             {
+                bool isExistingDriver = await _unitOfWork.Repository<Driver>()
+                    .Table.AnyAsync(x => x.Id == driverId);
+                if (!isExistingDriver)
+                    return Result.Failure("Driver not found.");
+
+                bool isExistingUser = await _unitOfWork.Repository<ApplicationUser>()
+                    .Table.AnyAsync(x => x.Id == userId);
+                if (!isExistingUser)
+                    return Result.Failure("User not found.");
+
                 // Fetch existing interaction
                 var interaction = await _unitOfWork.Repository<DriverInteraction>()
                     .GetAsync(x => x.DriverId == driverId && x.UserId == userId);
@@ -1547,7 +1557,6 @@ namespace Mottrist.Service.Features.Drivers.Services
                         DriverId = driverId,
                         UserId = userId,
                         IsLiked = isLiked,
-                        ViewsCount = 1
 
                     };
                     await _unitOfWork.Repository<DriverInteraction>().AddAsync(interaction);
