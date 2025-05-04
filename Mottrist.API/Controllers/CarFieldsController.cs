@@ -69,7 +69,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 500 Internal Server Error for unexpected errors.
         [AllowAnonymous]
         [HttpGet("All/BodyTypes", Name = "GetAllCarBodyTypes")]
-        [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<CarBodyTypeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllBodyTypes()
@@ -89,34 +89,6 @@ namespace Mottrist.API.Controllers
             }
         }
 
-        /// <summary>
-        /// Retrieves all car brands.
-        /// </summary>
-        /// <returns>A list of car brands.</returns>
-        /// - HTTP 200 OK with the list of car brands if successful.
-        /// - HTTP 204 No Content if no car brands are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
-        [AllowAnonymous]
-        [HttpGet("All/Brands", Name = "GetAllCarBrands")]
-        [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllBrands()
-        {
-            try
-            {
-                var dataResult = await _carBrandService.GetAllAsync();
-                if (dataResult?.DataRecordsCount == 0)
-                {
-                    return NoContentResponse("No Car's brands found.");
-                }
-                return SuccessResponse(dataResult, "Car's brands retrieved successfully.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", ex.Message);
-            }
-        }
 
         /// <summary>
         /// Retrieves all car colors.
@@ -127,7 +99,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 500 Internal Server Error for unexpected errors.
         [AllowAnonymous]
         [HttpGet("All/Colors", Name = "GetAllCarColors")]
-        [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<CarColorDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllColors()
@@ -156,7 +128,7 @@ namespace Mottrist.API.Controllers
         /// - HTTP 500 Internal Server Error for unexpected errors.
         [AllowAnonymous]
         [HttpGet("All/FuelTypes", Name = "GetAllFuelTypes")]
-        [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<CarFuelTypeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllFuelTypes()
