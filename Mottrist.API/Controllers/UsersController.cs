@@ -189,7 +189,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid or missing email address.</response>
         /// <response code="500">An error occurred while sending the email.</response>
         [AllowAnonymous]
-        [HttpPost("send-confirm-email")]
+        [HttpPost("email/send")]
         public async Task<IActionResult> SendConfirmEmailToUser(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
@@ -235,7 +235,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid user ID, token, or confirmation failure.</response>
         /// <response code="500">An error occurred while confirming the email.</response>
         [AllowAnonymous]
-        [HttpPost("confirm-email")]
+        [HttpPost("email/confirm")]
         public async Task<IActionResult> ConfirmEmail(int userId, string token)
         {
             if(userId == null || userId <= 0)
