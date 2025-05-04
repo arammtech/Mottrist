@@ -44,7 +44,6 @@ namespace Mottrist.Repository.DbInitializer
                     user.LastName = "admin";
                     user.Email = "admin@mottrist.com";
                     user.UserName = "admin@mottrist.com";
-                    user.PasswordHash = "Admin123@";
                     user.LockoutEnabled = false;
                     user.IsAdmin = true;
 
