@@ -38,15 +38,18 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves a destination by the specified ID.
+        /// Retrieves the details of a driver based on the specified ID.
         /// </summary>
-        /// <param name="id">The unique identifier of the destination to retrieve.</param>
+        /// <param name="id">
+        /// The unique identifier of the driver to retrieve.
+        /// </param>
         /// <returns>
-        /// - HTTP 200 OK with the destination details if found.
-        /// - HTTP 404 Not Found if no destination exists with the given ID.
-        /// - HTTP 400 Bad Request if the provided ID is invalid.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// An API response containing driver details.
         /// </returns>
+        /// <response code="200">Successfully retrieved driver details.</response>
+        /// <response code="400">Bad request due to invalid ID.</response>
+        /// <response code="404">Driver not found.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetDestinationByIdAsync")]
         [ProducesResponseType(typeof(ApiResponse<DestinationDto>), StatusCodes.Status200OK)]
@@ -81,17 +84,16 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves all destinations from the service.
+        /// Retrieves a list of all available destinations.
         /// </summary>
         /// <returns>
-        /// - HTTP 200 OK with the list of destinations if successful.
-        /// - HTTP 204 No Content if no destinations are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// An API response containing destination details.
         /// </returns>
+        /// <response code="200">Successfully retrieved destination data.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("all", Name = "GetAllDestinationsAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DestinationDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -114,29 +116,26 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves a paginated list of destinations based on the specified page and page size.
+        /// Retrieves a paginated list of destinations.
         /// </summary>
         /// <param name="page">
-        /// The page number for paginated results.
-        /// Must be greater than 0. Defaults to 1.
+        /// The page number to retrieve (default is 1).
         /// </param>
         /// <param name="pageSize">
-        /// The number of records per page.
-        /// Must be greater than 0. Defaults to 10.
+        /// The number of destinations per page (default is 10).
         /// </param>
         /// <returns>
-        /// - HTTP 200 OK with a paginated list of destinations.
-        /// - HTTP 204 No Content if no destinations are found.
-        /// - HTTP 400 Bad Request if pagination parameters are invalid.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// An API response containing a paginated list of destinations.
         /// </returns>
+        /// <response code="200">Successfully retrieved destination data.</response>
+        /// <response code="400">Bad request due to invalid pagination parameters.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("all/paged", Name = "GetAllDestinationsWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DestinationDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllDestinationsWithPaginationAsync([FromQuery]int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAllDestinationsWithPaginationAsync(int page = 1, int pageSize = 10)
         {
             try
             {
@@ -163,20 +162,22 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Adds a new destination using the provided data transfer object.
+        /// Adds a new destination.
         /// </summary>
-        /// <param name="destinationDto">The DTO containing the details of the destination to be added.</param>
+        /// <param name="destinationDto">
+        /// The data transfer object containing the destination details.
+        /// </param>
         /// <returns>
-        /// - HTTP 201 Created if the operation is successful.
-        /// - HTTP 400 Bad Request if there are validation errors.
-        /// - HTTP 409 Conflict if a destination with the same unique details already exists.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// An API response indicating the result of the operation.
         /// </returns>
+        /// <response code="201">Destination successfully created.</response>
+        /// <response code="400">Bad request due to invalid input.</response>
+        /// <response code="500">Internal server error.</response>
+        /// <response code="401">Unauthorized access. Authentication is required.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpPost(Name = "AddNewDestinationAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddAsync([FromForm] AddDestinationDto destinationDto)
         {
@@ -209,21 +210,25 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Updates an existing destination using the provided data transfer object.
+        /// Updates the details of an existing destination.
         /// </summary>
-        /// <param name="id">The unique identifier of the destination to be updated.</param>
-        /// <param name="destinationDto">The data transfer object containing updated destination details.</param>
+        /// <param name="id">
+        /// The unique identifier of the destination to update.
+        /// </param>
+        /// <param name="destinationDto">
+        /// The data transfer object containing the updated destination details.
+        /// </param>
         /// <returns>
-        /// - HTTP 200 OK if the update is successful.
-        /// - HTTP 400 Bad Request if validation fails.
-        /// - HTTP 404 Not Found if the destination does not exist.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// An API response indicating the result of the update operation.
         /// </returns>
+        /// <response code="200">Destination details updated successfully.</response>
+        /// <response code="400">Bad request due to invalid input.</response>
+        /// <response code="500">Internal server error.</response>
+        /// <response code="401">Unauthorized access. Authentication is required.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpPut("{id:int}", Name = "UpdateDestinationDetailsAsync")]
         [ProducesResponseType(typeof(ApiResponse<DestinationDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateDestinationDto destinationDto)
         {
@@ -264,20 +269,22 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Deletes a destination by the specified ID.
+        /// Deletes a destination based on the specified ID.
         /// </summary>
-        /// <param name="id">The unique identifier of the destination to be deleted.</param>
+        /// <param name="id">
+        /// The unique identifier of the destination to be deleted.
+        /// </param>
         /// <returns>
-        /// - HTTP 200 OK if the deletion is successful.
-        /// - HTTP 400 Bad Request if the destination ID is invalid.
-        /// - HTTP 404 Not Found if the destination does not exist.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// An API response indicating the result of the delete operation.
         /// </returns>
+        /// <response code="200">Destination deleted successfully.</response>
+        /// <response code="400">Bad request due to invalid destination ID.</response>
+        /// <response code="500">Internal server error.</response>
+        /// <response code="401">Unauthorized access. Authentication is required.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpDelete("{id:int}", Name = "DeleteDestinationAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteAsync(int id)
         {

@@ -79,9 +79,8 @@ namespace Mottrist.API.Controllers
         /// <response code="204">No countries found in the database.</response>
         /// <response code="500">An unexpected error occurred while processing the request.</response>
         [AllowAnonymous]
-        [HttpGet("All", Name = "GetAllCountriesAsync")]
+        [HttpGet("all", Name = "GetAllCountriesAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]  // Success response
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]  // No countries found
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]  // Internal server error
         public async Task<IActionResult> GetAllAsync()
         {
@@ -89,16 +88,9 @@ namespace Mottrist.API.Controllers
             {
                 var dataResult = await _countryService.GetAllAsync();
 
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No countries found.");
-                }
-
-                return SuccessResponse(dataResult, "Countries retrieved successfully.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+                   return dataResult != null
+                    ? SuccessResponse(dataResult, "Countries retrieved successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
             }
             catch (Exception ex)
             {

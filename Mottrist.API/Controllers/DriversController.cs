@@ -86,12 +86,10 @@ namespace Mottrist.API.Controllers
         /// A data result containing details of all available drivers.
         /// </returns>
         /// <response code="200">Returns a list of drivers.</response>
-        /// <response code="204">No content available.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("all", Name = "GetAllDriversAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -118,13 +116,11 @@ namespace Mottrist.API.Controllers
         /// A paginated result containing driver details.
         /// </returns>
         /// <response code="200">Returns a paginated list of drivers.</response>
-        /// <response code="204">No content available.</response>
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("all/paged", Name = "GetAllDriversWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllDriversWithPaginationAsync(int page = 1,int pageSize = 10)
@@ -157,12 +153,10 @@ namespace Mottrist.API.Controllers
         /// A data result containing details of the top-rated drivers.
         /// </returns>
         /// <response code="200">Returns a list of top-rated drivers.</response>
-        /// <response code="204">No content available.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("top-rated", Name = "GetTopRatedDriversAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetTopRatedAsync(int count = 3)
         {
@@ -172,7 +166,7 @@ namespace Mottrist.API.Controllers
 
                 return dataResult != null 
                     ? SuccessResponse(dataResult, "Top-rated drivers retrieved successfully.")
-                    : NoContentResponse("No top-rated drivers found at the moment.");
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
             }
             catch (Exception ex)
             {
@@ -189,13 +183,11 @@ namespace Mottrist.API.Controllers
         /// A data result containing driver details filtered by country.
         /// </returns>
         /// <response code="200">Returns a list of drivers for the specified country.</response>
-        /// <response code="204">No content available.</response>
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("by-country/{countryId:int}", Name = "GetDriversByCountryAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByCountryAsync(int countryId)
@@ -229,13 +221,11 @@ namespace Mottrist.API.Controllers
         /// A data result containing driver details filtered by country and city.
         /// </returns>
         /// <response code="200">Returns a list of drivers for the specified country and city.</response>
-        /// <response code="204">No content available.</response>
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("by-country/{countryId:int}/city/{cityId:int}", Name = "GetDriversByCountryAndCityAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByCountryAndCityAsync( int countryId, int cityId)
@@ -279,13 +269,11 @@ namespace Mottrist.API.Controllers
         /// A data result containing drivers that match the specified criteria.
         /// </returns>
         /// <response code="200">Returns a list of matching drivers.</response>
-        /// <response code="204">No content available.</response>
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("by-country/{countryId:int}/city/{cityId:int}/date", Name = "GetDriversByCountryCityAndDateAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByCountryCityAndDateAsync(int countryId,int cityId,DateTime date)
@@ -326,13 +314,11 @@ namespace Mottrist.API.Controllers
         /// A paginated result containing driver details filtered by country.
         /// </returns>
         /// <response code="200">Returns a paginated list of drivers.</response>
-        /// <response code="204">No content available.</response>
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("paged/by-country/{countryId:int}", Name = "GetDriversByCountryWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByCountryWithPaginationAsync(int countryId,int page = 1,int pageSize = 10)
@@ -375,13 +361,11 @@ namespace Mottrist.API.Controllers
         /// A paginated result containing driver details filtered by country and city.
         /// </returns>
         /// <response code="200">Returns a paginated list of drivers.</response>
-        /// <response code="204">No content available.</response>
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}", Name = "GetDriversByCountryAndCityWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByCountryAndCityWithPaginationAsync(int countryId,int cityId,int page = 1,int pageSize = 10)
@@ -397,7 +381,7 @@ namespace Mottrist.API.Controllers
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
-                    : NoContentResponse("No drivers found ");
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
             }
             catch (Exception ex)
             {
@@ -429,13 +413,11 @@ namespace Mottrist.API.Controllers
         /// A paginated result containing driver details filtered by country, city, and availability date.
         /// </returns>
         /// <response code="200">Returns a paginated list of matching drivers.</response>
-        /// <response code="204">No content available.</response>
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}/date", Name = "GetDriversByCountryAndCityAndDateWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByCountryCityAndDateWithPaginationAsync(int countryId,int cityId,DateTime date,int page = 1,int pageSize = 10)
@@ -475,13 +457,11 @@ namespace Mottrist.API.Controllers
         /// A paginated result containing driver details filtered by status.
         /// </returns>
         /// <response code="200">Returns a paginated list of drivers.</response>
-        /// <response code="204">No content available.</response>
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("paged/by-status", Name = "GetDriversByStatusWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByStatusWithPaginationAsync(string status,int page = 1,int pageSize = 10)
@@ -522,13 +502,11 @@ namespace Mottrist.API.Controllers
         /// A data result containing driver details filtered by status.
         /// </returns>
         /// <response code="200">Returns a list of drivers with the specified status.</response>
-        /// <response code="204">No content available.</response>
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("by-status", Name = "GetDriversByStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByStatusAsync(string status)
@@ -620,13 +598,11 @@ namespace Mottrist.API.Controllers
         /// </returns>
         /// <response code="200">Driver details successfully updated.</response>
         /// <response code="400">Bad request due to validation errors.</response>
-        /// <response code="404">Driver not found.</response>
         /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpPut("{id:int}", Name = "UpdateDriverDetailsAsync")]
         [ProducesResponseType(typeof(ApiResponse<Result<DriverDto>>), StatusCodes.Status200OK)] // Successful update
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)] // Validation errors
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)] // Driver not found
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)] // Unexpected errors
         public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateDriverDto driverDto)
         {
@@ -676,13 +652,11 @@ namespace Mottrist.API.Controllers
         /// </returns>
         /// <response code="200">Status successfully updated.</response>
         /// <response code="400">Bad request due to invalid parameters or input.</response>
-        /// <response code="404">Driver not found.</response>
         /// <response code="500">Internal server error.</response>
-        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpPatch("update-status/{driverId:int}", Name = "UpdateDriverStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateStatusAsync(int driverId, string newStatus)
         {
@@ -730,7 +704,7 @@ namespace Mottrist.API.Controllers
         /// <response code="200">Availability successfully updated.</response>
         /// <response code="400">Bad request due to invalid parameters or input.</response>
         /// <response code="500">Internal server error.</response>
-        [AllowAnonymous]
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpPatch("update-availability/{driverId:int}", Name = "UpdateDriverAvailabilityAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
@@ -770,13 +744,11 @@ namespace Mottrist.API.Controllers
         /// </returns>
         /// <response code="200">Price updated successfully.</response>
         /// <response code="400">Bad request due to invalid driver ID or price.</response>
-        /// <response code="404">Driver not found.</response>
         /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpPatch("update-price/{driverId:int}", Name = "UpdateDriverPriceAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdatePriceAsync(int driverId,decimal newPricePerHour)
         {
@@ -861,7 +833,6 @@ namespace Mottrist.API.Controllers
         [HttpPost("increment-view/{driverId:int}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> IncrementViewCountAsync( int driverId,int userId)
         {

@@ -11,7 +11,7 @@ namespace Mottrist.WebAPI.Controllers
     /// <summary>
     /// API Controller for managing city-related operations.
     /// </summary>
-    [Route("api/Cities")]
+    [Route("api/cities")]
     [ApiController]
     public class CitiesController : ControllerBase
     {
@@ -33,15 +33,18 @@ namespace Mottrist.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Retrieves a city by the specified ID.
+        /// Retrieves details of a city based on the specified ID.
         /// </summary>
-        /// <param name="id">The unique identifier of the city to retrieve.</param>
+        /// <param name="id">
+        /// The unique identifier of the city to retrieve.
+        /// </param>
         /// <returns>
-        /// - HTTP 200 OK with the city details if found.
-        /// - HTTP 404 Not Found if no city exists with the given ID.
-        /// - HTTP 400 Bad Request if the provided ID is invalid.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// An API response containing city details.
         /// </returns>
+        /// <response code="200">Successfully retrieved city details.</response>
+        /// <response code="400">Bad request due to invalid city ID.</response>
+        /// <response code="404">City not found.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetCityByIdAsync")]
         [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
@@ -66,10 +69,6 @@ namespace Mottrist.WebAPI.Controllers
 
                 return SuccessResponse(city, "City retrieved successfully.");
             }
-            catch (HttpRequestException httpEx)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", httpEx.Message);
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
@@ -87,7 +86,6 @@ namespace Mottrist.WebAPI.Controllers
         [AllowAnonymous]
         [HttpGet("All", Name = "GetAllCitiesAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<CityDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -95,12 +93,10 @@ namespace Mottrist.WebAPI.Controllers
             {
                 var dataResult = await _cityService.GetAllAsync();
 
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No cities found.");
-                }
+                return dataResult != null
+                    ? SuccessResponse(dataResult, "Cities retrieved successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
 
-                return SuccessResponse(dataResult, "Cities retrieved successfully.");
             }
             catch (HttpRequestException ex)
             {
@@ -113,19 +109,20 @@ namespace Mottrist.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Retrieves all cities belonging to the specified country.
+        /// Retrieves a list of cities associated with a specific country.
         /// </summary>
-        /// <param name="id">The unique identifier of the country.</param>
+        /// <param name="id">
+        /// The unique identifier of the country for which cities are requested.
+        /// </param>
         /// <returns>
-        /// - HTTP 200 OK with the list of cities if successful.
-        /// - HTTP 204 No Content if no cities are found for the given country.
-        /// - HTTP 400 Bad Request if the provided country ID is invalid.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// An API response containing the list of cities within the specified country.
         /// </returns>
+        /// <response code="200">Successfully retrieved cities associated with the country.</response>
+        /// <response code="400">Bad request due to invalid country ID.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("country/{id:int}", Name = "GetAllByCountryAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<CityWithCountryDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllByCountryAsync(int id)
@@ -139,16 +136,9 @@ namespace Mottrist.WebAPI.Controllers
             {
                 var dataResult = await _cityService.GetAllWithCountryAsync(x => x.Country.Id == id);
 
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No cities found for the specified country.");
-                }
-
-                return SuccessResponse(dataResult, "Cities retrieved successfully.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+                return dataResult != null
+                    ? SuccessResponse(dataResult, "Cities retrieved successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
             }
             catch (Exception ex)
             {
@@ -158,17 +148,16 @@ namespace Mottrist.WebAPI.Controllers
 
 
         /// <summary>
-        /// Retrieves all cities with country information.
+        /// Retrieves a list of all cities along with their associated country details.
         /// </summary>
         /// <returns>
-        /// - HTTP 200 OK with the list of cities with country data.
-        /// - HTTP 204 No Content if no cities are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// An API response containing city details along with country information.
         /// </returns>
+        /// <response code="200">Successfully retrieved cities with country details.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("WithCountry", Name = "GetAllCitiesWithCountryAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<CityWithCountryDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllWithCountryAsync()
         {
@@ -176,16 +165,9 @@ namespace Mottrist.WebAPI.Controllers
             {
                 var dataResult = await _cityService.GetAllWithCountryAsync();
 
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No cities found with country information.");
-                }
-
-                return SuccessResponse(dataResult, "Cities with country information retrieved successfully.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+                return dataResult != null
+                    ? SuccessResponse(dataResult, "Cities retrieved successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");            
             }
             catch (Exception ex)
             {
