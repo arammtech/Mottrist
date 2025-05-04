@@ -272,7 +272,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpGet("by-country/{countryId:int}/city/{cityId:int}/date/{date:string}", Name = "GetDriversByCountryCityAndDateAsync")]
+        [HttpGet("by-country/{countryId:int}/city/{cityId:int}/date/{date}", Name = "GetDriversByCountryCityAndDateAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
@@ -416,7 +416,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}/date/{date:string}", Name = "GetDriversByCountryAndCityAndDateWithPaginationAsync")]
+        [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}/date/{date}", Name = "GetDriversByCountryAndCityAndDateWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
