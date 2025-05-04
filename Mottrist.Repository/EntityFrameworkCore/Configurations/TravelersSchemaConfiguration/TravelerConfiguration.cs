@@ -19,6 +19,12 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.TravellersSchem
             builder.Property(t => t.UserId)
                 .IsRequired();
 
+            builder.Property(t => t.IsDeleted)
+            .IsRequired();
+
+            // retrive only entities is not deleted
+            builder.HasQueryFilter(x => x.IsDeleted == false);
+
             builder.HasOne(b => b.Country)
                 .WithMany()
                 .HasForeignKey(b => b.NationalityId)

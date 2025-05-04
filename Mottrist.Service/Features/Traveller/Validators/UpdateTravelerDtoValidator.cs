@@ -17,10 +17,10 @@ namespace Mottrist.Service.Features.Traveller.Validators
         {
             RuleFor(x => x.Id)
                 .GreaterThan(0).WithMessage("Traveler ID must be a positive number.");
-            // Valid NationalityId between 1 to 5.
+            // Valid NationalityId 
             RuleFor(x => x.NationalityId)
-                .InclusiveBetween(1, 5)
-                .WithMessage("Nationality ID is required and must be between 1 and 5.");
+                .NotEmpty()
+                .WithMessage("Nationality ID is required");
 
             // First name: required, with minimum and maximum length constraints.
             RuleFor(x => x.FirstName)

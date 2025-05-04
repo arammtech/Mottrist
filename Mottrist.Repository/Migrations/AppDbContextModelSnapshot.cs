@@ -45,10 +45,16 @@ namespace Mottrist.Repository.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DateDeleted")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsAvailableAllTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LicenseImageUrl")
                         .IsRequired()
@@ -3476,6 +3482,12 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<int?>("CityId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<int>("NationalityId")
                         .HasColumnType("int");

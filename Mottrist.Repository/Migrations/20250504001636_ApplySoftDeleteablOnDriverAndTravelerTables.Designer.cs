@@ -12,8 +12,8 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250503182629_add-CitiesSeeData")]
-    partial class addCitiesSeeData
+    [Migration("20250504001636_ApplySoftDeleteablOnDriverAndTravelerTables")]
+    partial class ApplySoftDeleteablOnDriverAndTravelerTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,10 +48,16 @@ namespace Mottrist.Repository.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DateDeleted")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsAvailableAllTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LicenseImageUrl")
                         .IsRequired()
@@ -211,11 +217,12 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("BodyTypes", "Vehicles");
+                    b.ToTable("BodyTypes", "Vehicle");
 
                     b.HasData(
                         new
@@ -241,82 +248,732 @@ namespace Mottrist.Repository.Migrations
                         new
                         {
                             Id = 5,
-                            Type = "Pickup"
-                        },
-                        new
-                        {
-                            Id = 6,
                             Type = "Convertible"
                         },
                         new
                         {
-                            Id = 7,
-                            Type = "Wagon"
-                        },
-                        new
-                        {
-                            Id = 8,
+                            Id = 6,
                             Type = "Minivan"
                         },
                         new
                         {
-                            Id = 9,
-                            Type = "Roadster"
-                        },
-                        new
-                        {
-                            Id = 10,
+                            Id = 7,
                             Type = "Crossover"
                         },
                         new
                         {
-                            Id = 11,
-                            Type = "Limousine"
+                            Id = 8,
+                            Type = "Electric Car"
                         },
                         new
                         {
-                            Id = 12,
-                            Type = "Van"
+                            Id = 9,
+                            Type = "Hybrid Car"
                         },
                         new
                         {
-                            Id = 13,
+                            Id = 10,
                             Type = "Sports Car"
                         },
                         new
                         {
+                            Id = 11,
+                            Type = "Roadster"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Type = "Pony Car"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Type = "Muscle Car"
+                        },
+                        new
+                        {
                             Id = 14,
-                            Type = "Luxury Sedan"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Type = "Coupe Convertible"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Type = "Station Wagon"
-                        },
-                        new
-                        {
-                            Id = 17,
                             Type = "Supercar"
                         },
                         new
                         {
-                            Id = 18,
+                            Id = 15,
                             Type = "Hypercar"
                         },
                         new
                         {
+                            Id = 16,
+                            Type = "Minicar"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Type = "Subcompact Car"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Type = "Compact Car"
+                        },
+                        new
+                        {
                             Id = 19,
-                            Type = "Off-road"
+                            Type = "Mid-Size Car"
                         },
                         new
                         {
                             Id = 20,
-                            Type = "Targa"
+                            Type = "Full-Size Car"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Type = "Luxury Car"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Type = "Grand Tourer"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Type = "Fastback"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Type = "Notchback"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Type = "Hardtop"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Type = "Targa Top"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Type = "Landau"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Type = "Shooting Brake"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Type = "Estate Car"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Type = "Liftback"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Type = "Kammback"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Type = "Bubble Car"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Type = "Microcar"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Type = "City Car"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Type = "Subcompact MPV"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Type = "Compact MPV"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Type = "Large MPV"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Type = "Panel Van"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Type = "Pickup SUV"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Type = "Coupe SUV"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Type = "Off-Road SUV"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Type = "Luxury SUV"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Type = "Performance SUV"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Type = "Electric SUV"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Type = "Hybrid SUV"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            Type = "Extended Length SUV"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            Type = "Three-Row SUV"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            Type = "Two-Row SUV"
+                        },
+                        new
+                        {
+                            Id = 49,
+                            Type = "Compact Crossover SUV"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            Type = "Mid-Size Crossover SUV"
+                        },
+                        new
+                        {
+                            Id = 51,
+                            Type = "Full-Size Crossover SUV"
+                        },
+                        new
+                        {
+                            Id = 52,
+                            Type = "Convertible SUV"
+                        },
+                        new
+                        {
+                            Id = 53,
+                            Type = "T-Top"
+                        },
+                        new
+                        {
+                            Id = 54,
+                            Type = "Phaeton"
+                        },
+                        new
+                        {
+                            Id = 55,
+                            Type = "Barchetta"
+                        },
+                        new
+                        {
+                            Id = 56,
+                            Type = "Spider"
+                        },
+                        new
+                        {
+                            Id = 57,
+                            Type = "Cabriolet"
+                        },
+                        new
+                        {
+                            Id = 58,
+                            Type = "Drophead Coupé"
+                        },
+                        new
+                        {
+                            Id = 59,
+                            Type = "Roadster Utility"
+                        },
+                        new
+                        {
+                            Id = 60,
+                            Type = "Club Coupe"
+                        },
+                        new
+                        {
+                            Id = 61,
+                            Type = "Opera Coupe"
+                        },
+                        new
+                        {
+                            Id = 62,
+                            Type = "Business Coupe"
+                        },
+                        new
+                        {
+                            Id = 63,
+                            Type = "Personal Luxury Coupe"
+                        },
+                        new
+                        {
+                            Id = 64,
+                            Type = "Four-Door Coupe"
+                        },
+                        new
+                        {
+                            Id = 65,
+                            Type = "Compact Executive Car"
+                        },
+                        new
+                        {
+                            Id = 66,
+                            Type = "Executive Car"
+                        },
+                        new
+                        {
+                            Id = 67,
+                            Type = "Luxury Sedan"
+                        },
+                        new
+                        {
+                            Id = 68,
+                            Type = "Full-Size Luxury Sedan"
+                        },
+                        new
+                        {
+                            Id = 69,
+                            Type = "Performance Sedan"
+                        },
+                        new
+                        {
+                            Id = 70,
+                            Type = "Sports Sedan"
+                        },
+                        new
+                        {
+                            Id = 71,
+                            Type = "Touring Sedan"
+                        },
+                        new
+                        {
+                            Id = 72,
+                            Type = "Wagon Sedan"
+                        },
+                        new
+                        {
+                            Id = 73,
+                            Type = "Fastback Sedan"
+                        },
+                        new
+                        {
+                            Id = 74,
+                            Type = "Notchback Sedan"
+                        },
+                        new
+                        {
+                            Id = 75,
+                            Type = "Hardtop Sedan"
+                        },
+                        new
+                        {
+                            Id = 76,
+                            Type = "Pillarless Hardtop"
+                        },
+                        new
+                        {
+                            Id = 77,
+                            Type = "Long-Wheelbase Sedan"
+                        },
+                        new
+                        {
+                            Id = 78,
+                            Type = "Short-Wheelbase Sedan"
+                        },
+                        new
+                        {
+                            Id = 79,
+                            Type = "Hybrid Electric Sedan"
+                        },
+                        new
+                        {
+                            Id = 80,
+                            Type = "Compact Luxury Sedan"
+                        },
+                        new
+                        {
+                            Id = 81,
+                            Type = "Mid-Size Luxury Sedan"
+                        },
+                        new
+                        {
+                            Id = 82,
+                            Type = "Subcompact Luxury SUV"
+                        },
+                        new
+                        {
+                            Id = 83,
+                            Type = "Compact Luxury SUV"
+                        },
+                        new
+                        {
+                            Id = 84,
+                            Type = "Mid-Size Luxury SUV"
+                        },
+                        new
+                        {
+                            Id = 85,
+                            Type = "Full-Size Luxury SUV"
+                        },
+                        new
+                        {
+                            Id = 86,
+                            Type = "Retro Sedan"
+                        },
+                        new
+                        {
+                            Id = 87,
+                            Type = "Retro Coupe"
+                        },
+                        new
+                        {
+                            Id = 88,
+                            Type = "Soft-Top Convertible"
+                        },
+                        new
+                        {
+                            Id = 89,
+                            Type = "Hardtop Convertible"
+                        },
+                        new
+                        {
+                            Id = 90,
+                            Type = "Micro MPV"
+                        },
+                        new
+                        {
+                            Id = 91,
+                            Type = "Luxury Crossover"
+                        },
+                        new
+                        {
+                            Id = 92,
+                            Type = "Performance Crossover"
+                        },
+                        new
+                        {
+                            Id = 93,
+                            Type = "Electric Crossover"
+                        },
+                        new
+                        {
+                            Id = 94,
+                            Type = "Hybrid Crossover"
+                        },
+                        new
+                        {
+                            Id = 95,
+                            Type = "Compact Performance Car"
+                        },
+                        new
+                        {
+                            Id = 96,
+                            Type = "Mid-Size Performance Car"
+                        },
+                        new
+                        {
+                            Id = 97,
+                            Type = "Luxury Performance Car"
+                        },
+                        new
+                        {
+                            Id = 98,
+                            Type = "Electric Performance Car"
+                        },
+                        new
+                        {
+                            Id = 99,
+                            Type = "Hybrid Performance Car"
+                        },
+                        new
+                        {
+                            Id = 100,
+                            Type = "Subcompact Hatchback"
+                        },
+                        new
+                        {
+                            Id = 101,
+                            Type = "Compact Hatchback"
+                        },
+                        new
+                        {
+                            Id = 102,
+                            Type = "Mid-Size Hatchback"
+                        },
+                        new
+                        {
+                            Id = 103,
+                            Type = "Luxury Hatchback"
+                        },
+                        new
+                        {
+                            Id = 104,
+                            Type = "Performance Hatchback"
+                        },
+                        new
+                        {
+                            Id = 105,
+                            Type = "Electric Hatchback"
+                        },
+                        new
+                        {
+                            Id = 106,
+                            Type = "Hybrid Hatchback"
+                        },
+                        new
+                        {
+                            Id = 107,
+                            Type = "Subcompact Coupe"
+                        },
+                        new
+                        {
+                            Id = 108,
+                            Type = "Compact Coupe"
+                        },
+                        new
+                        {
+                            Id = 109,
+                            Type = "Mid-Size Coupe"
+                        },
+                        new
+                        {
+                            Id = 110,
+                            Type = "Luxury Coupe"
+                        },
+                        new
+                        {
+                            Id = 111,
+                            Type = "Performance Coupe"
+                        },
+                        new
+                        {
+                            Id = 112,
+                            Type = "Electric Coupe"
+                        },
+                        new
+                        {
+                            Id = 113,
+                            Type = "Hybrid Coupe"
+                        },
+                        new
+                        {
+                            Id = 114,
+                            Type = "Subcompact Convertible"
+                        },
+                        new
+                        {
+                            Id = 115,
+                            Type = "Compact Convertible"
+                        },
+                        new
+                        {
+                            Id = 116,
+                            Type = "Mid-Size Convertible"
+                        },
+                        new
+                        {
+                            Id = 117,
+                            Type = "Luxury Convertible"
+                        },
+                        new
+                        {
+                            Id = 118,
+                            Type = "Performance Convertible"
+                        },
+                        new
+                        {
+                            Id = 119,
+                            Type = "Electric Convertible"
+                        },
+                        new
+                        {
+                            Id = 120,
+                            Type = "Hybrid Convertible"
+                        },
+                        new
+                        {
+                            Id = 121,
+                            Type = "Compact Wagon"
+                        },
+                        new
+                        {
+                            Id = 122,
+                            Type = "Mid-Size Wagon"
+                        },
+                        new
+                        {
+                            Id = 123,
+                            Type = "Full-Size Wagon"
+                        },
+                        new
+                        {
+                            Id = 124,
+                            Type = "Luxury Wagon"
+                        },
+                        new
+                        {
+                            Id = 125,
+                            Type = "Performance Wagon"
+                        },
+                        new
+                        {
+                            Id = 126,
+                            Type = "Electric Wagon"
+                        },
+                        new
+                        {
+                            Id = 127,
+                            Type = "Hybrid Wagon"
+                        },
+                        new
+                        {
+                            Id = 128,
+                            Type = "Subcompact Crossover"
+                        },
+                        new
+                        {
+                            Id = 129,
+                            Type = "Adventure SUV"
+                        },
+                        new
+                        {
+                            Id = 130,
+                            Type = "Retro SUV"
+                        },
+                        new
+                        {
+                            Id = 131,
+                            Type = "Urban SUV"
+                        },
+                        new
+                        {
+                            Id = 132,
+                            Type = "Compact Off-Road SUV"
+                        },
+                        new
+                        {
+                            Id = 133,
+                            Type = "Mid-Size Off-Road SUV"
+                        },
+                        new
+                        {
+                            Id = 134,
+                            Type = "Luxury Off-Road SUV"
+                        },
+                        new
+                        {
+                            Id = 135,
+                            Type = "Performance Off-Road SUV"
+                        },
+                        new
+                        {
+                            Id = 136,
+                            Type = "Electric Off-Road SUV"
+                        },
+                        new
+                        {
+                            Id = 137,
+                            Type = "Hybrid Off-Road SUV"
+                        },
+                        new
+                        {
+                            Id = 138,
+                            Type = "Micro Crossover"
+                        },
+                        new
+                        {
+                            Id = 139,
+                            Type = "Subcompact Performance SUV"
+                        },
+                        new
+                        {
+                            Id = 140,
+                            Type = "Mid-Size Performance SUV"
+                        },
+                        new
+                        {
+                            Id = 141,
+                            Type = "Full-Size Performance SUV"
+                        },
+                        new
+                        {
+                            Id = 142,
+                            Type = "Luxury Performance SUV"
+                        },
+                        new
+                        {
+                            Id = 143,
+                            Type = "Compact Hybrid SUV"
+                        },
+                        new
+                        {
+                            Id = 144,
+                            Type = "Full-Size Hybrid SUV"
+                        },
+                        new
+                        {
+                            Id = 145,
+                            Type = "Compact Electric SUV"
+                        },
+                        new
+                        {
+                            Id = 146,
+                            Type = "Mid-Size Electric SUV"
+                        },
+                        new
+                        {
+                            Id = 147,
+                            Type = "Full-Size Electric SUV"
+                        },
+                        new
+                        {
+                            Id = 148,
+                            Type = "Luxury Electric SUV"
+                        },
+                        new
+                        {
+                            Id = 149,
+                            Type = "Retro Hatchback"
+                        },
+                        new
+                        {
+                            Id = 150,
+                            Type = "Concept Car"
                         });
                 });
 
@@ -345,97 +1002,997 @@ namespace Mottrist.Repository.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "Ford"
-                        },
-                        new
-                        {
-                            Id = 3,
                             Name = "Honda"
                         },
                         new
                         {
+                            Id = 3,
+                            Name = "Ford"
+                        },
+                        new
+                        {
                             Id = 4,
-                            Name = "Tesla"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "BMW"
-                        },
-                        new
-                        {
-                            Id = 6,
                             Name = "Chevrolet"
                         },
                         new
                         {
-                            Id = 7,
-                            Name = "Mercedes-Benz"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Audi"
-                        },
-                        new
-                        {
-                            Id = 9,
+                            Id = 5,
                             Name = "Nissan"
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 6,
                             Name = "Volkswagen"
                         },
                         new
                         {
-                            Id = 11,
+                            Id = 7,
+                            Name = "BMW"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Mercedes-Benz"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Audi"
+                        },
+                        new
+                        {
+                            Id = 10,
                             Name = "Hyundai"
                         },
                         new
                         {
-                            Id = 12,
+                            Id = 11,
                             Name = "Kia"
                         },
                         new
                         {
+                            Id = 12,
+                            Name = "Renault"
+                        },
+                        new
+                        {
                             Id = 13,
-                            Name = "Subaru"
+                            Name = "Peugeot"
                         },
                         new
                         {
                             Id = 14,
-                            Name = "Mazda"
+                            Name = "Fiat"
                         },
                         new
                         {
                             Id = 15,
-                            Name = "Lexus"
+                            Name = "Mazda"
                         },
                         new
                         {
                             Id = 16,
-                            Name = "Jaguar"
+                            Name = "Subaru"
                         },
                         new
                         {
                             Id = 17,
-                            Name = "Porsche"
+                            Name = "Suzuki"
                         },
                         new
                         {
                             Id = 18,
-                            Name = "Land Rover"
+                            Name = "Mitsubishi"
                         },
                         new
                         {
                             Id = 19,
-                            Name = "Ferrari"
+                            Name = "Volvo"
                         },
                         new
                         {
                             Id = 20,
+                            Name = "Tesla"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Name = "Jeep"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Name = "Land Rover"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Name = "Porsche"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Name = "Ferrari"
+                        },
+                        new
+                        {
+                            Id = 25,
                             Name = "Lamborghini"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Name = "Aston Martin"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Name = "Bentley"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Name = "Rolls-Royce"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Name = "Bugatti"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Name = "Chrysler"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Name = "Dodge"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Name = "GMC"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Name = "Cadillac"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Name = "Lincoln"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Name = "Buick"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Name = "Opel"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Name = "Saab"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Name = "Skoda"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Name = "Seat"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Name = "Citroën"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Name = "Alfa Romeo"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Name = "Lancia"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Name = "Daewoo"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Name = "SsangYong"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Name = "Tata Motors"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            Name = "Mahindra"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            Name = "Hindustan Motors"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            Name = "Maruti Suzuki"
+                        },
+                        new
+                        {
+                            Id = 49,
+                            Name = "Isuzu"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            Name = "Daihatsu"
+                        },
+                        new
+                        {
+                            Id = 51,
+                            Name = "Hino Motors"
+                        },
+                        new
+                        {
+                            Id = 52,
+                            Name = "Lexus"
+                        },
+                        new
+                        {
+                            Id = 53,
+                            Name = "Infiniti"
+                        },
+                        new
+                        {
+                            Id = 54,
+                            Name = "Acura"
+                        },
+                        new
+                        {
+                            Id = 55,
+                            Name = "Scion"
+                        },
+                        new
+                        {
+                            Id = 56,
+                            Name = "Genesis"
+                        },
+                        new
+                        {
+                            Id = 57,
+                            Name = "Smart"
+                        },
+                        new
+                        {
+                            Id = 58,
+                            Name = "Mini"
+                        },
+                        new
+                        {
+                            Id = 59,
+                            Name = "Jaguar"
+                        },
+                        new
+                        {
+                            Id = 60,
+                            Name = "Lotus"
+                        },
+                        new
+                        {
+                            Id = 61,
+                            Name = "MG"
+                        },
+                        new
+                        {
+                            Id = 62,
+                            Name = "Rover"
+                        },
+                        new
+                        {
+                            Id = 63,
+                            Name = "Austin"
+                        },
+                        new
+                        {
+                            Id = 64,
+                            Name = "Morris"
+                        },
+                        new
+                        {
+                            Id = 65,
+                            Name = "Vauxhall"
+                        },
+                        new
+                        {
+                            Id = 66,
+                            Name = "Holden"
+                        },
+                        new
+                        {
+                            Id = 67,
+                            Name = "FPV"
+                        },
+                        new
+                        {
+                            Id = 68,
+                            Name = "HSV"
+                        },
+                        new
+                        {
+                            Id = 69,
+                            Name = "Proton"
+                        },
+                        new
+                        {
+                            Id = 70,
+                            Name = "Perodua"
+                        },
+                        new
+                        {
+                            Id = 71,
+                            Name = "Chery"
+                        },
+                        new
+                        {
+                            Id = 72,
+                            Name = "Geely"
+                        },
+                        new
+                        {
+                            Id = 73,
+                            Name = "BYD"
+                        },
+                        new
+                        {
+                            Id = 74,
+                            Name = "Great Wall Motors"
+                        },
+                        new
+                        {
+                            Id = 75,
+                            Name = "FAW"
+                        },
+                        new
+                        {
+                            Id = 76,
+                            Name = "Changan"
+                        },
+                        new
+                        {
+                            Id = 77,
+                            Name = "Dongfeng"
+                        },
+                        new
+                        {
+                            Id = 78,
+                            Name = "BAIC"
+                        },
+                        new
+                        {
+                            Id = 79,
+                            Name = "JAC"
+                        },
+                        new
+                        {
+                            Id = 80,
+                            Name = "Zotye"
+                        },
+                        new
+                        {
+                            Id = 81,
+                            Name = "Landwind"
+                        },
+                        new
+                        {
+                            Id = 82,
+                            Name = "Hawtai"
+                        },
+                        new
+                        {
+                            Id = 83,
+                            Name = "Soueast"
+                        },
+                        new
+                        {
+                            Id = 84,
+                            Name = "Brilliance"
+                        },
+                        new
+                        {
+                            Id = 85,
+                            Name = "Roewe"
+                        },
+                        new
+                        {
+                            Id = 86,
+                            Name = "MG Motor India"
+                        },
+                        new
+                        {
+                            Id = 87,
+                            Name = "Force Motors"
+                        },
+                        new
+                        {
+                            Id = 88,
+                            Name = "Premier Ltd."
+                        },
+                        new
+                        {
+                            Id = 89,
+                            Name = "Ram"
+                        },
+                        new
+                        {
+                            Id = 90,
+                            Name = "SRT"
+                        },
+                        new
+                        {
+                            Id = 91,
+                            Name = "Hummer"
+                        },
+                        new
+                        {
+                            Id = 92,
+                            Name = "SML Isuzu"
+                        },
+                        new
+                        {
+                            Id = 93,
+                            Name = "Ashok Leyland"
+                        },
+                        new
+                        {
+                            Id = 94,
+                            Name = "Eicher Motors"
+                        },
+                        new
+                        {
+                            Id = 95,
+                            Name = "Piaggio"
+                        },
+                        new
+                        {
+                            Id = 96,
+                            Name = "Bajaj Auto"
+                        },
+                        new
+                        {
+                            Id = 97,
+                            Name = "TVS Motors"
+                        },
+                        new
+                        {
+                            Id = 98,
+                            Name = "Hero MotoCorp"
+                        },
+                        new
+                        {
+                            Id = 99,
+                            Name = "Yamaha Motor Company"
+                        },
+                        new
+                        {
+                            Id = 100,
+                            Name = "Suzuki Motorcycles"
+                        },
+                        new
+                        {
+                            Id = 101,
+                            Name = "Kawasaki"
+                        },
+                        new
+                        {
+                            Id = 102,
+                            Name = "Ducati"
+                        },
+                        new
+                        {
+                            Id = 103,
+                            Name = "Harley-Davidson"
+                        },
+                        new
+                        {
+                            Id = 104,
+                            Name = "Triumph"
+                        },
+                        new
+                        {
+                            Id = 105,
+                            Name = "KTM"
+                        },
+                        new
+                        {
+                            Id = 106,
+                            Name = "Aprilia"
+                        },
+                        new
+                        {
+                            Id = 107,
+                            Name = "Vespa"
+                        },
+                        new
+                        {
+                            Id = 108,
+                            Name = "Royal Enfield"
+                        },
+                        new
+                        {
+                            Id = 109,
+                            Name = "Benelli"
+                        },
+                        new
+                        {
+                            Id = 110,
+                            Name = "Moto Guzzi"
+                        },
+                        new
+                        {
+                            Id = 111,
+                            Name = "Husqvarna"
+                        },
+                        new
+                        {
+                            Id = 112,
+                            Name = "Indian Motorcycle"
+                        },
+                        new
+                        {
+                            Id = 113,
+                            Name = "MV Agusta"
+                        },
+                        new
+                        {
+                            Id = 114,
+                            Name = "Bimota"
+                        },
+                        new
+                        {
+                            Id = 115,
+                            Name = "Norton"
+                        },
+                        new
+                        {
+                            Id = 116,
+                            Name = "Zero Motorcycles"
+                        },
+                        new
+                        {
+                            Id = 117,
+                            Name = "CFMoto"
+                        },
+                        new
+                        {
+                            Id = 118,
+                            Name = "Ural"
+                        },
+                        new
+                        {
+                            Id = 119,
+                            Name = "Victory Motorcycles"
+                        },
+                        new
+                        {
+                            Id = 120,
+                            Name = "Sym"
+                        },
+                        new
+                        {
+                            Id = 121,
+                            Name = "Kymco"
+                        },
+                        new
+                        {
+                            Id = 122,
+                            Name = "PGO Scooters"
+                        },
+                        new
+                        {
+                            Id = 123,
+                            Name = "Lifan"
+                        },
+                        new
+                        {
+                            Id = 124,
+                            Name = "Haojue"
+                        },
+                        new
+                        {
+                            Id = 125,
+                            Name = "QJMotor"
+                        },
+                        new
+                        {
+                            Id = 126,
+                            Name = "Zongshen"
+                        },
+                        new
+                        {
+                            Id = 127,
+                            Name = "Loncin"
+                        },
+                        new
+                        {
+                            Id = 128,
+                            Name = "Dayun"
+                        },
+                        new
+                        {
+                            Id = 129,
+                            Name = "Jincheng"
+                        },
+                        new
+                        {
+                            Id = 130,
+                            Name = "Shineray"
+                        },
+                        new
+                        {
+                            Id = 131,
+                            Name = "Daelim"
+                        },
+                        new
+                        {
+                            Id = 132,
+                            Name = "Hyosung"
+                        },
+                        new
+                        {
+                            Id = 133,
+                            Name = "Keeway"
+                        },
+                        new
+                        {
+                            Id = 134,
+                            Name = "Super Soco"
+                        },
+                        new
+                        {
+                            Id = 135,
+                            Name = "Energica"
+                        },
+                        new
+                        {
+                            Id = 136,
+                            Name = "Arcimoto"
+                        },
+                        new
+                        {
+                            Id = 137,
+                            Name = "Rivian"
+                        },
+                        new
+                        {
+                            Id = 138,
+                            Name = "Lucid Motors"
+                        },
+                        new
+                        {
+                            Id = 139,
+                            Name = "Fisker"
+                        },
+                        new
+                        {
+                            Id = 140,
+                            Name = "NIO"
+                        },
+                        new
+                        {
+                            Id = 141,
+                            Name = "XPeng"
+                        },
+                        new
+                        {
+                            Id = 142,
+                            Name = "Li Auto"
+                        },
+                        new
+                        {
+                            Id = 143,
+                            Name = "Polestar"
+                        },
+                        new
+                        {
+                            Id = 144,
+                            Name = "VinFast"
+                        },
+                        new
+                        {
+                            Id = 145,
+                            Name = "Sono Motors"
+                        },
+                        new
+                        {
+                            Id = 146,
+                            Name = "Lightyear"
+                        },
+                        new
+                        {
+                            Id = 147,
+                            Name = "Aptera Motors"
+                        },
+                        new
+                        {
+                            Id = 148,
+                            Name = "Faraday Future"
+                        },
+                        new
+                        {
+                            Id = 149,
+                            Name = "Lordstown Motors"
+                        },
+                        new
+                        {
+                            Id = 150,
+                            Name = "Canoo"
+                        },
+                        new
+                        {
+                            Id = 151,
+                            Name = "Bollinger Motors"
+                        },
+                        new
+                        {
+                            Id = 152,
+                            Name = "ElectraMeccanica"
+                        },
+                        new
+                        {
+                            Id = 153,
+                            Name = "Pininfarina"
+                        },
+                        new
+                        {
+                            Id = 154,
+                            Name = "Maserati"
+                        },
+                        new
+                        {
+                            Id = 155,
+                            Name = "McLaren"
+                        },
+                        new
+                        {
+                            Id = 156,
+                            Name = "Pagani"
+                        },
+                        new
+                        {
+                            Id = 157,
+                            Name = "Koenigsegg"
+                        },
+                        new
+                        {
+                            Id = 158,
+                            Name = "Rimac"
+                        },
+                        new
+                        {
+                            Id = 159,
+                            Name = "Spyker"
+                        },
+                        new
+                        {
+                            Id = 160,
+                            Name = "De Tomaso"
+                        },
+                        new
+                        {
+                            Id = 161,
+                            Name = "Hispano Suiza"
+                        },
+                        new
+                        {
+                            Id = 162,
+                            Name = "DS Automobiles"
+                        },
+                        new
+                        {
+                            Id = 163,
+                            Name = "Saleen"
+                        },
+                        new
+                        {
+                            Id = 164,
+                            Name = "Iveco"
+                        },
+                        new
+                        {
+                            Id = 165,
+                            Name = "MAN"
+                        },
+                        new
+                        {
+                            Id = 166,
+                            Name = "Scania"
+                        },
+                        new
+                        {
+                            Id = 167,
+                            Name = "DAF"
+                        },
+                        new
+                        {
+                            Id = 168,
+                            Name = "Navistar"
+                        },
+                        new
+                        {
+                            Id = 169,
+                            Name = "Paccar"
+                        },
+                        new
+                        {
+                            Id = 170,
+                            Name = "Kenworth"
+                        },
+                        new
+                        {
+                            Id = 171,
+                            Name = "Peterbilt"
+                        },
+                        new
+                        {
+                            Id = 172,
+                            Name = "Freightliner"
+                        },
+                        new
+                        {
+                            Id = 173,
+                            Name = "Mack Trucks"
+                        },
+                        new
+                        {
+                            Id = 174,
+                            Name = "Western Star"
+                        },
+                        new
+                        {
+                            Id = 175,
+                            Name = "Volvo Trucks"
+                        },
+                        new
+                        {
+                            Id = 176,
+                            Name = "Renault Trucks"
+                        },
+                        new
+                        {
+                            Id = 177,
+                            Name = "Tatra"
+                        },
+                        new
+                        {
+                            Id = 178,
+                            Name = "Kamaz"
+                        },
+                        new
+                        {
+                            Id = 179,
+                            Name = "UralAZ"
+                        },
+                        new
+                        {
+                            Id = 180,
+                            Name = "GAZ"
+                        },
+                        new
+                        {
+                            Id = 181,
+                            Name = "ZIL"
+                        },
+                        new
+                        {
+                            Id = 182,
+                            Name = "MAZ"
+                        },
+                        new
+                        {
+                            Id = 183,
+                            Name = "KrAZ"
+                        },
+                        new
+                        {
+                            Id = 184,
+                            Name = "BelAZ"
+                        },
+                        new
+                        {
+                            Id = 185,
+                            Name = "Sinotruk"
+                        },
+                        new
+                        {
+                            Id = 186,
+                            Name = "Foton"
+                        },
+                        new
+                        {
+                            Id = 187,
+                            Name = "Shacman"
+                        },
+                        new
+                        {
+                            Id = 188,
+                            Name = "Howo"
+                        },
+                        new
+                        {
+                            Id = 189,
+                            Name = "Yutong"
+                        },
+                        new
+                        {
+                            Id = 190,
+                            Name = "King Long"
+                        },
+                        new
+                        {
+                            Id = 191,
+                            Name = "Golden Dragon"
+                        },
+                        new
+                        {
+                            Id = 192,
+                            Name = "Higer"
+                        },
+                        new
+                        {
+                            Id = 193,
+                            Name = "Ankai"
+                        },
+                        new
+                        {
+                            Id = 194,
+                            Name = "Sollers"
+                        },
+                        new
+                        {
+                            Id = 195,
+                            Name = "Avtovaz"
+                        },
+                        new
+                        {
+                            Id = 196,
+                            Name = "Lada"
+                        },
+                        new
+                        {
+                            Id = 197,
+                            Name = "UAZ"
+                        },
+                        new
+                        {
+                            Id = 198,
+                            Name = "Moskvitch"
+                        },
+                        new
+                        {
+                            Id = 199,
+                            Name = "Dacia"
+                        },
+                        new
+                        {
+                            Id = 200,
+                            Name = "International Harvester"
                         });
                 });
 
@@ -612,92 +2169,1092 @@ namespace Mottrist.Repository.Migrations
                         new
                         {
                             Id = 3,
-                            Name = "Black"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "White"
-                        },
-                        new
-                        {
-                            Id = 5,
                             Name = "Green"
                         },
                         new
                         {
+                            Id = 4,
+                            Name = "Black"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "White"
+                        },
+                        new
+                        {
                             Id = 6,
-                            Name = "Yellow"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Orange"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Purple"
-                        },
-                        new
-                        {
-                            Id = 9,
                             Name = "Silver"
                         },
                         new
                         {
-                            Id = 10,
+                            Id = 7,
                             Name = "Gray"
                         },
                         new
                         {
-                            Id = 11,
+                            Id = 8,
+                            Name = "Yellow"
+                        },
+                        new
+                        {
+                            Id = 9,
                             Name = "Brown"
                         },
                         new
                         {
+                            Id = 10,
+                            Name = "Purple"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "Candy Apple Red"
+                        },
+                        new
+                        {
                             Id = 12,
-                            Name = "Beige"
+                            Name = "Midnight Blue"
                         },
                         new
                         {
                             Id = 13,
-                            Name = "Pink"
+                            Name = "Forest Green"
                         },
                         new
                         {
                             Id = 14,
-                            Name = "Gold"
+                            Name = "Jet Black"
                         },
                         new
                         {
                             Id = 15,
-                            Name = "Turquoise"
+                            Name = "Pearl White"
                         },
                         new
                         {
                             Id = 16,
-                            Name = "Teal"
+                            Name = "Metallic Silver"
                         },
                         new
                         {
                             Id = 17,
-                            Name = "Magenta"
+                            Name = "Slate Gray"
                         },
                         new
                         {
                             Id = 18,
-                            Name = "Copper"
+                            Name = "Sunburst Yellow"
                         },
                         new
                         {
                             Id = 19,
-                            Name = "Ivory"
+                            Name = "Mocha Brown"
                         },
                         new
                         {
                             Id = 20,
-                            Name = "Champagne"
+                            Name = "Vivid Purple"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Name = "Ruby Red"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Name = "Sapphire Blue"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Name = "Emerald Green"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Name = "Obsidian Black"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Name = "Ivory White"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Name = "Titanium Silver"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Name = "Charcoal Gray"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Name = "Canary Yellow"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Name = "Chocolate Brown"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Name = "Amethyst Purple"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Name = "Crimson Red"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Name = "Navy Blue"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Name = "Olive Green"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Name = "Onyx Black"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Name = "Cream White"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            Name = "Platinum Silver"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            Name = "Gunmetal Gray"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            Name = "Lemon Yellow"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            Name = "Espresso Brown"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            Name = "Plum Purple"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            Name = "Fire Engine Red"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            Name = "Sky Blue"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            Name = "Lime Green"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            Name = "Matte Black"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            Name = "Snow White"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            Name = "Brushed Silver"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            Name = "Steel Gray"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            Name = "Mustard Yellow"
+                        },
+                        new
+                        {
+                            Id = 49,
+                            Name = "Caramel Brown"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            Name = "Violet Purple"
+                        },
+                        new
+                        {
+                            Id = 51,
+                            Name = "Cherry Red"
+                        },
+                        new
+                        {
+                            Id = 52,
+                            Name = "Cobalt Blue"
+                        },
+                        new
+                        {
+                            Id = 53,
+                            Name = "Mint Green"
+                        },
+                        new
+                        {
+                            Id = 54,
+                            Name = "Ebony Black"
+                        },
+                        new
+                        {
+                            Id = 55,
+                            Name = "Alabaster White"
+                        },
+                        new
+                        {
+                            Id = 56,
+                            Name = "Chrome Silver"
+                        },
+                        new
+                        {
+                            Id = 57,
+                            Name = "Pewter Gray"
+                        },
+                        new
+                        {
+                            Id = 58,
+                            Name = "Saffron Yellow"
+                        },
+                        new
+                        {
+                            Id = 59,
+                            Name = "Walnut Brown"
+                        },
+                        new
+                        {
+                            Id = 60,
+                            Name = "Lilac Purple"
+                        },
+                        new
+                        {
+                            Id = 61,
+                            Name = "Scarlet Red"
+                        },
+                        new
+                        {
+                            Id = 62,
+                            Name = "Aqua Blue"
+                        },
+                        new
+                        {
+                            Id = 63,
+                            Name = "Jade Green"
+                        },
+                        new
+                        {
+                            Id = 64,
+                            Name = "Satin Black"
+                        },
+                        new
+                        {
+                            Id = 65,
+                            Name = "Chalk White"
+                        },
+                        new
+                        {
+                            Id = 66,
+                            Name = "Liquid Silver"
+                        },
+                        new
+                        {
+                            Id = 67,
+                            Name = "Iron Gray"
+                        },
+                        new
+                        {
+                            Id = 68,
+                            Name = "Amber Yellow"
+                        },
+                        new
+                        {
+                            Id = 69,
+                            Name = "Hazelnut Brown"
+                        },
+                        new
+                        {
+                            Id = 70,
+                            Name = "Orchid Purple"
+                        },
+                        new
+                        {
+                            Id = 71,
+                            Name = "Burgundy Red"
+                        },
+                        new
+                        {
+                            Id = 72,
+                            Name = "Turquoise Blue"
+                        },
+                        new
+                        {
+                            Id = 73,
+                            Name = "Sage Green"
+                        },
+                        new
+                        {
+                            Id = 74,
+                            Name = "Gloss Black"
+                        },
+                        new
+                        {
+                            Id = 75,
+                            Name = "Eggshell White"
+                        },
+                        new
+                        {
+                            Id = 76,
+                            Name = "Polished Silver"
+                        },
+                        new
+                        {
+                            Id = 77,
+                            Name = "Ash Gray"
+                        },
+                        new
+                        {
+                            Id = 78,
+                            Name = "Golden Yellow"
+                        },
+                        new
+                        {
+                            Id = 79,
+                            Name = "Cocoa Brown"
+                        },
+                        new
+                        {
+                            Id = 80,
+                            Name = "Magenta Purple"
+                        },
+                        new
+                        {
+                            Id = 81,
+                            Name = "Maroon Red"
+                        },
+                        new
+                        {
+                            Id = 82,
+                            Name = "Cerulean Blue"
+                        },
+                        new
+                        {
+                            Id = 83,
+                            Name = "Pine Green"
+                        },
+                        new
+                        {
+                            Id = 84,
+                            Name = "Raven Black"
+                        },
+                        new
+                        {
+                            Id = 85,
+                            Name = "Porcelain White"
+                        },
+                        new
+                        {
+                            Id = 86,
+                            Name = "Sterling Silver"
+                        },
+                        new
+                        {
+                            Id = 87,
+                            Name = "Smoke Gray"
+                        },
+                        new
+                        {
+                            Id = 88,
+                            Name = "Honey Yellow"
+                        },
+                        new
+                        {
+                            Id = 89,
+                            Name = "Truffle Brown"
+                        },
+                        new
+                        {
+                            Id = 90,
+                            Name = "Fuchsia Purple"
+                        },
+                        new
+                        {
+                            Id = 91,
+                            Name = "Coral Red"
+                        },
+                        new
+                        {
+                            Id = 92,
+                            Name = "Teal Blue"
+                        },
+                        new
+                        {
+                            Id = 93,
+                            Name = "Moss Green"
+                        },
+                        new
+                        {
+                            Id = 94,
+                            Name = "Carbon Black"
+                        },
+                        new
+                        {
+                            Id = 95,
+                            Name = "Milky White"
+                        },
+                        new
+                        {
+                            Id = 96,
+                            Name = "Quicksilver"
+                        },
+                        new
+                        {
+                            Id = 97,
+                            Name = "Granite Gray"
+                        },
+                        new
+                        {
+                            Id = 98,
+                            Name = "Butter Yellow"
+                        },
+                        new
+                        {
+                            Id = 99,
+                            Name = "Sienna Brown"
+                        },
+                        new
+                        {
+                            Id = 100,
+                            Name = "Indigo Purple"
+                        },
+                        new
+                        {
+                            Id = 101,
+                            Name = "Vermilion Red"
+                        },
+                        new
+                        {
+                            Id = 102,
+                            Name = "Azure Blue"
+                        },
+                        new
+                        {
+                            Id = 103,
+                            Name = "Fern Green"
+                        },
+                        new
+                        {
+                            Id = 104,
+                            Name = "Midnight Black"
+                        },
+                        new
+                        {
+                            Id = 105,
+                            Name = "Opal White"
+                        },
+                        new
+                        {
+                            Id = 106,
+                            Name = "Iridescent Silver"
+                        },
+                        new
+                        {
+                            Id = 107,
+                            Name = "Basalt Gray"
+                        },
+                        new
+                        {
+                            Id = 108,
+                            Name = "Dandelion Yellow"
+                        },
+                        new
+                        {
+                            Id = 109,
+                            Name = "Mahogany Brown"
+                        },
+                        new
+                        {
+                            Id = 110,
+                            Name = "Eggplant Purple"
+                        },
+                        new
+                        {
+                            Id = 111,
+                            Name = "Garnet Red"
+                        },
+                        new
+                        {
+                            Id = 112,
+                            Name = "Ocean Blue"
+                        },
+                        new
+                        {
+                            Id = 113,
+                            Name = "Kelly Green"
+                        },
+                        new
+                        {
+                            Id = 114,
+                            Name = "Shadow Black"
+                        },
+                        new
+                        {
+                            Id = 115,
+                            Name = "Frost White"
+                        },
+                        new
+                        {
+                            Id = 116,
+                            Name = "Mercury Silver"
+                        },
+                        new
+                        {
+                            Id = 117,
+                            Name = "Flint Gray"
+                        },
+                        new
+                        {
+                            Id = 118,
+                            Name = "Mango Yellow"
+                        },
+                        new
+                        {
+                            Id = 119,
+                            Name = "Cedar Brown"
+                        },
+                        new
+                        {
+                            Id = 120,
+                            Name = "Lavender Purple"
+                        },
+                        new
+                        {
+                            Id = 121,
+                            Name = "Brick Red"
+                        },
+                        new
+                        {
+                            Id = 122,
+                            Name = "Denim Blue"
+                        },
+                        new
+                        {
+                            Id = 123,
+                            Name = "Shamrock Green"
+                        },
+                        new
+                        {
+                            Id = 124,
+                            Name = "Pitch Black"
+                        },
+                        new
+                        {
+                            Id = 125,
+                            Name = "Linen White"
+                        },
+                        new
+                        {
+                            Id = 126,
+                            Name = "Aluminum Silver"
+                        },
+                        new
+                        {
+                            Id = 127,
+                            Name = "Storm Gray"
+                        },
+                        new
+                        {
+                            Id = 128,
+                            Name = "Tangerine Yellow"
+                        },
+                        new
+                        {
+                            Id = 129,
+                            Name = "Teak Brown"
+                        },
+                        new
+                        {
+                            Id = 130,
+                            Name = "Mauve Purple"
+                        },
+                        new
+                        {
+                            Id = 131,
+                            Name = "Rose Red"
+                        },
+                        new
+                        {
+                            Id = 132,
+                            Name = "Glacier Blue"
+                        },
+                        new
+                        {
+                            Id = 133,
+                            Name = "Cypress Green"
+                        },
+                        new
+                        {
+                            Id = 134,
+                            Name = "Coal Black"
+                        },
+                        new
+                        {
+                            Id = 135,
+                            Name = "Marble White"
+                        },
+                        new
+                        {
+                            Id = 136,
+                            Name = "Nickel Silver"
+                        },
+                        new
+                        {
+                            Id = 137,
+                            Name = "Mist Gray"
+                        },
+                        new
+                        {
+                            Id = 138,
+                            Name = "Banana Yellow"
+                        },
+                        new
+                        {
+                            Id = 139,
+                            Name = "Pecan Brown"
+                        },
+                        new
+                        {
+                            Id = 140,
+                            Name = "Grape Purple"
+                        },
+                        new
+                        {
+                            Id = 141,
+                            Name = "Salmon Red"
+                        },
+                        new
+                        {
+                            Id = 142,
+                            Name = "Lagoon Blue"
+                        },
+                        new
+                        {
+                            Id = 143,
+                            Name = "Spruce Green"
+                        },
+                        new
+                        {
+                            Id = 144,
+                            Name = "Velvet Black"
+                        },
+                        new
+                        {
+                            Id = 145,
+                            Name = "Bone White"
+                        },
+                        new
+                        {
+                            Id = 146,
+                            Name = "Pewter Silver"
+                        },
+                        new
+                        {
+                            Id = 147,
+                            Name = "Fog Gray"
+                        },
+                        new
+                        {
+                            Id = 148,
+                            Name = "Pumpkin Yellow"
+                        },
+                        new
+                        {
+                            Id = 149,
+                            Name = "Oak Brown"
+                        },
+                        new
+                        {
+                            Id = 150,
+                            Name = "Berry Purple"
+                        },
+                        new
+                        {
+                            Id = 151,
+                            Name = "Tomato Red"
+                        },
+                        new
+                        {
+                            Id = 152,
+                            Name = "Powder Blue"
+                        },
+                        new
+                        {
+                            Id = 153,
+                            Name = "Avocado Green"
+                        },
+                        new
+                        {
+                            Id = 154,
+                            Name = "Smoky Black"
+                        },
+                        new
+                        {
+                            Id = 155,
+                            Name = "Cotton White"
+                        },
+                        new
+                        {
+                            Id = 156,
+                            Name = "Zinc Silver"
+                        },
+                        new
+                        {
+                            Id = 157,
+                            Name = "Cloud Gray"
+                        },
+                        new
+                        {
+                            Id = 158,
+                            Name = "Apricot Yellow"
+                        },
+                        new
+                        {
+                            Id = 159,
+                            Name = "Chestnut Brown"
+                        },
+                        new
+                        {
+                            Id = 160,
+                            Name = "Raspberry Purple"
+                        },
+                        new
+                        {
+                            Id = 161,
+                            Name = "Blood Red"
+                        },
+                        new
+                        {
+                            Id = 162,
+                            Name = "Periwinkle Blue"
+                        },
+                        new
+                        {
+                            Id = 163,
+                            Name = "Basil Green"
+                        },
+                        new
+                        {
+                            Id = 164,
+                            Name = "Graphite Black"
+                        },
+                        new
+                        {
+                            Id = 165,
+                            Name = "Seashell White"
+                        },
+                        new
+                        {
+                            Id = 166,
+                            Name = "Tin Silver"
+                        },
+                        new
+                        {
+                            Id = 167,
+                            Name = "Dusk Gray"
+                        },
+                        new
+                        {
+                            Id = 168,
+                            Name = "Peach Yellow"
+                        },
+                        new
+                        {
+                            Id = 169,
+                            Name = "Maple Brown"
+                        },
+                        new
+                        {
+                            Id = 170,
+                            Name = "Blackberry Purple"
+                        },
+                        new
+                        {
+                            Id = 171,
+                            Name = "Cardinal Red"
+                        },
+                        new
+                        {
+                            Id = 172,
+                            Name = "Cornflower Blue"
+                        },
+                        new
+                        {
+                            Id = 173,
+                            Name = "Thyme Green"
+                        },
+                        new
+                        {
+                            Id = 174,
+                            Name = "Anthracite Black"
+                        },
+                        new
+                        {
+                            Id = 175,
+                            Name = "Vanilla White"
+                        },
+                        new
+                        {
+                            Id = 176,
+                            Name = "Steel Silver"
+                        },
+                        new
+                        {
+                            Id = 177,
+                            Name = "Haze Gray"
+                        },
+                        new
+                        {
+                            Id = 178,
+                            Name = "Citron Yellow"
+                        },
+                        new
+                        {
+                            Id = 179,
+                            Name = "Acorn Brown"
+                        },
+                        new
+                        {
+                            Id = 180,
+                            Name = "Mulberry Purple"
+                        },
+                        new
+                        {
+                            Id = 181,
+                            Name = "Chili Red"
+                        },
+                        new
+                        {
+                            Id = 182,
+                            Name = "Robin Egg Blue"
+                        },
+                        new
+                        {
+                            Id = 183,
+                            Name = "Celery Green"
+                        },
+                        new
+                        {
+                            Id = 184,
+                            Name = "Soot Black"
+                        },
+                        new
+                        {
+                            Id = 185,
+                            Name = "Parchment White"
+                        },
+                        new
+                        {
+                            Id = 186,
+                            Name = "Cadmium Silver"
+                        },
+                        new
+                        {
+                            Id = 187,
+                            Name = "Shale Gray"
+                        },
+                        new
+                        {
+                            Id = 188,
+                            Name = "Marigold Yellow"
+                        },
+                        new
+                        {
+                            Id = 189,
+                            Name = "Bark Brown"
+                        },
+                        new
+                        {
+                            Id = 190,
+                            Name = "Boysenberry Purple"
+                        },
+                        new
+                        {
+                            Id = 191,
+                            Name = "Poppy Red"
+                        },
+                        new
+                        {
+                            Id = 192,
+                            Name = "Baby Blue"
+                        },
+                        new
+                        {
+                            Id = 193,
+                            Name = "Pistachio Green"
+                        },
+                        new
+                        {
+                            Id = 194,
+                            Name = "Ink Black"
+                        },
+                        new
+                        {
+                            Id = 195,
+                            Name = "Quartz White"
+                        },
+                        new
+                        {
+                            Id = 196,
+                            Name = "Mithril Silver"
+                        },
+                        new
+                        {
+                            Id = 197,
+                            Name = "Cinder Gray"
+                        },
+                        new
+                        {
+                            Id = 198,
+                            Name = "Ginger Yellow"
+                        },
+                        new
+                        {
+                            Id = 199,
+                            Name = "Saddle Brown"
+                        },
+                        new
+                        {
+                            Id = 200,
+                            Name = "Concord Purple"
+                        },
+                        new
+                        {
+                            Id = 201,
+                            Name = "Sangria Red"
+                        },
+                        new
+                        {
+                            Id = 202,
+                            Name = "Peacock Blue"
+                        },
+                        new
+                        {
+                            Id = 203,
+                            Name = "Parrot Green"
+                        },
+                        new
+                        {
+                            Id = 204,
+                            Name = "Caviar Black"
+                        },
+                        new
+                        {
+                            Id = 205,
+                            Name = "Lace White"
+                        },
+                        new
+                        {
+                            Id = 206,
+                            Name = "Bismuth Silver"
+                        },
+                        new
+                        {
+                            Id = 207,
+                            Name = "Driftwood Gray"
+                        },
+                        new
+                        {
+                            Id = 208,
+                            Name = "Papaya Yellow"
+                        },
+                        new
+                        {
+                            Id = 209,
+                            Name = "Rosewood Brown"
+                        },
+                        new
+                        {
+                            Id = 210,
+                            Name = "Huckleberry Purple"
+                        },
+                        new
+                        {
+                            Id = 211,
+                            Name = "Flamingo Pink"
+                        },
+                        new
+                        {
+                            Id = 212,
+                            Name = "Arctic Blue"
+                        },
+                        new
+                        {
+                            Id = 213,
+                            Name = "Seafoam Green"
+                        },
+                        new
+                        {
+                            Id = 214,
+                            Name = "Phantom Black"
+                        },
+                        new
+                        {
+                            Id = 215,
+                            Name = "Dove White"
+                        },
+                        new
+                        {
+                            Id = 216,
+                            Name = "Tungsten Silver"
+                        },
+                        new
+                        {
+                            Id = 217,
+                            Name = "Boulder Gray"
+                        },
+                        new
+                        {
+                            Id = 218,
+                            Name = "Nectarine Orange"
+                        },
+                        new
+                        {
+                            Id = 219,
+                            Name = "Ebony Brown"
+                        },
+                        new
+                        {
+                            Id = 220,
+                            Name = "Wisteria Purple"
                         });
                 });
 
@@ -722,7 +3279,7 @@ namespace Mottrist.Repository.Migrations
                         new
                         {
                             Id = 1,
-                            Type = "Petrol"
+                            Type = "Petrol (Gasoline)"
                         },
                         new
                         {
@@ -732,92 +3289,97 @@ namespace Mottrist.Repository.Migrations
                         new
                         {
                             Id = 3,
-                            Type = "Electric"
+                            Type = "Liquefied Petroleum Gas (LPG)"
                         },
                         new
                         {
                             Id = 4,
-                            Type = "Hybrid"
+                            Type = "Compressed Natural Gas (CNG)"
                         },
                         new
                         {
                             Id = 5,
-                            Type = "CNG"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Type = "LPG"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Type = "Ethanol"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Type = "Biofuel"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Type = "Hydrogen"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Type = "Propane"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Type = "Methanol"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Type = "Butanol"
-                        },
-                        new
-                        {
-                            Id = 13,
                             Type = "Natural Gas"
                         },
                         new
                         {
+                            Id = 6,
+                            Type = "Kerosene"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Type = "Heavy Fuel Oil (HFO)"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Type = "Ethanol (E85, etc.)"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Type = "Biodiesel (B20, etc.)"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Type = "Biobutanol"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Type = "Biogas"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Type = "Electricity"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Type = "Hydrogen"
+                        },
+                        new
+                        {
                             Id = 14,
-                            Type = "Biodiesel"
+                            Type = "Green Hydrogen"
                         },
                         new
                         {
                             Id = 15,
-                            Type = "Alcohol"
+                            Type = "Synthetic Diesel"
                         },
                         new
                         {
                             Id = 16,
-                            Type = "Fischer-Tropsch"
+                            Type = "Synthetic Gasoline"
                         },
                         new
                         {
                             Id = 17,
-                            Type = "Electric + Petrol"
+                            Type = "E-Fuel"
                         },
                         new
                         {
                             Id = 18,
-                            Type = "Electric + Diesel"
+                            Type = "Jet Fuel (Jet A, Jet A-1)"
                         },
                         new
                         {
                             Id = 19,
-                            Type = "Electric + Hydrogen"
+                            Type = "Avgas"
                         },
                         new
                         {
                             Id = 20,
-                            Type = "Compressed Natural Gas (CNG)"
+                            Type = "Propane"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Type = "Methanol"
                         });
                 });
 
@@ -923,6 +3485,12 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<int?>("CityId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<int>("NationalityId")
                         .HasColumnType("int");

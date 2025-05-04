@@ -161,10 +161,10 @@ namespace Mottrist.Repository.Repository
 
         public void SoftDelete(TEntity entity)
         {
-            if (entity is ISoftDeletable softDeletableEntity)
+            if (entity is ISoftDeleteable softDeletableEntity)
             {
                 softDeletableEntity.IsDeleted = true;
-                softDeletableEntity.DeletedAt = DateTime.Now;
+                softDeletableEntity.DateDeleted = DateTime.Now;
                 Update(entity);
             }
             else
@@ -185,10 +185,10 @@ namespace Mottrist.Repository.Repository
 
         public async Task SoftDeleteAsync(TEntity entity)
         {
-            if (entity is ISoftDeletable softDeletableEntity)
+            if (entity is ISoftDeleteable softDeletableEntity)
             {
                 softDeletableEntity.IsDeleted = true;
-                softDeletableEntity.DeletedAt = DateTime.Now;
+                softDeletableEntity.DateDeleted = DateTime.Now;
                 await UpdateAsync(entity);
             }
             else
