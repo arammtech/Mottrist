@@ -124,11 +124,12 @@ namespace Mottrist.Service.Features.Messages.Services
         /// </summary>
         /// <param name="addMessageDto">The message data to add.</param>
         /// <returns>The added message DTO wrapped in a result.</returns>
-        public async Task<Result<MessageDto>> AddAsync(AddMessageDto addMessageDto)
+        public async Task<Result<MessageDto>> AddAsync(int userId,AddMessageDto addMessageDto)
         {
             try
             {
                 Message message = _mapper.Map<Message>(addMessageDto);
+                message.UserId = userId;
                 message.CreatedAt = DateTime.Now;
 
                 await _unitOfWork.Repository<Message>().AddAsync(message);

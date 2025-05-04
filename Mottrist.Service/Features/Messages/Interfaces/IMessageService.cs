@@ -14,7 +14,7 @@ namespace Mottrist.Service.Features.Messages.Interfaces
             int pageSize = 10,
             Expression<Func<Message, bool>>? filter = null);
         Task<MessageDto?> GetByIdAsync(int Id);
-        Task<Result<MessageDto>> AddAsync(AddMessageDto destinationDto);
+        Task<Result<MessageDto>> AddAsync(int userId,AddMessageDto destinationDto);
         Task<Result<MessageDto>> UpdateAsync(UpdateMessageDto destinationDto);
         Task<Result> DeleteAsync(int Id);
     }
