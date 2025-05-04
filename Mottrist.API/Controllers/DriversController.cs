@@ -545,7 +545,7 @@ namespace Mottrist.API.Controllers
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpPost (Name = "AddNewDriverAsync")]
-        [ProducesResponseType(typeof(ApiResponse<Result<DriverDto>>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<DriverDto>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddAsync([FromForm] AddDriverDto driverDto)
