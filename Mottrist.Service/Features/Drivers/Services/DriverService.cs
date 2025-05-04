@@ -1525,6 +1525,16 @@ namespace Mottrist.Service.Features.Drivers.Services
 
             try
             {
+                bool isExistingDriver = await _unitOfWork.Repository<Driver>()
+                    .Table.AnyAsync(x => x.Id == driverId);
+                if (!isExistingDriver)
+                    return Result.Failure("Driver not found.");
+
+                bool isExistingUser = await _unitOfWork.Repository<ApplicationUser>()
+                    .Table.AnyAsync(x => x.Id == userId);
+                if (!isExistingUser)
+                    return Result.Failure("User not found.");
+
                 // Fetch existing interaction
                 var interaction = await _unitOfWork.Repository<DriverInteraction>()
                     .GetAsync(x => x.DriverId == driverId && x.UserId == userId);
@@ -1547,7 +1557,6 @@ namespace Mottrist.Service.Features.Drivers.Services
                         DriverId = driverId,
                         UserId = userId,
                         IsLiked = isLiked,
-                        ViewsCount = 1
 
                     };
                     await _unitOfWork.Repository<DriverInteraction>().AddAsync(interaction);
