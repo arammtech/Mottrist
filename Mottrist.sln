@@ -15,6 +15,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mottrist.API", "Mottrist.AP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mottrist.Service.UnitTests", "Mottrist.Service.UnitTests\Mottrist.Service.UnitTests.csproj", "{59CA7412-68F8-4AB0-8EEB-BA7ABCC26667}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{96D20702-92C1-4846-BAA2-878E02D0F4B9}"
+	ProjectSection(SolutionItems) = preProject
+		buildspec.yml = buildspec.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

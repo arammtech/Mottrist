@@ -138,29 +138,30 @@ Create two environments in Postman (Development and Production) with the followi
 
 **Overview:** Manage drivers with filtering, pagination, and interactions.
 
-| Method | Endpoint                                                                          | Description                                             |
-| ------ | --------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| GET    | `{{baseUrl}}/api/drivers/{id:int}`                                                | Retrieves a driver by ID.                               |
-| GET    | `{{baseUrl}}/api/drivers/all`                                                     | Retrieves all drivers.                                  |
-| GET    | `{{baseUrl}}/api/drivers/all/paged`                                               | Retrieves paginated list of drivers.                    |
-| GET    | `{{baseUrl}}/api/drivers/top-rated`                                               | Retrieves top-rated drivers.                            |
-| GET    | `{{baseUrl}}/api/drivers/by-country/{countryId:int}`                              | Retrieves drivers by country.                           |
-| GET    | `{{baseUrl}}/api/drivers/by-country/{countryId:int}/city/{cityId:int}`            | Retrieves drivers by country and city.                  |
-| GET    | `{{baseUrl}}/api/drivers/by-country/{countryId:int}/city/{cityId:int}/date`       | Retrieves drivers by country, city, and date.           |
-| GET    | `{{baseUrl}}/api/drivers/paged/by-country/{countryId:int}`                        | Retrieves paginated drivers by country.                 |
-| GET    | `{{baseUrl}}/api/drivers/paged/by-country/{countryId:int}/city/{cityId:int}`      | Retrieves paginated drivers by country and city.        |
-| GET    | `{{baseUrl}}/api/drivers/paged/by-country/{countryId:int}/city/{cityId:int}/date` | Retrieves paginated drivers by country, city, and date. |
-| GET    | `{{baseUrl}}/api/drivers/paged/by-status`                                         | Retrieves paginated drivers by status.                  |
-| GET    | `{{baseUrl}}/api/drivers/by-status`                                               | Retrieves drivers by status.                            |
-| POST   | `{{baseUrl}}/api/drivers`                                                         | Adds a new driver.                                      |
-| PUT    | `{{baseUrl}}/api/drivers/{id:int}`                                                | Updates an existing driver.                             |
-| PATCH  | `{{baseUrl}}/api/drivers/update-status/{driverId:int}`                            | Updates driver status.                                  |
-| PATCH  | `{{baseUrl}}/api/drivers/update-availability/{driverId:int}`                      | Updates driver availability.                            |
-| PATCH  | `{{baseUrl}}/api/drivers/update-price/{driverId:int}`                             | Updates driver hourly price.                            |
-| POST   | `{{baseUrl}}/api/drivers/like-dislike/{driverId:int}`                             | Records a like/dislike for a driver by a user.          |
-| POST   | `{{baseUrl}}/api/drivers/increment-view/{driverId:int}`                           | Records a unique view for a driver.                     |
-| DELETE | `{{baseUrl}}/api/drivers/{id:int}`                                                | Deletes a driver by ID.                                 |
-| GET    | `{{baseUrl}}/api/drivers/all-driver-form-fields`                                  | Retrieves form fields for driver registration.          |
+| Method | Endpoint                                                                                           | Description                                              |
+|--------|----------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| GET    | `{{baseUrl}}/api/drivers/{id:int}`                                                                 | Retrieves a driver by ID.                                |
+| GET    | `{{baseUrl}}/api/drivers/all`                                                                      | Retrieves all drivers.                                   |
+| GET    | `{{baseUrl}}/api/drivers/all/paged`                                                                | Retrieves paginated list of drivers.                     |
+| GET    | `{{baseUrl}}/api/drivers/top-rated`                                                                | Retrieves top-rated drivers.                             |
+| GET    | `{{baseUrl}}/api/drivers/by-country/{countryId:int}`                                               | Retrieves drivers by country.                            |
+| GET    | `{{baseUrl}}/api/drivers/by-country/{countryId:int}/city/{cityId:int}`                             | Retrieves drivers by country and city.                   |
+| GET    | `{{baseUrl}}/api/drivers/by-country/{countryId:int}/city/{cityId:int}/date/{date:string}`          | Retrieves drivers by country, city, and date.            |
+| GET    | `{{baseUrl}}/api/drivers/paged/by-country/{countryId:int}`                                         | Retrieves paginated drivers by country.                  |
+| GET    | `{{baseUrl}}/api/drivers/paged/by-country/{countryId:int}/city/{cityId:int}`                       | Retrieves paginated drivers by country and city.         |
+| GET    | `{{baseUrl}}/api/drivers/paged/by-country/{countryId:int}/city/{cityId:int}/date/{date:string}`    | Retrieves paginated drivers by country, city, and date.  |
+| GET    | `{{baseUrl}}/api/drivers/paged/by-status`                                                          | Retrieves paginated drivers by status.                   |
+| GET    | `{{baseUrl}}/api/drivers/by-status`                                                                | Retrieves drivers by status.                             |
+| GET    | `{{baseUrl}}/api/drivers/all-driver-form-fields`                                                   | Retrieves form fields for driver registration.           |
+| POST   | `{{baseUrl}}/api/drivers`                                                                          | Adds a new driver.                                       |
+| PUT    | `{{baseUrl}}/api/drivers/{id:int}`                                                                 | Updates an existing driver.                              |
+| PATCH  | `{{baseUrl}}/api/drivers/update-status/{driverId:int}`                                             | Updates driver status.                                   |
+| PATCH  | `{{baseUrl}}/api/drivers/update-availability/{driverId:int}`                                       | Updates driver availability.                             |
+| PATCH  | `{{baseUrl}}/api/drivers/update-price/{driverId:int}`                                              | Updates driver hourly price.                             |
+| POST   | `{{baseUrl}}/api/drivers/like-dislike/{driverId:int}`                                              | Records a like/dislike for a driver by a user.           |
+| POST   | `{{baseUrl}}/api/drivers/increment-view/{driverId:int}`                                            | Records a unique view for a driver.                      |
+| DELETE | `{{baseUrl}}/api/drivers/{id:int}`                                                                 | Deletes a driver by ID.                                  |
+
 
 ### Travelers
 
