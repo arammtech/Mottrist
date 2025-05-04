@@ -21,7 +21,6 @@ This Postman collection organizes all API endpoints into logical folders, each c
 * **Public and Secure Access:** Balances public access for data retrieval (e.g., countries, cities, languages, car fields) with authenticated access for sensitive operations (e.g., user management, driver updates).
 
 ---
----
 
 ## 🏗️ Technologies Used
 - **Backend**: `ASP.NET Core WebAPI (.NET 9)`
