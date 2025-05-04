@@ -203,23 +203,16 @@ namespace Mottrist.Service.Features.Cars.Services
 
                 _mapper.Map(updateCarDto, car);
 
+                if (car.CarImages.Count == 0 && updateCarDto.CarImages is null)
+                    return Result<CarDto>.Failure("shall has one image at least.");
 
                 // handle car images
                 if (updateCarDto.CarImages != null && updateCarDto.CarImages.Any())
                 {
-                    
-                    if (car.CarImages.Any())
-                    {
-                        IEnumerable<CarImage> carImages = car.CarImages.ToList();
+                    int totalImages = car.CarImages.Count + updateCarDto.CarImages.Count;
 
-                        foreach (var carimage in carImages)
-                        {
-                            _imageService.DeleteImage(carimage.ImageUrl);
-                        }
-
-                        car.CarImages.Clear();
-                    }
-
+                    if (totalImages < 1 || totalImages > 10)
+                        return Result<CarDto>.Failure("Shall have at least one image and not greater than 10.");
 
                     foreach (var image in updateCarDto.CarImages)
                     {
