@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Mottrist.API.Response;
+using Mottrist.Domain.Global;
+using Mottrist.Service.Features.Drivers.DTOs;
 using Mottrist.Service.Features.General.DTOs;
 using Mottrist.Service.Features.Traveller.DTOs;
 using Mottrist.Service.Features.Traveller.Interfaces;
@@ -26,19 +29,17 @@ namespace Mottrist.API.Controllers
         /// Retrieves a traveler by their unique identifier.
         /// </summary>
         /// <param name="id">The unique identifier of the traveler.</param>
-        /// <returns>
-        /// Traveler data if found; otherwise, an error message.
-        /// </returns>
+        /// <returns>Traveler data if found; otherwise, an error message.</returns>
         /// <response code="200">Traveler retrieved successfully.</response>
-        /// <response code="400">Invalid traveler id.</response>
+        /// <response code="400">Invalid traveler ID.</response>
         /// <response code="404">Traveler not found.</response>
         /// <response code="500">An internal server error occurred.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleTraveler}")]
         [HttpGet("{id:int}", Name = "GetTravelerByIdAsync")]
-        [ProducesResponseType(typeof(TravelerDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<TravelerDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             if (id <= 0)
@@ -48,12 +49,8 @@ namespace Mottrist.API.Controllers
             {
                 TravelerDto? travelerDto = await _travelerService.GetByIdAsync(id);
 
-                return travelerDto != null ? SuccessResponse<TravelerDto>(travelerDto, "Traveler retrieved successfully.")
+                return travelerDto != null ? SuccessResponse(travelerDto, "Traveler retrieved successfully.")
                        : NotFoundResponse("TRAVELER_NOT_FOUND", "Traveler not found.", $"Traveler with Id {id} was not found.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -64,29 +61,22 @@ namespace Mottrist.API.Controllers
         /// <summary>
         /// Retrieves all travelers.
         /// </summary>
-        /// <returns>
-        /// A list of all travelers, or an appropriate error message.
-        /// </returns>
+        /// <returns>A list of all travelers.</returns>
         /// <response code="200">Travelers retrieved successfully.</response>
-        /// <response code="204">No travelers found.</response>
         /// <response code="500">An internal server error occurred.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("all",Name = "GetAllTravelersAsync")]
         [ProducesResponseType(typeof(DataResult<TravelerDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
         {
             try
             {
                 var travelerDtos = await _travelerService.GetAllAsync();
 
-                return travelerDtos != null ? SuccessResponse<DataResult<TravelerDto>>(travelerDtos, "Travelers retrieved successfully.")
-                       : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NO_DATA_FOUND", "No data found.", "There is no data found for travelers.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
+                return travelerDtos != null 
+                    ? SuccessResponse(travelerDtos, "Travelers retrieved successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NO_DATA_FOUND", "No data found.", "There is no data found for travelers.");
             }
             catch (Exception ex)
             {
@@ -95,21 +85,19 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves travelers with pagination.
+        /// Retrieves a paginated list of travelers.
         /// </summary>
-        /// <param name="page">The page number (must be greater than 0).</param>
-        /// <param name="pageSize">The number of travelers per page (must be greater than 0).</param>
-        /// <returns>
-        /// A paginated list of travelers, or an appropriate error message.
-        /// </returns>
+        /// <param name="page">The page number (starting from 1).</param>
+        /// <param name="pageSize">The number of records per page.</param>
+        /// <returns>A paginated list of travelers.</returns>
         /// <response code="200">Travelers retrieved successfully.</response>
-        /// <response code="400">Invalid page or pageSize parameter.</response>
+        /// <response code="400">Invalid page or page size.</response>
         /// <response code="500">An internal server error occurred.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("all/paged", Name = "GetAllTravelersWithPaginationAsync")]
         [ProducesResponseType(typeof(PaginatedResult<TravelerDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllWithPaginationAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             if (page < 1 || pageSize < 1)
@@ -119,13 +107,9 @@ namespace Mottrist.API.Controllers
             {
                 var travelerDtos = await _travelerService.GetAllWithPaginationAsync(page, pageSize);
 
-                return travelerDtos != null ? SuccessResponse<PaginatedResult<TravelerDto>>(travelerDtos, "Travelers retrieved successfully.")
+                return travelerDtos != null ? SuccessResponse(travelerDtos, "Travelers retrieved successfully.")
                        : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NO_DATA_FOUND", "No data found.", "There is no data found for travelers.");
 
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -134,20 +118,18 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Creates a new traveler.
+        /// Adds a new traveler to the system.
         /// </summary>
-        /// <param name="travelerDto">The traveler data transfer object.</param>
-        /// <returns>
-        /// The created traveler data, along with a location header on success.
-        /// </returns>
+        /// <param name="travelerDto">The data of the traveler to add.</param>
+        /// <returns>The created traveler with status and route reference.</returns>
         /// <response code="201">Traveler created successfully.</response>
-        /// <response code="400">Validation error or invalid traveler data.</response>
+        /// <response code="400">Validation error occurred.</response>
         /// <response code="500">An internal server error occurred.</response>
         [AllowAnonymous]
         [HttpPost(Name = "AddNewTravelerAsync")]
-        [ProducesResponseType(typeof(AddTravelerDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<Result<TravelerDto>>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddAsync([FromForm]AddTravelerDto travelerDto)
         {
             if (!ModelState.IsValid)
@@ -170,10 +152,6 @@ namespace Mottrist.API.Controllers
 
   
             }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Unexpected error: {ex.Message}");
@@ -181,21 +159,19 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Updates an existing traveler.
+        /// Updates an existing traveler's information.
         /// </summary>
-        /// <param name="id">The unique identifier of the traveler to update.</param>
-        /// <param name="travelerDto">The traveler data transfer object with updated information.</param>
-        /// <returns>
-        /// The updated traveler data on success; otherwise, an error message.
-        /// </returns>
+        /// <param name="id">The ID of the traveler to update.</param>
+        /// <param name="travelerDto">The updated traveler data.</param>
+        /// <returns>The updated traveler if successful.</returns>
         /// <response code="200">Traveler updated successfully.</response>
-        /// <response code="400">Validation error or mismatched traveler id.</response>
+        /// <response code="400">Invalid request or mismatched ID.</response>
         /// <response code="500">An internal server error occurred.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleTraveler}")]
         [HttpPut("{id:int}", Name = "UpdateTravelerAsync")]
-        [ProducesResponseType(typeof(UpdateTravelerDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<TravelerDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateTravelerDto travelerDto)
         {
             if (!ModelState.IsValid)
@@ -223,10 +199,6 @@ namespace Mottrist.API.Controllers
 
 
             }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Unexpected error: {ex.Message}");
@@ -236,18 +208,16 @@ namespace Mottrist.API.Controllers
         /// <summary>
         /// Deletes a traveler by their unique identifier.
         /// </summary>
-        /// <param name="id">The unique identifier of the traveler to delete.</param>
-        /// <returns>
-        /// No content on successful deletion; otherwise, an error message.
-        /// </returns>
-        /// <response code="204">Traveler record deleted successfully.</response>
-        /// <response code="400">Invalid traveler id.</response>
+        /// <param name="id">The unique identifier of the traveler.</param>
+        /// <returns>Status message indicating result of deletion.</returns>
+        /// <response code="200">Traveler deleted successfully.</response>
+        /// <response code="400">Invalid traveler ID.</response>
         /// <response code="500">An internal server error occurred.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleTraveler}")]
         [HttpDelete("{id:int}", Name = "DeleteTraveler")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)] // Driver deleted successfully
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)] // Invalid driver ID provided
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)] // Unexpected errors
         public async Task<IActionResult> DeleteAsync(int id)
         {
             if (id <= 0)
@@ -261,10 +231,6 @@ namespace Mottrist.API.Controllers
                 ? SuccessResponse("Traveler deleted successfully.")
                 : StatusCodeResponse(StatusCodes.Status500InternalServerError, "FAILD_DELETE_TRAVELER", "Error deleting traveler.", result.Errors.ToArray());
 
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ERROR_ACCRUED", "An error accrued", $"Service error: {ex.Message}");
             }
             catch (Exception ex)
             {

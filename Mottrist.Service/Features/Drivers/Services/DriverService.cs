@@ -642,7 +642,11 @@ namespace Mottrist.Service.Features.Drivers.Services
         #region Driver Update Operations
         public async Task<Result<DriverDto>> UpdateAsync(UpdateDriverDto updateDriverDto)
         {
-            await _unitOfWork.StartTransactionAsync();
+            var result = await _unitOfWork.StartTransactionAsync();
+            if(!result.IsSuccess)
+            {
+                return Result<DriverDto>.Failure("Failed to start transaction.");
+            }
             try
             {
                 // Validate the existence of the driver.
@@ -659,6 +663,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 }
 
                 var imageUpdateResult = await _UpdateProfileImageAsync(updateDriverDto, existingDriver);
+                string? savedImageUrl = existingDriver?.ProfileImageUrl;
                 if (!imageUpdateResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
@@ -688,6 +693,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 if (!userUpdateResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
+                    await _imageService.DeleteImageAsync(savedImageUrl);
                     return Result<DriverDto>.Failure($"Failed to update user details: {userUpdateResult.Errors.FirstOrDefault()}");
                 }
 
@@ -700,6 +706,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 if (!saveResult.IsSuccess)
                 {
                     await _unitOfWork.RollbackAsync();
+                    await _imageService.DeleteImageAsync(savedImageUrl);
                     return Result<DriverDto>.Failure("Failed to save driver updates.");
                 }
 
@@ -710,12 +717,19 @@ namespace Mottrist.Service.Features.Drivers.Services
                     if (!carUpdateResult.IsSuccess)
                     {
                         await _unitOfWork.RollbackAsync();
+                        await _imageService.DeleteImageAsync(savedImageUrl);
                         return Result<DriverDto>.Failure($"Failed to update car details: {carUpdateResult.Errors.FirstOrDefault()}");
                     }
                 }
 
                 // Commit the transaction.
-                await _unitOfWork.CommitAsync();
+                var resultCommit =  await _unitOfWork.CommitAsync();
+                if (!resultCommit.IsSuccess)
+                {
+                    await _unitOfWork.RollbackAsync();
+                    await _imageService.DeleteImageAsync(savedImageUrl);
+                    return Result<DriverDto>.Failure("Failed to commit transaction.");
+                }
 
                 return Result<DriverDto>.Success(await GetByIdAsync(updateDriverDto.Id));
             }
@@ -736,11 +750,7 @@ namespace Mottrist.Service.Features.Drivers.Services
 
             return Result.Success();
         }
-        public async Task<Result> UpdateAvailabilityAsync(
-            int driverId,
-            DateTime? availableFrom,
-            DateTime? availableTo,
-            bool availableAllTime)
+        public async Task<Result> UpdateAvailabilityAsync(int driverId, DateTime? availableFrom, DateTime? availableTo, bool availableAllTime)
         {
             // Validate driver ID
             if (driverId < 1)
@@ -756,7 +766,7 @@ namespace Mottrist.Service.Features.Drivers.Services
                 // Update availability fields (ensuring only the date portion is stored)
                 driver.AvailableFrom = availableFrom?.Date;
                 driver.AvailableTo = availableTo?.Date;
-                driver.IsAvailableAllTime = availableAllTime;
+                driver.IsAvailableAllTime = availableAllTime && !(availableTo.HasValue && availableFrom.HasValue);
 
                 // Save changes
                 await _unitOfWork.Repository<Driver>().UpdateAsync(driver);
@@ -769,10 +779,10 @@ namespace Mottrist.Service.Features.Drivers.Services
                 return Result.Failure($"Unexpected error occurred: {ex.Message}");
             }
         }
-        public async Task<Result> UpdatePriceAsync(int driverId, decimal newPricePerHour)
+        public async Task<Result> UpdatePriceAsync(int driverId, decimal newPricePerHour = 0)
         {
             // Validate parameters
-            if (driverId < 1 || newPricePerHour <= 0)
+            if (driverId < 1)
                 return Result.Failure("Invalid driver ID or price.");
 
             try
@@ -798,6 +808,26 @@ namespace Mottrist.Service.Features.Drivers.Services
         }
 
         #region Update Helper Functions
+
+        private async Task _DeleteSavedImageAsync(string? imageUrl)
+        {
+            if (!string.IsNullOrEmpty(imageUrl))
+            {
+                try
+                {
+                    // Execute synchronous deletion without blocking async flow
+                    _imageService.DeleteImage(imageUrl);
+                }
+                catch (Exception ex)
+                {
+                    // Handle failure gracefully
+                   // Console.WriteLine($"Error deleting image: {ex.Message}");
+                }
+            }
+
+            await Task.CompletedTask; // Maintain async method structure
+        }
+
         private async Task<Result> _UpdateUserDetailsAsync(UpdateDriverDto driverDto, int userId)
         {
             var existingUser = await _userManager.FindByIdAsync(userId.ToString());
@@ -1495,6 +1525,16 @@ namespace Mottrist.Service.Features.Drivers.Services
 
             try
             {
+                bool isExistingDriver = await _unitOfWork.Repository<Driver>()
+                    .Table.AnyAsync(x => x.Id == driverId);
+                if (!isExistingDriver)
+                    return Result.Failure("Driver not found.");
+
+                bool isExistingUser = await _unitOfWork.Repository<ApplicationUser>()
+                    .Table.AnyAsync(x => x.Id == userId);
+                if (!isExistingUser)
+                    return Result.Failure("User not found.");
+
                 // Fetch existing interaction
                 var interaction = await _unitOfWork.Repository<DriverInteraction>()
                     .GetAsync(x => x.DriverId == driverId && x.UserId == userId);
@@ -1517,7 +1557,6 @@ namespace Mottrist.Service.Features.Drivers.Services
                         DriverId = driverId,
                         UserId = userId,
                         IsLiked = isLiked,
-                        ViewsCount = 1
 
                     };
                     await _unitOfWork.Repository<DriverInteraction>().AddAsync(interaction);

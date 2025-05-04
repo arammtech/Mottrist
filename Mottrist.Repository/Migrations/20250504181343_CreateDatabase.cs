@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Mottrist.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class createdatabase : Migration
+    public partial class CreateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -395,7 +395,9 @@ namespace Mottrist.Repository.Migrations
                     CityId = table.Column<int>(type: "int", nullable: true),
                     ProfileImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PreferredLanguageId = table.Column<int>(type: "int", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DateDeleted = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -467,10 +469,12 @@ namespace Mottrist.Repository.Migrations
                     AvailableTo = table.Column<DateTime>(type: "datetime", nullable: true),
                     IsAvailableAllTime = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     PricePerHour = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Status = table.Column<byte>(type: "tinyint", nullable: false, defaultValue: (byte)2),
+                    Status = table.Column<byte>(type: "tinyint", nullable: false, defaultValue: (byte)2, comment: "Stores the status of the driver: Approved = 1, Pending = 2, or Rejected = 3."),
                     LicenseImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PassportImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProfileImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DateDeleted = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -507,7 +511,7 @@ namespace Mottrist.Repository.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DriverId = table.Column<int>(type: "int", nullable: false),
                     CityId = table.Column<int>(type: "int", nullable: false),
-                    WorkStatus = table.Column<byte>(type: "tinyint", nullable: false)
+                    WorkStatus = table.Column<byte>(type: "tinyint", nullable: false, comment: "Stores the work status of the driver in the city: WorkedOn = 1, CoverNow = 2.")
                 },
                 constraints: table =>
                 {
@@ -537,7 +541,7 @@ namespace Mottrist.Repository.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DriverId = table.Column<int>(type: "int", nullable: false),
                     CountryId = table.Column<int>(type: "int", nullable: false),
-                    WorkStatus = table.Column<byte>(type: "tinyint", nullable: false)
+                    WorkStatus = table.Column<byte>(type: "tinyint", nullable: false, comment: "Stores the work status of the driver in the country: WorkedOn = 1, CoverNow = 2.")
                 },
                 constraints: table =>
                 {

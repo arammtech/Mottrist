@@ -12,7 +12,7 @@ namespace Mottrist.API.Controllers
     /// <summary>
     /// Controller for managing car-related fields such as brands, body types, fuel types, models, and colors.
     /// </summary>
-    [Route("api/CarFields")]
+    [Route("api/carFields")]
     [ApiController]
     public class CarFieldsController : ControllerBase
     {
@@ -36,7 +36,6 @@ namespace Mottrist.API.Controllers
         /// </summary>
         private readonly ICarFuelTypeService _carFuelTypeService;
 
-
         /// <summary>
         /// Service for managing car colors.
         /// </summary>
@@ -46,7 +45,6 @@ namespace Mottrist.API.Controllers
         /// Initializes a new instance of the <see cref="CarFieldsController"/> class.
         /// </summary>
         /// <param name="carService">Service for handling general car operations.</param>
-        /// <param name="carModelService">Service for managing car models.</param>
         /// <param name="carColorService">Service for managing car colors.</param>
         /// <param name="carBrandService">Service for managing car brands.</param>
         /// <param name="carBodyTypeService">Service for managing car body types.</param>
@@ -63,25 +61,24 @@ namespace Mottrist.API.Controllers
         /// <summary>
         /// Retrieves all car body types.
         /// </summary>
-        /// <returns>A list of car body types.</returns>
-        /// - HTTP 200 OK with the list of car body types if successful.
-        /// - HTTP 204 No Content if no car body types are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// <returns>
+        /// An API response containing car body types details.
+        /// </returns>
+        /// <response code="200">Successfully retrieved car colors.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpGet("All/BodyTypes", Name = "GetAllCarBodyTypes")]
-        [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [HttpGet("all/bodyTypes", Name = "GetAllCarBodyTypes")]
+        [ProducesResponseType(typeof(ApiResponse<CarBodyTypeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllBodyTypes()
         {
             try
             {
                 var dataResult = await _carBodyTypeService.GetAllAsync();
-                if (dataResult?.DataRecordsCount == 0)
-                {
-                    return NoContentResponse("No Car's body types found.");
-                }
-                return SuccessResponse(dataResult, "Car's body types retrieved successfully.");
+
+                return dataResult != null
+                  ? SuccessResponse(dataResult, "Car's body types retrieved successfully.")
+                   : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
             }
             catch (Exception ex)
             {
@@ -90,56 +87,26 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves all car brands.
+        /// Retrieves a list of all available car colors.
         /// </summary>
-        /// <returns>A list of car brands.</returns>
-        /// - HTTP 200 OK with the list of car brands if successful.
-        /// - HTTP 204 No Content if no car brands are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// <returns>
+        /// An API response containing car color details.
+        /// </returns>
+        /// <response code="200">Successfully retrieved car colors.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpGet("All/Brands", Name = "GetAllCarBrands")]
-        [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllBrands()
-        {
-            try
-            {
-                var dataResult = await _carBrandService.GetAllAsync();
-                if (dataResult?.DataRecordsCount == 0)
-                {
-                    return NoContentResponse("No Car's brands found.");
-                }
-                return SuccessResponse(dataResult, "Car's brands retrieved successfully.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Retrieves all car colors.
-        /// </summary>
-        /// <returns>A list of car colors.</returns>
-        /// - HTTP 200 OK with the list of car colors if successful.
-        /// - HTTP 204 No Content if no car colors are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
-        [AllowAnonymous]
-        [HttpGet("All/Colors", Name = "GetAllCarColors")]
-        [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [HttpGet("all/colors", Name = "GetAllCarColors")]
+        [ProducesResponseType(typeof(ApiResponse<CarColorDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllColors()
         {
             try
             {
                 var dataResult = await _carColorService.GetAllAsync();
-                if (dataResult?.DataRecordsCount == 0)
-                {
-                    return NoContentResponse("No Car's colors found.");
-                }
-                return SuccessResponse(dataResult, "Car's colors retrieved successfully.");
+
+                return dataResult != null
+                ? SuccessResponse(dataResult, "Car's colors retrieved successfully.")
+                : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
             }
             catch (Exception ex)
             {
@@ -148,27 +115,26 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves all car fuel types.
+        /// Retrieves a list of all available car fuel types.
         /// </summary>
-        /// <returns>A list of car fuel types.</returns>
-        /// - HTTP 200 OK with the list of car fuel types if successful.
-        /// - HTTP 204 No Content if no car fuel types are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// <returns>
+        /// An API response containing car fuel type details.
+        /// </returns>
+        /// <response code="200">Successfully retrieved fuel types.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpGet("All/FuelTypes", Name = "GetAllFuelTypes")]
-        [ProducesResponseType(typeof(ApiResponse<CityDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
+        [HttpGet("all/fuelTypes", Name = "GetAllFuelTypes")]
+        [ProducesResponseType(typeof(ApiResponse<CarFuelTypeDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllFuelTypes()
         {
             try
             {
                 var dataResult = await _carFuelTypeService.GetAllAsync();
-                if (dataResult?.DataRecordsCount == 0)
-                {
-                    return NoContentResponse("No Car's fuel types found.");
-                }
-                return SuccessResponse(dataResult, "Car's fuel types retrieved successfully.");
+
+                return dataResult != null
+                    ? SuccessResponse(dataResult, "Car's fuel types retrieved successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
             }
             catch (Exception ex)
             {
@@ -176,18 +142,17 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
         /// <summary>
-        /// Retrieves all car fields.
+        /// Retrieves all necessary car-related fields.
         /// </summary>
-        /// <returns>A list of car fields.</returns>
-        /// - HTTP 200 OK with the list of car fields if successful.
-        /// - HTTP 204 No Content if no car fields are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// <returns>
+        /// An API response containing car field details.
+        /// </returns>
+        /// <response code="200">Successfully retrieved car fields.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpGet("All/CarFields", Name = "GetAllCarFields")]
+        [HttpGet("all/carFields", Name = "GetAllCarFields")]
         [ProducesResponseType(typeof(ApiResponse<CarFieldsDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllCarFields()
         {
@@ -195,11 +160,10 @@ namespace Mottrist.API.Controllers
             {
                 var carModelDto = await _carService.GetAllCarFieldsAsync();
 
-                return SuccessResponse(carModelDto, "Car's models retrieved successfully.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
+                return carModelDto != null
+                    ? SuccessResponse(carModelDto, "Car's models retrieved successfully.")
+                   : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
+
             }
             catch (Exception ex)
             {

@@ -19,10 +19,9 @@ namespace Mottrist.Service.Features.Traveller.Validators
         public AddTravelerDtoValidator()
         {
 
-            // NationalityId must be between 1 and 5
+            // NationalityId : required
             RuleFor(x => x.NationalityId)
-                .InclusiveBetween(1, 5)
-                .WithMessage("Nationality ID is required and must be between 1 and 5.");
+                .NotEmpty().WithMessage("Nationality ID is required");
 
             // First name: required, minimum 2 and maximum 50 characters
             RuleFor(x => x.FirstName)

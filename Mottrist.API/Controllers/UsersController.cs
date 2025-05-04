@@ -17,15 +17,15 @@ namespace Mottrist.API.Controllers
     /// Manages user authentication and authorization.
     /// </summary>
 
-    [Route("api/user")]
+    [Route("api/users")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUserService _userService;
    
-        public UserController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,IUserService userService)
+        public UsersController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,IUserService userService)
         {
             _userManager = userManager ;
             _signInManager = signInManager;
@@ -42,7 +42,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid request data.</response>
         /// <response code="401">Unauthorized, invalid credentials.</response>
         /// <response code="500">An internal server error occurred.</response>
-        [HttpPost("login")]
+        [HttpPost("auth/login")]
         [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -63,12 +63,13 @@ namespace Mottrist.API.Controllers
               {
                 var user = await _userManager.FindByEmailAsync(userLoginDto.Email);
                 if (user == null)
-                    return Unauthorized("Invalid username or password.");
+                    return UnauthorizedResponse("INVALID_EMAIL", "Invalid email.", "Invalid username or password.");
+
 
                 // Validate password
                 var passwordValid = await _userManager.CheckPasswordAsync(user, userLoginDto.Password);
                 if (!passwordValid)
-                    return Unauthorized("Invalid username or password.");
+                    return UnauthorizedResponse("INVALID_PASSWORD", "Invalid password.", "Invalid username or password.");
 
                 // Validate if the user's account is locked
                 if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
@@ -77,7 +78,7 @@ namespace Mottrist.API.Controllers
                 //Prevent Brute Force Attacks
                 var result = await _signInManager.PasswordSignInAsync(userLoginDto.Email, userLoginDto.Password, false, lockoutOnFailure: true);
                 if (result.IsLockedOut)
-                    return Unauthorized("Account locked due to multiple failed attempts.");
+                    return UnauthorizedResponse("ACCOUNT_LOCKED", "User account is locked.", "Account locked due to multiple failed attempts.");
 
                 UserDto userDto = new()
                 {
@@ -106,7 +107,7 @@ namespace Mottrist.API.Controllers
         /// <returns>A success response if logout is successful.</returns>
         /// <response code="200">User logged out successfully.</response>
         /// <response code="500">An internal server error occurred.</response>
-        [HttpPost("logout")]
+        [HttpPost("auth/logout")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize]
@@ -189,8 +190,8 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid or missing email address.</response>
         /// <response code="500">An error occurred while sending the email.</response>
         [AllowAnonymous]
-        [HttpPost("send-confirm-email")]
-        public async Task<IActionResult> SendConfirmEmailToUser(string email)
+        [HttpPost("email/send")]
+        public async Task<IActionResult> SendConfirmEmailToUser([FromQuery] string email)
         {
             if (string.IsNullOrWhiteSpace(email))
                 return BadRequestResponse("INVALID_EMAIL", "Email is required.", "Email is required");
@@ -214,8 +215,6 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
-
         /// <summary>
         /// Confirms a user’s email address using the provided user ID and token.
         /// </summary>
@@ -235,8 +234,8 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid user ID, token, or confirmation failure.</response>
         /// <response code="500">An error occurred while confirming the email.</response>
         [AllowAnonymous]
-        [HttpPost("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail(int userId, string token)
+        [HttpPost("email/confirm")]
+        public async Task<IActionResult> ConfirmEmail([FromQuery]int userId, [FromQuery]string token)
         {
             if(userId == null || userId <= 0)
                 return BadRequestResponse("INVALID_USER_ID", "User id not valid.", "User Id is required and should be positive number");

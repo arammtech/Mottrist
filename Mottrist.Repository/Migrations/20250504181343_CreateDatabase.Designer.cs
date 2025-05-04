@@ -12,8 +12,8 @@ using Mottrist.Repository.EntityFrameworkCore.Context;
 namespace Mottrist.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250503233323_create-database")]
-    partial class createdatabase
+    [Migration("20250504181343_CreateDatabase")]
+    partial class CreateDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,10 +48,16 @@ namespace Mottrist.Repository.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("DateDeleted")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsAvailableAllTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LicenseImageUrl")
                         .IsRequired()
@@ -73,7 +79,8 @@ namespace Mottrist.Repository.Migrations
                     b.Property<byte>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint")
-                        .HasDefaultValue((byte)2);
+                        .HasDefaultValue((byte)2)
+                        .HasComment("Stores the status of the driver: Approved = 1, Pending = 2, or Rejected = 3.");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -3479,6 +3486,12 @@ namespace Mottrist.Repository.Migrations
 
                     b.Property<int?>("CityId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateDeleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<int>("NationalityId")
                         .HasColumnType("int");
@@ -10205,7 +10218,8 @@ namespace Mottrist.Repository.Migrations
                         .HasColumnType("int");
 
                     b.Property<byte>("WorkStatus")
-                        .HasColumnType("tinyint");
+                        .HasColumnType("tinyint")
+                        .HasComment("Stores the work status of the driver in the city: WorkedOn = 1, CoverNow = 2.");
 
                     b.HasKey("Id");
 
@@ -10231,7 +10245,8 @@ namespace Mottrist.Repository.Migrations
                         .HasColumnType("int");
 
                     b.Property<byte>("WorkStatus")
-                        .HasColumnType("tinyint");
+                        .HasColumnType("tinyint")
+                        .HasComment("Stores the work status of the driver in the country: WorkedOn = 1, CoverNow = 2.");
 
                     b.HasKey("Id");
 

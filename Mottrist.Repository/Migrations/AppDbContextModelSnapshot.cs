@@ -76,7 +76,8 @@ namespace Mottrist.Repository.Migrations
                     b.Property<byte>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint")
-                        .HasDefaultValue((byte)2);
+                        .HasDefaultValue((byte)2)
+                        .HasComment("Stores the status of the driver: Approved = 1, Pending = 2, or Rejected = 3.");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -10214,7 +10215,8 @@ namespace Mottrist.Repository.Migrations
                         .HasColumnType("int");
 
                     b.Property<byte>("WorkStatus")
-                        .HasColumnType("tinyint");
+                        .HasColumnType("tinyint")
+                        .HasComment("Stores the work status of the driver in the city: WorkedOn = 1, CoverNow = 2.");
 
                     b.HasKey("Id");
 
@@ -10240,7 +10242,8 @@ namespace Mottrist.Repository.Migrations
                         .HasColumnType("int");
 
                     b.Property<byte>("WorkStatus")
-                        .HasColumnType("tinyint");
+                        .HasColumnType("tinyint")
+                        .HasComment("Stores the work status of the driver in the country: WorkedOn = 1, CoverNow = 2.");
 
                     b.HasKey("Id");
 

@@ -17,7 +17,8 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
                      .IsRequired()
                      .HasConversion(
                         builder => (byte)builder,
-                        builder => (WorkStatus)builder);
+                        builder => (WorkStatus)builder)
+                     .HasComment("Stores the work status of the driver in the city: WorkedOn = 1, CoverNow = 2.");
 
             // Relationships
             builder.HasOne(dcc => dcc.Driver)
