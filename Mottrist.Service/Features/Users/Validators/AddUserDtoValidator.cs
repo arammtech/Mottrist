@@ -20,9 +20,8 @@ namespace Mottrist.Service.Features.Users.Validators
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public AddUserDtoValidator(UserManager<ApplicationUser> userManager)
+        public AddUserDtoValidator()
         {
-            _userManager = userManager;
 
             RuleFor(x => x.FirstName)
            .NotEmpty().WithMessage("First name is required.")
@@ -57,13 +56,6 @@ namespace Mottrist.Service.Features.Users.Validators
                 .NotNull().WithMessage("Roles list must not be null.")
                 .Must(roles => roles.Count > 0).WithMessage("At least one role must be assigned.");
 
-        }
-
-        private async Task<bool> EmailNotTaken(string email, CancellationToken cancellationToken)
-        {
-            // Check if the email already exists
-            var user = await _userManager.FindByEmailAsync(email);
-            return user == null;
         }
     }
 }

@@ -86,6 +86,26 @@ namespace Mottrist.API.Response
         }
 
         /// <summary>
+        /// Creates a HTTP 401 Unauthorized response with error details.
+        /// </summary>
+        /// <param name="code">The unique error code identifying the failure.</param>
+        /// <param name="message">The error message describing the failure.</param>
+        /// <param name="details">Additional details about the error.</param>
+        /// <returns>An <see cref="IActionResult"/> representing the HTTP 401 Unauthorized response.</returns>
+        public static IActionResult UnauthorizedResponse(string code, string message, params string[] details)
+        {
+            return new ObjectResult(new ApiResponse<object>
+            {
+                Success = false,
+                StatusCode = StatusCodes.Status401Unauthorized,
+                Data = null,
+                Message = message,
+                Error = new ApiError(code, details)
+            })
+            { StatusCode = StatusCodes.Status401Unauthorized };
+        }
+
+        /// <summary>
         /// Creates a HTTP 204 No Content response with a success message.
         /// </summary>
         /// <param name="message">The success message to be included in the response.</param>
