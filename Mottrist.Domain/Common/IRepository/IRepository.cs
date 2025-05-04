@@ -37,10 +37,10 @@ namespace Mottrist.Domain.Common.IRepository
         void Delete(TEntity entity);
         void Delete(Expression<Func<TEntity, bool>> filter);
         void DeleteRange(IEnumerable<TEntity> entities);
-        void SoftDelete(TEntity entity);
-        void SoftDelete(Expression<Func<TEntity, bool>> filter);
-        Task SoftDeleteAsync(TEntity entity);
-        Task SoftDeleteAsync(Expression<Func<TEntity, bool>> filter);
+        //void SoftDelete(TEntity entity);
+        //void SoftDelete(Expression<Func<TEntity, bool>> filter);
+        //Task SoftDeleteAsync(TEntity entity);
+        //Task SoftDeleteAsync(Expression<Func<TEntity, bool>> filter);
         #endregion
     }
 }

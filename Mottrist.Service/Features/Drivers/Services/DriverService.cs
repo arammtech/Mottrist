@@ -867,67 +867,67 @@ namespace Mottrist.Service.Features.Drivers.Services
         {
             try
             {
-                // Start a transaction for atomicity.
-                var transaction = await _unitOfWork.StartTransactionAsync();
-                if (!transaction.IsSuccess)
-                    return Result.Failure("Failed to start the transaction.");
+                //// Start a transaction for atomicity.
+                //var transaction = await _unitOfWork.StartTransactionAsync();
+                //if (!transaction.IsSuccess)
+                //    return Result.Failure("Failed to start the transaction.");
 
                 // Retrieve the driver.
                 var driver = await _unitOfWork.Repository<Driver>().GetAsync(d => d.Id == driverId);
                 if (driver == null)
                 {
-                    await _unitOfWork.RollbackAsync();
+                    //await _unitOfWork.RollbackAsync();
                     return Result.Failure("Driver not found.");
                 }
 
-                // Delete associated car and its images.
-                var carDeletionResult = await _DeleteCarAndImagesAsync(driver);
-                if (!carDeletionResult.IsSuccess)
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return carDeletionResult;
-                }
+                //// Delete associated car and its images.
+                //var carDeletionResult = await _DeleteCarAndImagesAsync(driver);
+                //if (!carDeletionResult.IsSuccess)
+                //{
+                //    await _unitOfWork.RollbackAsync();
+                //    return carDeletionResult;
+                //}
 
 
-                // Delete the driver record.
-                var associatetionDeletionResult = await _DeleteDriverAssociationsAsync(driverId);
-                if (!associatetionDeletionResult.IsSuccess)
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return associatetionDeletionResult;
-                }
+                //// Delete the driver record.
+                //var associatetionDeletionResult = await _DeleteDriverAssociationsAsync(driverId);
+                //if (!associatetionDeletionResult.IsSuccess)
+                //{
+                //    await _unitOfWork.RollbackAsync();
+                //    return associatetionDeletionResult;
+                //}
 
 
                 // Delete the driver record.
                 var driverDeletionResult = await _DeleteDriverRecordAsync(driver);
                 if (!driverDeletionResult.IsSuccess)
                 {
-                    await _unitOfWork.RollbackAsync();
+                    //await _unitOfWork.RollbackAsync();
                     return driverDeletionResult;
                 }
 
-                // Delete the associated user.
-                var userDeletionResult = await _DeleteAssociatedUserAsync(driver);
-                if (!userDeletionResult.IsSuccess)
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return userDeletionResult;
-                }
+                //// Delete the associated user.
+                //var userDeletionResult = await _DeleteAssociatedUserAsync(driver);
+                //if (!userDeletionResult.IsSuccess)
+                //{
+                //    await _unitOfWork.RollbackAsync();
+                //    return userDeletionResult;
+                //}
 
                 // Commit the transaction if all operations succeed.
-                var commitResult = await _unitOfWork.CommitAsync();
-                if (!commitResult.IsSuccess)
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return Result.Failure("Failed to commit the transaction.");
-                }
+                //var commitResult = await _unitOfWork.SaveChangesAsync();
+                //if (!commitResult.IsSuccess)
+                //{
+                //    //await _unitOfWork.RollbackAsync();
+                //    return Result.Failure("Failed to commit the transaction.");
+                //}
 
                 return Result.Success();
             }
             catch (Exception ex)
             {
                 // Rollback the transaction on error.
-                await _unitOfWork.RollbackAsync();
+                //await _unitOfWork.RollbackAsync();
                 return Result.Failure($"Error deleting driver: {ex.Message}");
             }
         }
