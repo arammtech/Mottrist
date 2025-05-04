@@ -19,13 +19,13 @@ namespace Mottrist.API.Controllers
 
     [Route("api/users")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUserService _userService;
    
-        public UserController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,IUserService userService)
+        public UsersController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,IUserService userService)
         {
             _userManager = userManager ;
             _signInManager = signInManager;
