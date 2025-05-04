@@ -57,10 +57,6 @@ namespace Mottrist.API.Controllers
 
                 return SuccessResponse(message, "Message retrieved successfully.");
             }
-            catch (HttpRequestException httpEx)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", httpEx.Message);
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
@@ -87,10 +83,6 @@ namespace Mottrist.API.Controllers
                     ? SuccessResponse(dataResult, "Messages retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
             }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
@@ -105,9 +97,9 @@ namespace Mottrist.API.Controllers
         /// <returns>A paginated list of messages.</returns>
         /// <response code="200">Paginated messages retrieved successfully.</response>
         /// <response code="400">Invalid pagination parameters.</response>
-        /// <response code="500">An internal server error occurred.</response>[Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
+        /// <response code="500">An internal server error occurred.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
-        [HttpGet("all/paged",Name = "GetAllMessagesWithPaginationAsync")]
+        [HttpGet("all/paged", Name = "GetAllMessagesWithPaginationAsync")]
         [ProducesResponseType(typeof(PaginatedResult<MessageDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -123,10 +115,6 @@ namespace Mottrist.API.Controllers
                 return result != null
                     ? SuccessResponse(result, "Paginated messages retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error:");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
@@ -158,15 +146,11 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                var result = await _messageService.AddAsync(userId,addMessageDto);
+                var result = await _messageService.AddAsync(userId, addMessageDto);
 
                 return result.IsSuccess
                     ? CreatedResponse("GetMessageByIdAsync", new { id = result.Data?.Id }, result.Data, "Message created successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "CreationError", "Failed to create message.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
@@ -201,10 +185,6 @@ namespace Mottrist.API.Controllers
                     ? SuccessResponse(result.Data, "Message details updated successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UpdateError", "An error occurred during update.");
             }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
@@ -236,10 +216,6 @@ namespace Mottrist.API.Controllers
                 return result.IsSuccess
                     ? SuccessResponse("Message deleted successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "DeletionError", "Failed to delete the message.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {

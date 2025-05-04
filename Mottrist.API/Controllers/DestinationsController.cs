@@ -73,10 +73,6 @@ namespace Mottrist.API.Controllers
 
                 return SuccessResponse(destination, "Destination retrieved successfully.");
             }
-            catch (HttpRequestException httpEx)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", httpEx.Message);
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
@@ -104,10 +100,6 @@ namespace Mottrist.API.Controllers
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Destinations retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
@@ -150,10 +142,6 @@ namespace Mottrist.API.Controllers
                 return result != null
                     ? SuccessResponse(result, "Paginated destinations retrieved successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error:");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
@@ -198,10 +186,6 @@ namespace Mottrist.API.Controllers
                 return result.IsSuccess
                     ? CreatedResponse("GetDestinationByIdAsync", new { id = result.Data?.Id }, result.Data, "Destination created successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "CreationError", "Failed to create destination.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {
@@ -258,10 +242,6 @@ namespace Mottrist.API.Controllers
                     ? SuccessResponse(result.Data, "Destination details updated successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UpdateError", "An error occurred during update.");
             }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
@@ -300,10 +280,6 @@ namespace Mottrist.API.Controllers
                 return result.IsSuccess
                     ? SuccessResponse("Destination deleted successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "DeletionError", "Failed to delete the destination.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {

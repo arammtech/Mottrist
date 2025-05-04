@@ -98,10 +98,6 @@ namespace Mottrist.WebAPI.Controllers
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
 
             }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
@@ -166,7 +162,7 @@ namespace Mottrist.WebAPI.Controllers
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Cities retrieved successfully.")
-                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");            
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
             }
             catch (Exception ex)
             {
