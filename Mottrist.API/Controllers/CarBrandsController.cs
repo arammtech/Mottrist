@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Mottrist.API.Response;
 using Mottrist.Service.Features.Cars.DTOs.CarFieldsDTOs.BrandDTOs;
 using Mottrist.Service.Features.Cars.Interfaces.CarFields;
 using Mottrist.Service.Features.General.DTOs;
+using Mottrist.Utilities.Identity;
 using static Mottrist.API.Response.ApiResponseHelper;
 
 namespace Mottrist.API.Controllers
@@ -27,6 +29,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid brand ID.</response>
         /// <response code="404">Brand not found.</response>
         /// <response code="500">Internal server error.</response>
+        [AllowAnonymous]
         [HttpGet("{Id:int}", Name = "GetBrandByIdAsync")]
         [ProducesResponseType(typeof(CarBrandDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -61,6 +64,7 @@ namespace Mottrist.API.Controllers
         /// <response code="200">Brands retrieved successfully.</response>
         /// <response code="400">Bad request.</response>
         /// <response code="500">Internal server error.</response>
+        [AllowAnonymous]
         [HttpGet("all", Name = "GetAllBrandsAsync")]
         [ProducesResponseType(typeof(CarBrandDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -95,6 +99,7 @@ namespace Mottrist.API.Controllers
         /// <response code="200">Paginated brands retrieved successfully.</response>
         /// <response code="400">Invalid pagination parameters.</response>
         /// <response code="500">Internal server error.</response>
+        [AllowAnonymous]
         [HttpGet("all/paged", Name = "GetAllBrandsWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<CarBrandDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
@@ -131,6 +136,7 @@ namespace Mottrist.API.Controllers
         /// <response code="201">Brand created successfully.</response>
         /// <response code="400">Validation errors.</response>
         /// <response code="500">Internal server error.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpPost(Name = "AddNewBrandAsync")]
         [ProducesResponseType(typeof(CarBrandDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -174,6 +180,7 @@ namespace Mottrist.API.Controllers
         /// <response code="200">Brand updated successfully.</response>
         /// <response code="400">Invalid brand ID or validation errors.</response>
         /// <response code="500">Internal server error.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpPut("{id:int}", Name = "UpdateBrandAsync")]
         [ProducesResponseType(typeof(CarBrandDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -220,6 +227,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid brand ID.</response>
         /// <response code="404">Brand not found.</response>
         /// <response code="500">Internal server error.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpDelete("{id:int}", Name = "DeleteBrandAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

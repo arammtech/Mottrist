@@ -17,7 +17,7 @@ namespace Mottrist.API.Controllers
     /// Manages user authentication and authorization.
     /// </summary>
 
-    [Route("api/user")]
+    [Route("api/users")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -42,7 +42,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Invalid request data.</response>
         /// <response code="401">Unauthorized, invalid credentials.</response>
         /// <response code="500">An internal server error occurred.</response>
-        [HttpPost("login")]
+        [HttpPost("auth/login")]
         [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -106,7 +106,7 @@ namespace Mottrist.API.Controllers
         /// <returns>A success response if logout is successful.</returns>
         /// <response code="200">User logged out successfully.</response>
         /// <response code="500">An internal server error occurred.</response>
-        [HttpPost("logout")]
+        [HttpPost("auth/logout")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize]
