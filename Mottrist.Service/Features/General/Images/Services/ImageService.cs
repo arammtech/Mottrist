@@ -90,7 +90,7 @@ namespace Mottrist.Service.Features.General.Images.Services
         #region Helper methods
         private bool HasAllowedExtension(string extension)
         {
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".bmp", ".heic", ".heif" };
             return allowedExtensions.Contains(extension);
         }
 

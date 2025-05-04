@@ -53,6 +53,12 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
                 .IsRequired()
                 .HasDefaultValue(true); // Defaults to true
 
+            builder.Property(d => d.IsDeleted)
+                .IsRequired();
+
+            // retrive only entities is not deleted
+            builder.HasQueryFilter(x => x.IsDeleted == false);
+
             // Relation with User
             builder.HasOne(d => d.User)
                 .WithMany()
@@ -69,6 +75,7 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
 
             // Adding Indexes for optimized querying
             builder.HasIndex(d => d.UserId);
+
 
             builder.ToTable("Drivers", schema: "Drivers");
         }

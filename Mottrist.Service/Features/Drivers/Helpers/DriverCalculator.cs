@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Mottrist.Service.Features.Drivers.Helpers
+﻿namespace Mottrist.Service.Features.Drivers.Helpers
 {
     public class DriverCalculator
     {
@@ -23,7 +17,7 @@ namespace Mottrist.Service.Features.Drivers.Helpers
         public static double CalculateRating(int likes, int dislikes)
         {
             if (likes < 0 || dislikes < 0)
-                return 0.0; // Invalid input, return 0.0
+                return 1.0; // Invalid input, return 1.0
 
             // Handle zero total votes
             if (likes == 0 && dislikes == 0)

@@ -11,53 +11,32 @@ using System.Linq.Expressions;
 namespace Mottrist.Service.Features.Cars.Interfaces
 {
     /// <summary>
-    /// Interface defining car service methods for managing cars, their details, and associated images.
+    /// Interface for managing cars, their details, and associated images.
     /// </summary>
     public interface ICarService : IBaseService
     {
         #region Get Methods
 
         /// <summary>
-        /// Retrieves all cars, optionally filtered by the specified criteria.
+        /// Retrieves all cars optionally filtered by a criteria.
         /// </summary>
-        /// <param name="filter">Optional: A filter expression to apply to the car query.</param>
-        /// <returns>
-        /// A task representing the asynchronous operation. 
-        /// The task result contains an <see cref="IEnumerable{AddCarDto}"/> of cars matching the filter, 
-        /// or null if no cars match the filter.
-        /// </returns>
         Task<DataResult<CarDto>?> GetAllAsync(Expression<Func<Car, bool>>? filter = null);
 
         /// <summary>
-        /// Retrieves a paginated list of cars based on the specified criteria.
+        /// Retrieves a paginated list of cars.
         /// </summary>
-        /// <param name="page">The page number to retrieve (1-based).</param>
-        /// <param name="pageSize">The number of cars per page. Defaults to 10.</param>
-        /// <param name="filter">Optional: A filter expression to apply to the car query.</param>
-        /// <returns>
-        /// A task representing the asynchronous operation. 
-        /// The task result contains:
-        /// - Cars: An <see cref="IEnumerable{AddCarDto}"/> of cars for the specified page.
-        /// - TotalRecords: The total count of cars matching the criteria.
-        /// </returns>
         Task<PaginatedResult<CarDto>?> GetAllWithPaginationAsync(int page, int pageSize = 10, Expression<Func<Car, bool>>? filter = null);
 
         /// <summary>
-        /// Retrieves a specific car by its unique identifier.
+        /// Retrieves a car by its unique ID.
         /// </summary>
-        /// <param name="carId">The ID of the car to retrieve.</param>
-        /// <returns>
-        /// A task representing the asynchronous operation. 
-        /// The task result contains the <see cref="AddCarDto"/> of the car, or null if not found.
-        /// </returns>
         Task<CarDto?> GetByIdAsync(int carId);
 
         /// <summary>
-        /// Retrieves all car fields.
+        /// Retrieves all car fields (dropdowns, etc.).
         /// </summary>
-        /// A task representing the asynchronous operation. 
-        /// </returns>
         Task<CarFieldsDto> GetAllCarFieldsAsync();
+
         #endregion
 
         #region CRUD Methods
@@ -65,28 +44,16 @@ namespace Mottrist.Service.Features.Cars.Interfaces
         /// <summary>
         /// Adds a new car to the system.
         /// </summary>
-        /// <param name="carDto">The DTO containing the car details to add.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating the success or failure of the operation.
-        /// </returns>
         Task<Result<CarDto>> AddAsync(AddCarDto carDto);
 
         /// <summary>
-        /// Updates an existing car in the system.
+        /// Updates an existing car.
         /// </summary>
-        /// <param name="carDto">The DTO containing the updated car details.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating the success or failure of the operation.
-        /// </returns>
         Task<Result<CarDto>> UpdateAsync(UpdateCarDto carDto, int carId);
 
         /// <summary>
-        /// Deletes a car from the system by its unique identifier.
+        /// Deletes a car by ID.
         /// </summary>
-        /// <param name="carId">The ID of the car to delete.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating the success or failure of the operation.
-        /// </returns>
         Task<Result> DeleteAsync(int carId);
 
         #endregion
@@ -94,54 +61,28 @@ namespace Mottrist.Service.Features.Cars.Interfaces
         #region Image Methods
 
         /// <summary>
-        /// Updates a car image, either by replacing the image file or updating metadata.
+        /// Updates a car image (file or metadata).
         /// </summary>
-        /// <param name="carId">The ID of the car associated with the image.</param>
-        /// <param name="imageUrl">Optional: The URL of the existing image to update metadata.</param>
-        /// <param name="newImageFile">Optional: A new image file to replace the existing image.</param>
-        /// <param name="isMain">Specifies whether the image should be marked as the main image.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating the success or failure of the operation.
-        /// </returns>
         Task<Result> UpdateImageAsync(int carId, string? imageUrl, IFormFile? newImageFile, bool isMain);
-        
+
         /// <summary>
-        /// Retrieves all images associated with a specific car.
+        /// Retrieves all images of a specific car.
         /// </summary>
-        /// <param name="carId">The ID of the car whose images are to be retrieved.</param>
-        /// <returns>
-        /// A task representing the asynchronous operation. 
-        /// The task result contains an <see cref="IEnumerable{CarImageDto}"/> of car images, or null if no images exist.
-        /// </returns>
         Task<IEnumerable<CarImageDto>?> GetCarImagesAsync(int carId);
 
         /// <summary>
         /// Adds or updates a car image.
         /// </summary>
-        /// <param name="carImageDto">The DTO containing the car image details.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating the success or failure of the operation.
-        /// </returns>
         Task<Result> AddCarImageAsync(CarImageDto carImageDto);
 
         /// <summary>
-        /// Removes a specific car image by its URL and associated car identifier.
+        /// Removes a car image by URL and car ID.
         /// </summary>
-        /// <param name="imageUrl">The URL of the image to remove.</param>
-        /// <param name="carId">The ID of the car associated with the image.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating the success or failure of the operation.
-        /// </returns>
         Task<Result> RemoveCarImageAsync(string imageUrl, int carId);
 
         /// <summary>
-        /// Sets a specific car image as the main image for the car.
+        /// Sets a car image as the main image.
         /// </summary>
-        /// <param name="carId">The ID of the car associated with the image.</param>
-        /// <param name="imageUrl">The URL of the image to set as the main image.</param>
-        /// <returns>
-        /// A <see cref="Result"/> indicating the success or failure of the operation.
-        /// </returns>
         Task<Result> SetMainImageAsync(int carId, string imageUrl);
 
         #endregion

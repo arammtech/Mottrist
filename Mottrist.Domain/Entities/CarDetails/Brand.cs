@@ -2,7 +2,7 @@
 
 namespace Mottrist.Domain.Entities.CarDetails
 {
-    public class Brand : LookupEntity
+    public class Brand : BaseEntity
     {
         public string Name { get; set; } = null!;
     }
