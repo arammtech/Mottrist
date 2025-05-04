@@ -63,12 +63,13 @@ namespace Mottrist.API.Controllers
               {
                 var user = await _userManager.FindByEmailAsync(userLoginDto.Email);
                 if (user == null)
-                    return Unauthorized("Invalid username or password.");
+                    return UnauthorizedResponse("INVALID_EMAIL", "Invalid email.", "Invalid username or password.");
+
 
                 // Validate password
                 var passwordValid = await _userManager.CheckPasswordAsync(user, userLoginDto.Password);
                 if (!passwordValid)
-                    return Unauthorized("Invalid username or password.");
+                    return UnauthorizedResponse("INVALID_PASSWORD", "Invalid password.", "Invalid username or password.");
 
                 // Validate if the user's account is locked
                 if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
@@ -77,7 +78,7 @@ namespace Mottrist.API.Controllers
                 //Prevent Brute Force Attacks
                 var result = await _signInManager.PasswordSignInAsync(userLoginDto.Email, userLoginDto.Password, false, lockoutOnFailure: true);
                 if (result.IsLockedOut)
-                    return Unauthorized("Account locked due to multiple failed attempts.");
+                    return UnauthorizedResponse("ACCOUNT_LOCKED", "User account is locked.", "Account locked due to multiple failed attempts.");
 
                 UserDto userDto = new()
                 {
@@ -190,7 +191,7 @@ namespace Mottrist.API.Controllers
         /// <response code="500">An error occurred while sending the email.</response>
         [AllowAnonymous]
         [HttpPost("email/send")]
-        public async Task<IActionResult> SendConfirmEmailToUser(string email)
+        public async Task<IActionResult> SendConfirmEmailToUser([FromQuery] string email)
         {
             if (string.IsNullOrWhiteSpace(email))
                 return BadRequestResponse("INVALID_EMAIL", "Email is required.", "Email is required");
@@ -214,8 +215,6 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
-
         /// <summary>
         /// Confirms a user’s email address using the provided user ID and token.
         /// </summary>
@@ -236,7 +235,7 @@ namespace Mottrist.API.Controllers
         /// <response code="500">An error occurred while confirming the email.</response>
         [AllowAnonymous]
         [HttpPost("email/confirm")]
-        public async Task<IActionResult> ConfirmEmail(int userId, string token)
+        public async Task<IActionResult> ConfirmEmail([FromQuery]int userId, [FromQuery]string token)
         {
             if(userId == null || userId <= 0)
                 return BadRequestResponse("INVALID_USER_ID", "User id not valid.", "User Id is required and should be positive number");
