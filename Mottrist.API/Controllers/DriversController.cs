@@ -272,7 +272,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpGet("by-country/{countryId:int}/city/{cityId:int}/date", Name = "GetDriversByCountryCityAndDateAsync")]
+        [HttpGet("by-country/{countryId:int}/city/{cityId:int}/date/{date:string}", Name = "GetDriversByCountryCityAndDateAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
@@ -416,7 +416,7 @@ namespace Mottrist.API.Controllers
         /// <response code="400">Bad request due to invalid parameters.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}/date", Name = "GetDriversByCountryAndCityAndDateWithPaginationAsync")]
+        [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}/date/{date:string}", Name = "GetDriversByCountryAndCityAndDateWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
@@ -538,17 +538,15 @@ namespace Mottrist.API.Controllers
         /// The driver data transfer object containing the details of the driver to be added.
         /// </param>
         /// <returns>
-        /// A result containing the newly created driver details.
+        /// A result containing the newly created driver details.h
         /// </returns>
         /// <response code="201">Driver successfully created.</response>
         /// <response code="400">Bad request due to invalid input.</response>
-        /// <response code="409">Conflict due to duplicate entry or business rule violation.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpPost (Name = "AddNewDriverAsync")]
         [ProducesResponseType(typeof(ApiResponse<Result<DriverDto>>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddAsync([FromForm] AddDriverDto driverDto)
         {
@@ -564,13 +562,7 @@ namespace Mottrist.API.Controllers
 
             try
             {
-                // Validate uniqueness of the email
-                var existingUser = await _driverService.DoesExistByEmailAsync(driverDto.Email);
-                if (existingUser)
-                {
-                    return StatusCodeResponse(StatusCodes.Status409Conflict, "DuplicateUser", "Driver already exists.");
-                }
-
+                
                 var result = await _driverService.AddAsync(driverDto);
 
 
@@ -601,7 +593,7 @@ namespace Mottrist.API.Controllers
         /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpPut("{id:int}", Name = "UpdateDriverDetailsAsync")]
-        [ProducesResponseType(typeof(ApiResponse<Result<DriverDto>>), StatusCodes.Status200OK)] // Successful update
+        [ProducesResponseType(typeof(ApiResponse<DriverDto), StatusCodes.Status200OK)] // Successful update
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)] // Validation errors
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)] // Unexpected errors
         public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateDriverDto driverDto)
@@ -836,7 +828,7 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> IncrementViewCountAsync( int driverId,int userId)
+        public async Task<IActionResult> IncrementViewCountAsync( int driverId,[FromQuery]int userId)
         {
             // Validate input parameters
             if (driverId < 1 || userId < 1)
