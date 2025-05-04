@@ -84,7 +84,7 @@ namespace Mottrist.WebAPI.Controllers
         /// - HTTP 500 Internal Server Error for unexpected errors.
         /// </returns>
         [AllowAnonymous]
-        [HttpGet("All", Name = "GetAllCitiesAsync")]
+        [HttpGet("all", Name = "GetAllCitiesAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<CityDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
@@ -156,7 +156,7 @@ namespace Mottrist.WebAPI.Controllers
         /// <response code="200">Successfully retrieved cities with country details.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpGet("WithCountry", Name = "GetAllCitiesWithCountryAsync")]
+        [HttpGet("withCountry", Name = "GetAllCitiesWithCountryAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<CityWithCountryDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllWithCountryAsync()
