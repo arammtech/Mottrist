@@ -11,7 +11,7 @@ namespace Mottrist.WebAPI.Controllers
     /// <summary>
     /// API Controller for managing language-related operations.
     /// </summary>
-    [Route("api/Languages")]
+    [Route("api/languages")]
     [ApiController]
     public class LanguagesController : ControllerBase
     {
@@ -33,15 +33,18 @@ namespace Mottrist.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Retrieves a language by the specified ID.
+        /// Retrieves details of a language based on the specified ID.
         /// </summary>
-        /// <param name="id">The unique identifier of the language to retrieve.</param>
+        /// <param name="id">
+        /// The unique identifier of the language to retrieve.
+        /// </param>
         /// <returns>
-        /// - HTTP 200 OK with the language details if found.
-        /// - HTTP 404 Not Found if no language exists with the given ID.
-        /// - HTTP 400 Bad Request if the provided ID is invalid.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// An API response containing language details.
         /// </returns>
+        /// <response code="200">Successfully retrieved language details.</response>
+        /// <response code="400">Bad request due to invalid language ID.</response>
+        /// <response code="404">Language not found.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetLanguageByIdAsync")]
         [ProducesResponseType(typeof(ApiResponse<LanguageDto>), StatusCodes.Status200OK)]
@@ -66,10 +69,6 @@ namespace Mottrist.WebAPI.Controllers
 
                 return SuccessResponse(language, "Language retrieved successfully.");
             }
-            catch (HttpRequestException httpEx)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", httpEx.Message);
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
@@ -77,17 +76,16 @@ namespace Mottrist.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Retrieves all languages.
+        /// Retrieves a list of all available languages.
         /// </summary>
         /// <returns>
-        /// - HTTP 200 OK with the list of languages if successful.
-        /// - HTTP 204 No Content if no languages are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// An API response containing language details.
         /// </returns>
+        /// <response code="200">Successfully retrieved language data.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("All", Name = "GetAllLanguagesAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<LanguageDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -95,16 +93,9 @@ namespace Mottrist.WebAPI.Controllers
             {
                 var dataResult = await _languageService.GetAllAsync();
 
-                if (dataResult?.DataRecordsCount?.Equals(0) ?? false)
-                {
-                    return NoContentResponse("No languages found.");
-                }
-
-                return SuccessResponse(dataResult, "Languages retrieved successfully.");
-            }
-            catch (HttpRequestException httpEx)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", httpEx.Message);
+                return dataResult != null 
+                    ? SuccessResponse(dataResult, "Languages retrieved successfully.")
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "NoDataFound", "No data found.");
             }
             catch (Exception ex)
             {
