@@ -1,8 +1,27 @@
 # 🚀 Mottrist Project Documentation
 
 ## 📌 Overview
+Welcome to the Mottrist REST API!
 Mottrist is a powerful .NET 9 and MSSQL-based application leveraging Entity Framework Core (EF Core) for seamless data management. It features efficient database initialization and comes preloaded with seed data, including languages, car fields, cities, and countries, ensuring a structured and well-organized system.
+The Mottrist REST API is your gateway to managing a comprehensive travel platform that connects travelers with drivers, facilitating seamless travel experiences. This Postman collection provides a complete set of tools to interact with the Mottrist API, enabling you to manage Travelers, Drivers, Cars, Destinations, Messages, Countries, Cities, Languages, and access Admin and Employee dashboards.
 
+---
+
+## Overview
+
+Mottrist is a robust platform designed to streamline travel logistics by connecting travelers with drivers and providing rich metadata for destinations, vehicles, and communication. The API, built with ASP.NET Core, offers a RESTful interface to perform operations such as creating and updating driver profiles, managing traveler accounts, retrieving location data, sending messages, and authenticating users. It leverages dependency injection for service interactions, standardized ApiResponse objects for consistent responses, and role-based authorization (Admin, Employee, Driver, Traveler) to secure sensitive operations.
+
+This Postman collection organizes all API endpoints into logical folders, each corresponding to a key component of the Mottrist application. Each folder includes an endpoint table listing HTTP methods, paths, and descriptions, along with an overview of the controller's purpose and functionality. The collection supports both Development and Production environments, with clear instructions for setting up authentication and environment variables.
+
+### Key Features
+
+* **Comprehensive Management:** Supports end-to-end operations for drivers, travelers, destinations, messages, and metadata (car brands, car fields, countries, cities, languages).
+* **Role-Based Authorization:** Secures endpoints with roles (Admin, Employee, Driver, Traveler) where applicable, while allowing public access (\[AllowAnonymous]) for read-heavy or onboarding endpoints.
+* **Pagination Support:** Implements pagination for large datasets (e.g., drivers, travelers, destinations, messages, car brands) to optimize performance.
+* **Standardized Responses:** Uses ApiResponse objects for consistent response formats, with HTTP status codes (e.g., 200 OK, 201 Created, 400 Bad Request, 404 Not Found, 500 Internal Server Error).
+* **Public and Secure Access:** Balances public access for data retrieval (e.g., countries, cities, languages, car fields) with authenticated access for sensitive operations (e.g., user management, driver updates).
+
+---
 ---
 
 ## 🏗️ Technologies Used
@@ -38,28 +57,8 @@ This project is Apache License 2.0 licensed
 ✅ **Seed Data Information** → **Languages, Cities, and Countries** included.  
 ✅ **License Mention** → **Apache License 2.0** structured properly.  
 
-# Mottrist REST API Documentation
 
-Welcome to the Mottrist REST API!
-The Mottrist REST API is your gateway to managing a comprehensive travel platform that connects travelers with drivers, facilitating seamless travel experiences. This Postman collection provides a complete set of tools to interact with the Mottrist API, enabling you to manage Travelers, Drivers, Cars, Destinations, Messages, Countries, Cities, Languages, and access Admin and Employee dashboards.
-
----
-
-## Overview
-
-Mottrist is a robust platform designed to streamline travel logistics by connecting travelers with drivers and providing rich metadata for destinations, vehicles, and communication. The API, built with ASP.NET Core, offers a RESTful interface to perform operations such as creating and updating driver profiles, managing traveler accounts, retrieving location data, sending messages, and authenticating users. It leverages dependency injection for service interactions, standardized ApiResponse objects for consistent responses, and role-based authorization (Admin, Employee, Driver, Traveler) to secure sensitive operations.
-
-This Postman collection organizes all API endpoints into logical folders, each corresponding to a key component of the Mottrist application. Each folder includes an endpoint table listing HTTP methods, paths, and descriptions, along with an overview of the controller's purpose and functionality. The collection supports both Development and Production environments, with clear instructions for setting up authentication and environment variables.
-
-### Key Features
-
-* **Comprehensive Management:** Supports end-to-end operations for drivers, travelers, destinations, messages, and metadata (car brands, car fields, countries, cities, languages).
-* **Role-Based Authorization:** Secures endpoints with roles (Admin, Employee, Driver, Traveler) where applicable, while allowing public access (\[AllowAnonymous]) for read-heavy or onboarding endpoints.
-* **Pagination Support:** Implements pagination for large datasets (e.g., drivers, travelers, destinations, messages, car brands) to optimize performance.
-* **Standardized Responses:** Uses ApiResponse objects for consistent response formats, with HTTP status codes (e.g., 200 OK, 201 Created, 400 Bad Request, 404 Not Found, 500 Internal Server Error).
-* **Public and Secure Access:** Balances public access for data retrieval (e.g., countries, cities, languages, car fields) with authenticated access for sensitive operations (e.g., user management, driver updates).
-
----
+## Detailed Documentation for Mottrist collection or APIs !
 
 ## Getting Started
 
