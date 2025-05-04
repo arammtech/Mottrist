@@ -629,7 +629,7 @@ namespace Mottrist.API.Controllers
                 var result = await _driverService.UpdateAsync(driverDto);
 
                 return result.IsSuccess
-                    ? SuccessResponse(result, "Driver details updated successfully.")
+                    ? SuccessResponse(result.Data, "Driver details updated successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UpdateError", "An error occurred during update.");
             }
             catch (Exception ex)
