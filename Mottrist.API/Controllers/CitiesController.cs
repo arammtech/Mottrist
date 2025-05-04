@@ -146,7 +146,6 @@ namespace Mottrist.WebAPI.Controllers
             }
         }
 
-
         /// <summary>
         /// Retrieves a list of all cities along with their associated country details.
         /// </summary>
@@ -156,7 +155,7 @@ namespace Mottrist.WebAPI.Controllers
         /// <response code="200">Successfully retrieved cities with country details.</response>
         /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
-        [HttpGet("withCountry", Name = "GetAllCitiesWithCountryAsync")]
+        [HttpGet("with-country", Name = "GetAllCitiesWithCountryAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<CityWithCountryDto>?>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllWithCountryAsync()
