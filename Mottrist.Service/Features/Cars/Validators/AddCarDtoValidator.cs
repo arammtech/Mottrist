@@ -40,11 +40,6 @@ namespace Feature.Car.Validators
                 .NotNull().WithMessage("At least one car image is required.")
                 .Must(images => images is not null && images.Count is >= 1 and <= 10)
                 .WithMessage("You must upload at least one car image and no more than ten.");
-
-            // Validate each image format and size
-            RuleForEach(car => car.CarImages)
-                .Must(file => file.Length > 0 && file.Length <= 5 * 1024 * 1024) // Limit to 5MB per image
-                .WithMessage("Each car image must be between 1KB and 5MB.");
         }
     }
 }

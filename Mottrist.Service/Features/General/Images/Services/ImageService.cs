@@ -105,6 +105,47 @@ namespace Mottrist.Service.Features.General.Images.Services
             var extension = Path.GetExtension(image.FileName).ToLower();
             return HasAllowedExtension(extension) && IsWithinAllowedSize(image);
         }
+
+        public async Task DeleteImageAsync(string? relativePath)
+        {
+            if (!string.IsNullOrEmpty(relativePath))
+            {
+                try
+                {
+                    // Perform file deletion asynchronously
+                    if (File.Exists(relativePath))
+                    {
+                        await Task.Run(() => File.Delete(relativePath));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error deleting image: {ex.Message}");
+                }
+            }
+        }
+
+        public async Task DeleteImagesAsync(List<string>? relativePaths)
+        {
+            if (relativePaths != null && relativePaths.Any())
+            {
+                try
+                {
+                    foreach (var path in relativePaths)
+                    {
+                        if (File.Exists(path))
+                        {
+                            await Task.Run(() => File.Delete(path));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                  
+                }
+            }
+        }
+
         #endregion
     }
 }
