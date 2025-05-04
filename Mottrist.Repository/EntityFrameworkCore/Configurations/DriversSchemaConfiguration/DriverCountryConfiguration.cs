@@ -15,7 +15,8 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
                 .IsRequired()
                 .HasConversion(
                     builder => (byte)builder,
-                    builder => (WorkStatus)builder);
+                    builder => (WorkStatus)builder)
+                .HasComment("Stores the work status of the driver in the country: WorkedOn = 1, CoverNow = 2.");
 
             builder.HasOne(dcc => dcc.Driver) 
                 .WithMany(d => d.DriverCountries)
