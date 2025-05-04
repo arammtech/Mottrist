@@ -21,14 +21,14 @@ namespace Mottrist.Repository.EntityFrameworkCore.Configurations.DriversSchemaCo
                 .IsRequired();
 
             builder.Property(d => d.CarId)
-                .IsRequired(false); 
+                .IsRequired(false);
 
             builder.Property(d => d.Status)
-                .HasConversion
-                (
+                .HasConversion(
                     builder => (byte)builder,
                     builder => (DriverStatus)builder)
-                .HasDefaultValue(DriverStatus.Pending);
+                .HasDefaultValue(DriverStatus.Pending)
+                .HasComment("Stores the status of the driver: Approved = 1, Pending = 2, or Rejected = 3.");
 
             builder.HasOne(d => d.Car)
                 .WithOne()

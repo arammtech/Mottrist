@@ -742,16 +742,18 @@ namespace Mottrist.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdatePriceAsync(int driverId,decimal newPricePerHour)
+        public async Task<IActionResult> UpdatePriceAsync(int driverId,decimal? newPricePerHour)
         {
-            if (driverId < 1 || newPricePerHour <= 0)
+            if (driverId < 1)
             {
                 return BadRequestResponse("InvalidRequest", "Driver ID and price must be greater than 0.");
             }
 
+            newPricePerHour = (newPricePerHour < 0) ? 0 : newPricePerHour;
+
             try
             {
-                var result = await _driverService.UpdatePriceAsync(driverId, newPricePerHour);
+                var result = await _driverService.UpdatePriceAsync(driverId, newPricePerHour ?? 0);
 
                 return result.IsSuccess
                     ? SuccessResponse("Driver price updated successfully.")
