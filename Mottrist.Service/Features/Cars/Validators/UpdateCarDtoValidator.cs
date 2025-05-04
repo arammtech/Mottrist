@@ -37,18 +37,14 @@ namespace Feature.Car.Validators
             RuleFor(car => car.HasWiFi).NotNull().WithMessage("WiFi availability must be specified.");
             RuleFor(car => car.HasAirCondiations).NotNull().WithMessage("Air conditioning availability must be specified.");
 
+
+
             // Validate Car Images (Optional but if provided, must follow constraints)
             When(car => car.CarImages != null && car.CarImages.Count > 0, () =>
             {
                 RuleFor(car => car.CarImages!.Count)
                     .InclusiveBetween(1, 10)
                     .WithMessage("The number of car images must be between 1 and 10.");
-
-                RuleForEach(car => car.CarImages)
-                    .Must(file => file.Length > 0 && file.Length <= 5 * 1024 * 1024) // Limit to 5MB per image
-                    .WithMessage("Each car image must be between 1KB and 5MB.")
-                    .Must(file => file.ContentType.StartsWith("image/"))
-                    .WithMessage("Only image files are allowed.");
             });
         }
     }

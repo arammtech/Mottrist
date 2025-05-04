@@ -7,7 +7,7 @@ using static Mottrist.API.Response.ApiResponseHelper;
 
 namespace Mottrist.API.Controllers
 {
-    [Route("api/Cars")]
+    [Route("api/cars")]
     [ApiController]
     public class CarsControllers : ControllerBase
     {

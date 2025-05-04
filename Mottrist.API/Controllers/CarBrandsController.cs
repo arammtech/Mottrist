@@ -9,7 +9,7 @@ using static Mottrist.API.Response.ApiResponseHelper;
 
 namespace Mottrist.API.Controllers
 {
-    [Route("api/Brands")]
+    [Route("api/brands")]
     [ApiController]
     public class CarBrandsController : ControllerBase
     {
@@ -68,7 +68,6 @@ namespace Mottrist.API.Controllers
         [HttpGet("all", Name = "GetAllBrandsAsync")]
         [ProducesResponseType(typeof(CarBrandDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -102,7 +101,6 @@ namespace Mottrist.API.Controllers
         [AllowAnonymous]
         [HttpGet("all/paged", Name = "GetAllBrandsWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<CarBrandDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllDriversWithPaginationAsync(int page = 1, int pageSize = 10)
@@ -208,10 +206,6 @@ namespace Mottrist.API.Controllers
                     ? SuccessResponse(result.Data, "Brand updated successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UpdateError", "An error occurred during update.");
             }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
-            }
             catch (Exception ex)
             {
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", $"Unexpected error: {ex.Message}");
@@ -225,7 +219,6 @@ namespace Mottrist.API.Controllers
         /// <returns>A success message if deleted; otherwise, an error message.</returns>
         /// <response code="200">Brand deleted successfully.</response>
         /// <response code="400">Invalid brand ID.</response>
-        /// <response code="404">Brand not found.</response>
         /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpDelete("{id:int}", Name = "DeleteBrandAsync")]
@@ -245,10 +238,6 @@ namespace Mottrist.API.Controllers
                 return result.IsSuccess
                     ? SuccessResponse("Brand deleted successfully.")
                     : StatusCodeResponse(StatusCodes.Status500InternalServerError, "DeletionError", "Failed to delete the brand.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return StatusCodeResponse(StatusCodes.Status500InternalServerError, "HttpRequestException", ex.Message);
             }
             catch (Exception ex)
             {

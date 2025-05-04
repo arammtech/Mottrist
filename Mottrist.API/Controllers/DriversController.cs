@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Mottrist.Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Mottrist.Utilities.Identity;
+using Mottrist.Domain.Global;
 
 namespace Mottrist.API.Controllers
 {
@@ -38,15 +39,16 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves a driver by the specified ID.
+        /// Retrieves a driver by their unique ID.
         /// </summary>
-        /// <param name="id">The unique identifier of the driver to retrieve.</param>
+        /// <param name="id">The unique identifier of the driver.</param>
         /// <returns>
-        /// - HTTP 200 OK with the driver details if found.
-        /// - HTTP 404 Not Found if no driver exists with the given ID.
-        /// - HTTP 400 Bad Request if the provided ID is invalid.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// The driver details corresponding to the provided ID.
         /// </returns>
+        /// <response code="200">Returns the driver details.</response>
+        /// <response code="400">Bad request due to invalid parameters.</response>
+        /// <response code="404">Driver not found.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("{id:int}", Name = "GetDriverByIdAsync")]
         [ProducesResponseType(typeof(ApiResponse<DriverDto>), StatusCodes.Status200OK)]
@@ -78,17 +80,16 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves all drivers from the service.
+        /// Retrieves a list of all drivers.
         /// </summary>
         /// <returns>
-        /// - HTTP 200 OK with the list of drivers if successful.
-        /// - HTTP 204 No Content if no drivers are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// A data result containing details of all available drivers.
         /// </returns>
+        /// <response code="200">Returns a list of drivers.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("all", Name = "GetAllDriversAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -107,31 +108,22 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves a paginated list of drivers based on the specified page and page size.
+        /// Retrieves a paginated list of drivers.
         /// </summary>
-        /// <param name="page">
-        /// The page number for paginated results.
-        /// Must be greater than 0. Defaults to 1.
-        /// </param>
-        /// <param name="pageSize">
-        /// The number of records per page.
-        /// Must be greater than 0. Defaults to 10.
-        /// </param>
+        /// <param name="page">The page number of the paginated result. Default is 1.</param>
+        /// <param name="pageSize">The number of items per page. Default is 10.</param>
         /// <returns>
-        /// - HTTP 200 OK with a paginated list of drivers.
-        /// - HTTP 204 No Content if no drivers are found.
-        /// - HTTP 400 Bad Request if pagination parameters are invalid.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// A paginated result containing driver details.
         /// </returns>
+        /// <response code="200">Returns a paginated list of drivers.</response>
+        /// <response code="400">Bad request due to invalid parameters.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("all/paged", Name = "GetAllDriversWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllDriversWithPaginationAsync(
-             int page = 1,
-             int pageSize = 10)
+        public async Task<IActionResult> GetAllDriversWithPaginationAsync(int page = 1,int pageSize = 10)
         {
             try
             {
@@ -154,20 +146,17 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves the top-rated drivers based on the specified number of drivers.
+        /// Retrieves a list of top-rated drivers.
         /// </summary>
-        /// <param name="count">
-        /// The number of top-rated drivers to fetch. Defaults to <c>3</c> if not provided.
-        /// </param>
+        /// <param name="count">The number of top-rated drivers to retrieve. Default is 3.</param>
         /// <returns>
-        /// - HTTP 200 OK with the list of top-rated drivers if successful.
-        /// - HTTP 204 No Content if no top-rated drivers are found.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// A data result containing details of the top-rated drivers.
         /// </returns>
+        /// <response code="200">Returns a list of top-rated drivers.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("top-rated", Name = "GetTopRatedDriversAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetTopRatedAsync(int count = 3)
         {
@@ -177,7 +166,7 @@ namespace Mottrist.API.Controllers
 
                 return dataResult != null 
                     ? SuccessResponse(dataResult, "Top-rated drivers retrieved successfully.")
-                    : NoContentResponse("No top-rated drivers found at the moment.");
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
             }
             catch (Exception ex)
             {
@@ -187,21 +176,18 @@ namespace Mottrist.API.Controllers
 
 
         /// <summary>
-        /// Retrieves drivers filtered by country.
+        /// Retrieves a list of drivers based on the specified country.
         /// </summary>
-        /// <param name="countryId">
-        /// The ID of the country to filter drivers by. This parameter is required and must be greater than 0.
-        /// </param>
+        /// <param name="countryId">The unique identifier of the country.</param>
         /// <returns>
-        /// - HTTP 200 OK with the list of drivers if successful.
-        /// - HTTP 204 No Content if no drivers are found.
-        /// - HTTP 400 Bad Request if the country ID parameter is invalid.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// A data result containing driver details filtered by country.
         /// </returns>
+        /// <response code="200">Returns a list of drivers for the specified country.</response>
+        /// <response code="400">Bad request due to invalid parameters.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("by-country/{countryId:int}", Name = "GetDriversByCountryAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByCountryAsync(int countryId)
@@ -227,26 +213,19 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves drivers filtered by both country and city.
+        /// Retrieves a list of drivers based on the specified country and city.
         /// </summary>
-        /// <param name="countryId">
-        /// The unique identifier for the country to filter drivers.
-        /// This parameter is required and must be greater than 0.
-        /// </param>
-        /// <param name="cityId">
-        /// The unique identifier for the city to filter drivers.
-        /// This parameter is required and must be greater than 0.
-        /// </param>
+        /// <param name="countryId">The unique identifier of the country.</param>
+        /// <param name="cityId">The unique identifier of the city.</param>
         /// <returns>
-        /// - HTTP 200 OK with a list of matching drivers.
-        /// - HTTP 204 No Content if no drivers are found.
-        /// - HTTP 400 Bad Request if the country or city ID is invalid.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// A data result containing driver details filtered by country and city.
         /// </returns>
+        /// <response code="200">Returns a list of drivers for the specified country and city.</response>
+        /// <response code="400">Bad request due to invalid parameters.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("by-country/{countryId:int}/city/{cityId:int}", Name = "GetDriversByCountryAndCityAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByCountryAndCityAsync( int countryId, int cityId)
@@ -272,7 +251,7 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves drivers filtered by country, city, and availability date.
+        /// Retrieves a list of drivers filtered by country, city, and availability date.
         /// </summary>
         /// <param name="countryId">
         /// The unique identifier for the country to filter drivers.
@@ -287,21 +266,17 @@ namespace Mottrist.API.Controllers
         /// Only drivers available on this date or marked as available all the time will be included.
         /// </param>
         /// <returns>
-        /// - HTTP 200 OK with a list of matching drivers.
-        /// - HTTP 204 No Content if no drivers are found.
-        /// - HTTP 400 Bad Request if the country or city ID is invalid.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// A data result containing drivers that match the specified criteria.
         /// </returns>
+        /// <response code="200">Returns a list of matching drivers.</response>
+        /// <response code="400">Bad request due to invalid parameters.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("by-country/{countryId:int}/city/{cityId:int}/date", Name = "GetDriversByCountryCityAndDateAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByCountryCityAndDateAsync(
-            int countryId,
-             int cityId,
-             DateTime date)
+        public async Task<IActionResult> GetByCountryCityAndDateAsync(int countryId,int cityId,DateTime date)
         {
             if (countryId < 1 || cityId < 1)
             {
@@ -323,17 +298,30 @@ namespace Mottrist.API.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Retrieves a paginated list of drivers based on the specified country.
+        /// </summary>
+        /// <param name="countryId">
+        /// The unique identifier of the country.
+        /// </param>
+        /// <param name="page">
+        /// The page number of the paginated result. Default is 1.
+        /// </param>
+        /// <param name="pageSize">
+        /// The number of items per page. Default is 10.
+        /// </param>
+        /// <returns>
+        /// A paginated result containing driver details filtered by country.
+        /// </returns>
+        /// <response code="200">Returns a paginated list of drivers.</response>
+        /// <response code="400">Bad request due to invalid parameters.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("paged/by-country/{countryId:int}", Name = "GetDriversByCountryWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByCountryWithPaginationAsync(
-            int countryId,
-            int page = 1,
-            int pageSize = 10)
+        public async Task<IActionResult> GetByCountryWithPaginationAsync(int countryId,int page = 1,int pageSize = 10)
         {
             if (countryId  < 1 || page < 1 || pageSize < 1)
             {
@@ -354,17 +342,33 @@ namespace Mottrist.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of drivers filtered by country and city.
+        /// </summary>
+        /// <param name="countryId">
+        /// The unique identifier of the country.
+        /// </param>
+        /// <param name="cityId">
+        /// The unique identifier of the city.
+        /// </param>
+        /// <param name="page">
+        /// The page number of the paginated result. Default is 1.
+        /// </param>
+        /// <param name="pageSize">
+        /// The number of items per page. Default is 10.
+        /// </param>
+        /// <returns>
+        /// A paginated result containing driver details filtered by country and city.
+        /// </returns>
+        /// <response code="200">Returns a paginated list of drivers.</response>
+        /// <response code="400">Bad request due to invalid parameters.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}", Name = "GetDriversByCountryAndCityWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByCountryAndCityWithPaginationAsync(
-         int countryId,
-         int cityId,
-         int page = 1,
-         int pageSize = 10)
+        public async Task<IActionResult> GetByCountryAndCityWithPaginationAsync(int countryId,int cityId,int page = 1,int pageSize = 10)
         {
             if (countryId < 1 || page < 1 || pageSize < 1)
             {
@@ -377,7 +381,7 @@ namespace Mottrist.API.Controllers
 
                 return dataResult != null
                     ? SuccessResponse(dataResult, "Drivers retrieved successfully.")
-                    : NoContentResponse("No drivers found ");
+                    : StatusCodeResponse(StatusCodes.Status500InternalServerError, "UnexpectedError", "Unexpected error occurred while retrieving drivers.");
             }
             catch (Exception ex)
             {
@@ -385,18 +389,38 @@ namespace Mottrist.API.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Retrieves a paginated list of drivers filtered by country, city, and availability date.
+        /// </summary>
+        /// <param name="countryId">
+        /// The unique identifier for the country.
+        /// </param>
+        /// <param name="cityId">
+        /// The unique identifier for the city.
+        /// </param>
+        /// <param name="date">
+        /// The specific date when the driver should be available.
+        /// Only drivers available on this date or marked as available all the time will be included.
+        /// </param>
+        /// <param name="page">
+        /// The page number of the paginated result. Default is 1.
+        /// </param>
+        /// <param name="pageSize">
+        /// The number of items per page. Default is 10.
+        /// </param>
+        /// <returns>
+        /// A paginated result containing driver details filtered by country, city, and availability date.
+        /// </returns>
+        /// <response code="200">Returns a paginated list of matching drivers.</response>
+        /// <response code="400">Bad request due to invalid parameters.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("paged/by-country/{countryId:int}/city/{cityId:int}/date", Name = "GetDriversByCountryAndCityAndDateWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<PaginatedResult<DriverDto>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByCountryCityAndDateWithPaginationAsync(
-         int countryId,
-         int cityId,
-         DateTime date,
-         int page = 1,
-         int pageSize = 10)
+        public async Task<IActionResult> GetByCountryCityAndDateWithPaginationAsync(int countryId,int cityId,DateTime date,int page = 1,int pageSize = 10)
         {
             if (countryId < 1 || page < 1 || pageSize < 1)
             {
@@ -416,37 +440,31 @@ namespace Mottrist.API.Controllers
                 return StatusCodeResponse(StatusCodes.Status500InternalServerError, "ServerError", $"Unexpected error: {ex.Message}");
             }
         }
+
         /// <summary>
-        /// Retrieves a paginated list of drivers based on a specified status.
+        /// Retrieves a paginated list of drivers filtered by status.
         /// </summary>
         /// <param name="status">
         /// The status used to filter drivers (e.g., "Approved", "Rejected", "Pending").
-        /// This parameter is required and must be a valid status.
         /// </param>
         /// <param name="page">
-        /// The page number for paginated results.
-        /// Must be greater than 0. Defaults to 1.
+        /// The page number of the paginated result. Default is 1.
         /// </param>
         /// <param name="pageSize">
-        /// The number of records per page in paginated results.
-        /// Must be greater than 0. Defaults to 10.
+        /// The number of items per page. Default is 10.
         /// </param>
         /// <returns>
-        /// - HTTP 200 OK with a paginated list of drivers.
-        /// - HTTP 204 No Content if no matching drivers are found.
-        /// - HTTP 400 Bad Request if the pagination parameters or status are invalid.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// A paginated result containing driver details filtered by status.
         /// </returns>
+        /// <response code="200">Returns a paginated list of drivers.</response>
+        /// <response code="400">Bad request due to invalid parameters.</response>
+        /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("paged/by-status", Name = "GetDriversByStatusWithPaginationAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetByStatusWithPaginationAsync(
-            string status,
-            int page = 1,
-            int pageSize = 10)
+        public async Task<IActionResult> GetByStatusWithPaginationAsync(string status,int page = 1,int pageSize = 10)
         {
             try
             {
@@ -475,22 +493,20 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves a list of drivers based on the specified status.
+        /// Retrieves a list of drivers filtered by status.
         /// </summary>
         /// <param name="status">
         /// The status used to filter drivers (e.g., "Approved", "Rejected", "Pending").
-        /// This parameter is required and must be a valid status.
         /// </param>
         /// <returns>
-        /// - HTTP 200 OK with a list of matching drivers.
-        /// - HTTP 204 No Content if no drivers match the specified status.
-        /// - HTTP 400 Bad Request if the status parameter is invalid.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// A data result containing driver details filtered by status.
         /// </returns>
+        /// <response code="200">Returns a list of drivers with the specified status.</response>
+        /// <response code="400">Bad request due to invalid parameters.</response>
+        /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpGet("by-status", Name = "GetDriversByStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<DataResult<DriverDto>?>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetByStatusAsync(string status)
@@ -516,19 +532,21 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Adds a new driver using the provided data transfer object.
+        /// Adds a new driver to the system.
         /// </summary>
-        /// <param name="driverDto">The DTO containing the details of the driver to be added.</param>
+        /// <param name="driverDto">
+        /// The driver data transfer object containing the details of the driver to be added.
+        /// </param>
         /// <returns>
-        /// - HTTP 201 Created if the operation is successful.
-        /// - HTTP 400 Bad Request if there are validation errors.
-        /// - HTTP 409 Conflict if a driver with the same unique details already exists.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// A result containing the newly created driver details.
         /// </returns>
-        
+        /// <response code="201">Driver successfully created.</response>
+        /// <response code="400">Bad request due to invalid input.</response>
+        /// <response code="409">Conflict due to duplicate entry or business rule violation.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpPost (Name = "AddNewDriverAsync")]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<Result<DriverDto>>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
@@ -567,22 +585,24 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Updates the details of an existing driver in the system using the provided data transfer object.
+        /// Updates the details of an existing driver.
         /// </summary>
-        /// <param name="id">The unique identifier of the driver to be updated.</param>
-        /// <param name="driverDto">The data transfer object containing updated driver details.</param>
+        /// <param name="id">
+        /// The unique identifier of the driver to be updated.
+        /// </param>
+        /// <param name="driverDto">
+        /// The driver data transfer object containing updated details.
+        /// </param>
         /// <returns>
-        /// An <see cref="IActionResult"/> indicating the result of the operation:
-        /// - HTTP 200 OK if the operation is successful.
-        /// - HTTP 400 Bad Request if validation fails.
-        /// - HTTP 404 Not Found if the driver does not exist.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// A result containing the updated driver details.
         /// </returns>
+        /// <response code="200">Driver details successfully updated.</response>
+        /// <response code="400">Bad request due to validation errors.</response>
+        /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpPut("{id:int}", Name = "UpdateDriverDetailsAsync")]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)] // Successful update
+        [ProducesResponseType(typeof(ApiResponse<Result<DriverDto>>), StatusCodes.Status200OK)] // Successful update
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)] // Validation errors
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)] // Driver not found
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)] // Unexpected errors
         public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateDriverDto driverDto)
         {
@@ -605,9 +625,6 @@ namespace Mottrist.API.Controllers
 
             try
             {
-    
-                
-                // Set the driver id based on the route parameter.
                 driverDto.Id = id;
                 var result = await _driverService.UpdateAsync(driverDto);
 
@@ -622,27 +639,24 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Updates the status of a specified driver.
+        /// Updates the status of a specific driver.
         /// </summary>
         /// <param name="driverId">
-        /// The unique identifier of the driver whose status needs to be updated.
-        /// Must be greater than 0.
+        /// The unique identifier of the driver whose status is being updated.
         /// </param>
         /// <param name="newStatus">
         /// The new status to assign to the driver (e.g., "Approved", "Rejected", "Pending").
-        /// This parameter is required and must be a valid status.
         /// </param>
         /// <returns>
-        /// - HTTP 200 OK if the status is updated successfully.
-        /// - HTTP 400 Bad Request if the provided status is invalid.
-        /// - HTTP 404 Not Found if no driver matches the provided ID.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// An API response indicating the result of the update operation.
         /// </returns>
-        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
+        /// <response code="200">Status successfully updated.</response>
+        /// <response code="400">Bad request due to invalid parameters or input.</response>
+        /// <response code="500">Internal server error.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}")]
         [HttpPatch("update-status/{driverId:int}", Name = "UpdateDriverStatusAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateStatusAsync(int driverId, string newStatus)
         {
@@ -667,39 +681,35 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Updates the availability status of a specified driver.
+        /// Updates the availability status of a specific driver.
         /// </summary>
         /// <param name="driverId">
-        /// The unique identifier of the driver whose availability needs to be updated.
-        /// Must be greater than 0.
+        /// The unique identifier of the driver whose availability is being updated.
         /// </param>
         /// <param name="availableFrom">
-        /// The date when the driver becomes available.
-        /// If null, no specific start date is set.
+        /// The optional start date from which the driver is available.
+        /// If null, availability start date is not specified.
         /// </param>
         /// <param name="availableTo">
-        /// The date when the driver is no longer available.
-        /// If null, no specific end date is set.
+        /// The optional end date until which the driver is available.
+        /// If null, availability end date is not specified.
         /// </param>
         /// <param name="availableAllTime">
         /// Indicates whether the driver is available at all times.
-        /// If true, the availability dates may be ignored.
+        /// If true, the driver is always available regardless of specific dates.
         /// </param>
         /// <returns>
-        /// - HTTP 200 OK if the availability update is successful.
-        /// - HTTP 400 Bad Request if the driver ID is invalid.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// An API response indicating the result of the update operation.
         /// </returns>
-        [AllowAnonymous]
+        /// <response code="200">Availability successfully updated.</response>
+        /// <response code="400">Bad request due to invalid parameters or input.</response>
+        /// <response code="500">Internal server error.</response>
+        [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpPatch("update-availability/{driverId:int}", Name = "UpdateDriverAvailabilityAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateAvailabilityAsync(
-            int driverId,
-            DateTime? availableFrom,
-            DateTime? availableTo,
-            bool availableAllTime)
+        public async Task<IActionResult> UpdateAvailabilityAsync(int driverId,DateTime? availableFrom,DateTime? availableTo,bool availableAllTime)
         {
             if (driverId < 1)
             {
@@ -723,23 +733,24 @@ namespace Mottrist.API.Controllers
         /// <summary>
         /// Updates the price per hour for a specified driver.
         /// </summary>
-        /// <param name="driverId">The unique ID of the driver.</param>
-        /// <param name="newPricePerHour">The new price per hour to set for the driver.</param>
+        /// <param name="driverId">
+        /// The unique ID of the driver whose price is being updated.
+        /// </param>
+        /// <param name="newPricePerHour">
+        /// The new price per hour to set for the driver.
+        /// </param>
         /// <returns>
-        /// - HTTP 200 OK if the price is updated successfully.
-        /// - HTTP 400 Bad Request if the driver ID or price is invalid.
-        /// - HTTP 404 Not Found if the driver does not exist.
-        /// - HTTP 500 Internal Server Error for unexpected errors.
+        /// An API response indicating the result of the update operation.
         /// </returns>
+        /// <response code="200">Price updated successfully.</response>
+        /// <response code="400">Bad request due to invalid driver ID or price.</response>
+        /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpPatch("update-price/{driverId:int}", Name = "UpdateDriverPriceAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdatePriceAsync(
-            int driverId,
-            decimal newPricePerHour)
+        public async Task<IActionResult> UpdatePriceAsync(int driverId,decimal newPricePerHour)
         {
             if (driverId < 1 || newPricePerHour <= 0)
             {
@@ -761,36 +772,29 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Updates the like/dislike status for a driver by a logged-in user.
+        /// Allows a user to like or dislike a specific driver.
         /// </summary>
         /// <param name="driverId">
-        /// The unique identifier of the driver.
-        /// Must be greater than 0.
+        /// The unique identifier of the driver being liked or disliked.
         /// </param>
         /// <param name="userId">
-        /// The unique identifier of the user making the reaction.
-        /// Must be greater than 0.
+        /// The unique identifier of the user performing the action.
         /// </param>
         /// <param name="isLiked">
-        /// The reaction type: 
-        /// - `true` for Like.
-        /// - `false` for Dislike.
-        /// - `null` to remove the reaction.
+        /// Indicates whether the user likes (true), dislikes (false), or removes their previous action (null).
         /// </param>
         /// <returns>
-        /// - HTTP 200 OK if the reaction is updated successfully.
-        /// - HTTP 400 Bad Request if input parameters are invalid.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// An API response indicating the result of the operation.
         /// </returns>
+        /// <response code="200">Successfully recorded the like/dislike action.</response>
+        /// <response code="400">Bad request due to invalid parameters or input.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpPost("like-dislike/{driverId:int}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> LikeOrDislikeAsync(
-            int driverId,
-            int userId,
-            bool? isLiked)
+        public async Task<IActionResult> LikeOrDislikeAsync(int driverId,int userId,bool? isLiked)
         {
             if (driverId < 1 || userId < 1)
                 return BadRequestResponse("InvalidRequest", "Driver ID and User ID must be greater than 0.");
@@ -810,32 +814,27 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Records a user's first view of a driver, ensuring each user views a driver only once.
-        /// Validates that both driver and user exist before registering the view.
+        /// Increments the view count for a specific driver.
         /// </summary>
         /// <param name="driverId">
-        /// The unique identifier of the driver being viewed.
-        /// Must be greater than 0.
+        /// The unique identifier of the driver whose view count is being updated.
         /// </param>
         /// <param name="userId">
         /// The unique identifier of the user viewing the driver.
-        /// Must be greater than 0.
         /// </param>
         /// <returns>
-        /// - HTTP 200 OK if the view is recorded successfully.
-        /// - HTTP 400 Bad Request if input parameters are invalid.
-        /// - HTTP 404 Not Found if the driver or user does not exist.
-        /// - HTTP 500 Internal Server Error for unexpected failures.
+        /// An API response indicating the result of the operation.
         /// </returns>
+        /// <response code="200">View count successfully incremented.</response>
+        /// <response code="400">Bad request due to invalid parameters or input.</response>
+        /// <response code="404">Driver not found.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpPost("increment-view/{driverId:int}")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> IncrementViewCountAsync(
-            [FromRoute] int driverId,
-            [FromQuery] int userId)
+        public async Task<IActionResult> IncrementViewCountAsync( int driverId,int userId)
         {
             // Validate input parameters
             if (driverId < 1 || userId < 1)
@@ -857,15 +856,17 @@ namespace Mottrist.API.Controllers
         }
 
         /// <summary>
-        /// Deletes a driver by the specified ID.
+        /// Deletes a driver based on the specified ID.
         /// </summary>
-        /// <param name="id">The unique identifier of the driver to be deleted.</param>
+        /// <param name="id">
+        /// The unique identifier of the driver to be deleted.
+        /// </param>
         /// <returns>
-        /// Returns:
-        /// - HTTP 200 OK if the deletion is successful.
-        /// - HTTP 400 Bad Request if the driver ID is invalid.
-        /// - HTTP 500 Internal Server Error with detailed error information for failures.
+        /// An API response indicating the result of the delete operation.
         /// </returns>
+        /// <response code="200">Driver deleted successfully.</response>
+        /// <response code="400">Bad request due to an invalid driver ID.</response>
+        /// <response code="500">Internal server error.</response>
         [Authorize(Roles = $"{AppUserRoles.RoleAdmin}, {AppUserRoles.RoleEmployee}, {AppUserRoles.RoleDriver}")]
         [HttpDelete("{id:int}",Name = "DeleteAsync")]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)] // Driver deleted successfully
@@ -900,11 +901,11 @@ namespace Mottrist.API.Controllers
         /// Retrieves all necessary form fields for driver registration, including car-related fields, languages, countries, and cities.
         /// </summary>
         /// <returns>
-        /// An <see cref="IActionResult"/> containing:
-        /// - **200 OK**: If the data is retrieved successfully.
-        /// - **204 No Content**: If no data is available.
-        /// - **500 Internal Server Error**: If an exception occurs.
+        /// A response containing all required form fields for driver registration.
         /// </returns>
+        /// <response code="200">Successfully retrieved form fields.</response>
+        /// <response code="204">No content available.</response>
+        /// <response code="500">Internal server error.</response>
         [AllowAnonymous]
         [HttpGet("all-driver-form-fields", Name = "GetAllDriverFormFields")]
         [ProducesResponseType(typeof(ApiResponse<DriverFormFieldsDto>), StatusCodes.Status200OK)] // Success response
