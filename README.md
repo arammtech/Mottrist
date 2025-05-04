@@ -1,13 +1,12 @@
 # 🚀 Mottrist Project Documentation
 
-## 📌 Overview
 Welcome to the Mottrist REST API!
 Mottrist is a powerful .NET 9 and MSSQL-based application leveraging Entity Framework Core (EF Core) for seamless data management. It features efficient database initialization and comes preloaded with seed data, including languages, car fields, cities, and countries, ensuring a structured and well-organized system.
 The Mottrist REST API is your gateway to managing a comprehensive travel platform that connects travelers with drivers, facilitating seamless travel experiences. This Postman collection provides a complete set of tools to interact with the Mottrist API, enabling you to manage Travelers, Drivers, Cars, Destinations, Messages, Countries, Cities, Languages, and access Admin and Employee dashboards.
 
 ---
 
-## Overview
+## 📌 Overview
 
 Mottrist is a robust platform designed to streamline travel logistics by connecting travelers with drivers and providing rich metadata for destinations, vehicles, and communication. The API, built with ASP.NET Core, offers a RESTful interface to perform operations such as creating and updating driver profiles, managing traveler accounts, retrieving location data, sending messages, and authenticating users. It leverages dependency injection for service interactions, standardized ApiResponse objects for consistent responses, and role-based authorization (Admin, Employee, Driver, Traveler) to secure sensitive operations.
 
