@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -121,8 +121,30 @@ builder.Services.AddScoped<SoftDeleteInterceptor>();
 builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 {
     var interceptor = serviceProvider.GetRequiredService<SoftDeleteInterceptor>();
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-    options.AddInterceptors(interceptor);
+
+    // 1️⃣  Try to read the RDS variables supplied by Elastic Beanstalk
+    var host = Environment.GetEnvironmentVariable("RDS_HOSTNAME");
+
+    string connString;
+
+    if (string.IsNullOrEmpty(host))
+    {
+        // 2️⃣  Fallback for local development
+        connString = builder.Configuration.GetConnectionString("DefaultConnection");
+    }
+    else
+    {
+        var port = Environment.GetEnvironmentVariable("RDS_PORT") ?? "1433";
+        var db = Environment.GetEnvironmentVariable("RDS_DB_NAME");
+        var user = Environment.GetEnvironmentVariable("RDS_USERNAME");
+        var pwd = Environment.GetEnvironmentVariable("RDS_PASSWORD");
+
+        connString =
+            $"Server={host},{port};Database={db};User Id={user};Password={pwd};TrustServerCertificate=True;";
+    }
+
+    options.UseSqlServer(connString)
+           .AddInterceptors(interceptor);
 });
 #endregion
 
@@ -208,7 +230,7 @@ builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 
-SeedDatabase();
+//SeedDatabase();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -235,6 +257,12 @@ app.UseAuthorization();
 // app.UseEndpoints(endpoints => endpoints.MapControllers());
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var init = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+    init.Initialize();      // EnsureCreated / Migrate + seed
+}
 
 app.Run();
 

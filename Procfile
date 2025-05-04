@@ -1,0 +1,1 @@
+web: dotnet ./app/Mottrist.API.dll
